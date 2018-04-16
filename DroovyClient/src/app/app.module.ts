@@ -8,13 +8,11 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientModule } from '@angular/common/http';
 import { AuthComponent } from './auth/auth.component';
 import { AppRoutingModule } from './/app-routing.module';
-import { Oauth2CallBackComponent } from './oauth2-call-back/oauth2-call-back.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     AuthComponent,
-    Oauth2CallBackComponent
   ],
   imports: [
     HttpClientModule,
