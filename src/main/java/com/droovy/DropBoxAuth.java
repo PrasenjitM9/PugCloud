@@ -26,6 +26,7 @@ import org.glassfish.jersey.client.JerseyClient;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.glassfish.jersey.client.JerseyInvocation;
 import org.glassfish.jersey.client.JerseyWebTarget;
+import org.glassfish.jersey.server.ResourceConfig;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
@@ -33,43 +34,49 @@ import com.sun.jersey.api.client.WebResource;
 /**
  * Root resource (exposed at "myresource" path)
  */
-@Path("googledriveauth")
-public class GoogledriveAuth {
+@Path("dropboxauth")
+public class DropBoxAuth{
 
-    /**
-     * Method handling HTTP GET requests. The returned object will be sent
-     * to the client as "text/plain" media type.
-     *
-     * @return String that will be returned as a text/plain response.
-     */
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public String getIt() {
-        return "Got it!";
-    }
-    
-    
-    @GET
-    @Produces("text/plain")
-    @Path("/callback")
-    public String callBackAuth(@Context UriInfo uriInfo,@QueryParam("code") String code) {
-    	
-    	String client_id = "783584831345-rpngg6uic1i0iorvp2l5agc9ajmdm64v.apps.googleusercontent.com";
-    	String client_secret = "0VnkLfVVZlE3c5SGiBk5AP7p" ;
-    	
-    	System.out.println("callback receive");
-    	
-    	
-    	Client client = Client.create();
+	/**
+	 * Method handling HTTP GET requests. The returned object will be sent
+	 * to the client as "text/plain" media type.
+	 *
+	 * @return String that will be returned as a text/plain response.
+	 */
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getIt() {
+		return "Got it!";
+	}
 
-        String url = "https://www.googleapis.com/oauth2/v4/token";
-        
-        String redirect_uri = "http://localhost:8080/droovy/googledriveauth/callback";
-		
+
+	@GET
+	@Produces("text/plain")
+	@Path("/callback")
+	public String callBackAuth(@Context UriInfo uriInfo,@QueryParam("code") String code) {
+
+
+		String client_id = "i90y72ofs47u9b8";
+		String client_secret = "7tvoiqp2ivspl7y";
+
+		System.out.println("callback receive");
+
+		String url = "https://api.dropboxapi.com/oauth2/token";
+
+		String redirect_uri = "http://localhost:8080/droovy/dropboxauth/callback";
+
 		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
 		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
 		JerseyInvocation.Builder jerseyInvocation = jerseyTarget.request("application/json");
-		
+
+
+
+		String input = "{\"client_id\" : \""+client_id+"\""
+				+ "\"client_secret\" : \""+client_secret+"\""
+				+ "\"grant_type\" : \""+"authorization_code"+"\""
+				+ "\"code\" : \""+code+"\""
+				+ "\"redirect_uri\" : \""+redirect_uri+"\"}";
+
 
 		MultivaluedMap<String, String> formData = new MultivaluedHashMap<String, String>();
 		formData.add("client_id", client_id);
@@ -95,36 +102,36 @@ public class GoogledriveAuth {
 		System.out.println(response.toString());
 
 		return "Response : "+output;
-		
-    }
-    
-    
-    public static void updateUserDatabase(String token) {
-    	 
-        String url = "./" + "users.sqlite";
-        
-        File file = new File(url);
-        
-        
-        try {
+
+	}
+
+
+	public static void updateUserDatabase(String token) {
+
+		String url = "./" + "users.sqlite";
+
+		File file = new File(url);
+
+
+		try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (ClassNotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
-        
-        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:"+url)) {
-            if (conn != null) {
-                DatabaseMetaData meta = conn.getMetaData();
-               
-                
-                
-            }
- 
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-    
+
+		try (Connection conn = DriverManager.getConnection("jdbc:sqlite:"+url)) {
+			if (conn != null) {
+				DatabaseMetaData meta = conn.getMetaData();
+
+
+
+			}
+
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+	}
+
 }
