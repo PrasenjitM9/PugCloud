@@ -1,4 +1,4 @@
-package com.droovy;
+package com.droovy.auth;
 
 
 import java.io.File;
