@@ -14,6 +14,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
+import com.droovy.DatabaseOp;
+
 
 @Path("user")
 public class UserAuth {
@@ -22,22 +24,32 @@ public class UserAuth {
 	@GET
 	@Produces("text/plain")
 	@Path("/create")
-	public String userCreate(@Context UriInfo uriInfo,@QueryParam("password") String mdp,@QueryParam("id") String id) {
+	public String userCreate(@Context UriInfo uriInfo,@QueryParam("password") String password,@QueryParam("name") String name) {
 		
-		boolean creationSuccess = true;
-		int idClient = -1;
+		 boolean creationSuccess = true;
 		
-		/**
-		 * TO DO : 
-		 * create user account with id and mdp
-		 * 
-		 */
+		 DatabaseOp db = new DatabaseOp();
+		 
+		 if(db.checkIfUserExist(name, password)) {
+			 return "{\"reason\" : \"alreadyExist\","
+						+ "\"success\" : \"false\"}";
+		 }
+		 
+		 int idClient = db.createUser(name, password);
 		
-		  idClient = 4;
-		 /**---*/
-		
+		 
+		 try {
+				db.close();
+			} catch (SQLException e) {
+			 	return "{\"success\" : \"false\"}";
+			}
+			 
+		 if(idClient == -1) {
+			 creationSuccess = false;
+		 }
+		 
 		 if(creationSuccess) {
-				return "{\"id\" : \""+idClient+"\""
+				return "{\"id\" : \""+idClient+"\","
 						+ "\"success\" : \"true\"}";
 		 }
 		 else {
@@ -50,25 +62,27 @@ public class UserAuth {
 	@GET
 	@Produces("text/plain")
 	@Path("/auth")
-	public String userAuth(@Context UriInfo uriInfo,@QueryParam("password") String mdp,@QueryParam("id") String id) {
+	public String userAuth(@Context UriInfo uriInfo,@QueryParam("password") String password,@QueryParam("name") String name) {
 
 		
-		 boolean connexionSuccess = false;
-		 int idClient = -1;
+		 boolean connexionSuccess = true;
 		 
-		 /**
-		  * TO DO :
-		  * Check an get cuser id in database
-		  */
+		 DatabaseOp db = new DatabaseOp();
+		 
+		 int idClient = db.authUser(name, password);
 		
-		 connexionSuccess = true;
-		 idClient = 4;
+		 try {
+			db.close();
+		} catch (SQLException e) {
+		 	return "{\"success\" : \"false\"}";
+		}
 		 
-		 /**----*/
-		 
+		 if(idClient == -1) {
+			 connexionSuccess = false;
+		 }
 		 
 		 if(connexionSuccess) {
-				return "{\"id\" : \""+idClient+"\""
+				return "{\"id\" : \""+idClient+"\","
 						+ "\"success\" : \"true\"}";
 		 }
 		 else {
