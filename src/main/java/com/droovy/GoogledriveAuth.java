@@ -41,6 +41,10 @@ import com.sun.jersey.api.client.WebResource;
 @Path("googledriveauth")
 public class GoogledriveAuth {
 	
+	
+	//A SUPPRIMER 
+	private String token;
+	
 	private String client_id = "783584831345-rpngg6uic1i0iorvp2l5agc9ajmdm64v.apps.googleusercontent.com";
 	private String client_secret = "0VnkLfVVZlE3c5SGiBk5AP7p" ;
 
@@ -86,43 +90,16 @@ public class GoogledriveAuth {
 		JsonNode rootNode = objectMapper.readTree(output);
 		JsonNode tokenNode = rootNode.path("access_token");
 		
-		String token_client = tokenNode.asText();
+		token = tokenNode.asText();
 		
 		
 		System.out.println("Output from Server .... "+output+"\n");
 		System.out.println(response.toString());
-		System.out.println("token:"+token_client);
+		
 
 		return "Response : "+output;
 		
     }
     
-    public static void updateUserDatabase(String token) {
-    	 
-        String url = "./" + "users.sqlite";
-        
-        File file = new File(url);
-        
-        
-        try {
-			Class.forName("org.sqlite.JDBC");
-		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-        
-        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:"+url)) {
-            if (conn != null) {
-                DatabaseMetaData meta = conn.getMetaData();
-               
-                
-                
-            }
- 
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
     
 }

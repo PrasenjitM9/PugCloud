@@ -36,6 +36,7 @@ import com.sun.jersey.api.client.WebResource;
  */
 @Path("dropboxauth")
 public class DropBoxAuth{
+	
 
 	/**
 	 * Method handling HTTP GET requests. The returned object will be sent
@@ -43,11 +44,7 @@ public class DropBoxAuth{
 	 *
 	 * @return String that will be returned as a text/plain response.
 	 */
-	@GET
-	@Produces(MediaType.TEXT_PLAIN)
-	public String getIt() {
-		return "Got it!";
-	}
+
 
 
 	@GET
@@ -87,6 +84,7 @@ public class DropBoxAuth{
 			throw new RuntimeException("Failed : HTTP error code : "
 					+ response.getStatus()+ " "+ response.toString());
 		}
+		
 		String output =  response.readEntity(String.class);
 		System.out.println("Output from Server .... "+output+"\n");
 		System.out.println(response.toString());
@@ -95,33 +93,5 @@ public class DropBoxAuth{
 
 	}
 
-
-	public static void updateUserDatabase(String token) {
-
-		String url = "./" + "users.sqlite";
-
-		File file = new File(url);
-
-
-		try {
-			Class.forName("org.sqlite.JDBC");
-		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-
-		try (Connection conn = DriverManager.getConnection("jdbc:sqlite:"+url)) {
-			if (conn != null) {
-				DatabaseMetaData meta = conn.getMetaData();
-
-
-
-			}
-
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-		}
-	}
 
 }

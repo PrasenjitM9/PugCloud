@@ -77,32 +77,4 @@ public class UserAuth {
 	}
 
 
-	public static void updateUserDatabase(String token) {
-
-		String url = "./" + "users.sqlite";
-
-		File file = new File(url);
-
-
-		try {
-			Class.forName("org.sqlite.JDBC");
-		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-
-		try (Connection conn = DriverManager.getConnection("jdbc:sqlite:"+url)) {
-			if (conn != null) {
-				DatabaseMetaData meta = conn.getMetaData();
-
-
-
-			}
-
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-		}
-	}
-
 }
