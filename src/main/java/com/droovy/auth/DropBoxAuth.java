@@ -57,8 +57,6 @@ public class DropBoxAuth implements Auth{
 	@Path("/callback")
 	public String callBackAuth(@Context UriInfo uriInfo,@QueryParam("code") String code) throws JsonProcessingException, IOException {
 
-		System.out.println("callback receive");
-
 		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
 		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
 

@@ -1,5 +1,6 @@
 package com.droovy.request;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
@@ -14,6 +15,9 @@ import org.glassfish.jersey.client.JerseyWebTarget;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import com.droovy.DatabaseOp;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class UserRequestDropbox implements UserRequest{
 
@@ -36,12 +40,25 @@ public class UserRequestDropbox implements UserRequest{
 
 		String output =  response.readEntity(String.class);
 	
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode rootNode;
+		try {
+			rootNode = mapper.readTree(output);
+			JsonNode entries = rootNode.path("entries");
+			
+			
+		} catch (JsonProcessingException e) {
+			output = "{}";
+		} catch (IOException e) {
+			output = "{}";
+		}
+		
 		
 		System.out.println("Files from Server .... "+output+"\n");
 		System.out.println(response.toString());
 		
 
-		return "Response : "+output;
+		return output;
 		
 		
 		

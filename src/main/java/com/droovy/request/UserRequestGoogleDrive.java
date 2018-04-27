@@ -36,20 +36,19 @@ public class UserRequestGoogleDrive implements UserRequest{
 			if (response.getStatus() != 200) {
 				throw new RuntimeException("Failed : HTTP error code : "
 						+ response.getStatus()+ " "+ response.toString());
-			}		JerseyInvocation.Builder jerseyInvocation = jerseyTarget.request("application/json");
-
+			}		
 			String output =  response.readEntity(String.class);
 
 
 			System.out.println("Files from Server .... "+output+"\n");
 			System.out.println(response.toString());
-			return "Response : "+output;
+			return output;
 
 
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-		return "Response : ";
+		return "{}";
 	}
 
 
