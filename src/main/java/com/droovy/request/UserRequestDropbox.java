@@ -25,7 +25,6 @@ public class UserRequestDropbox implements UserRequest {
 	
 		String json = "{\"path\": \""+path+"\",\"recursive\": false,\"include_media_info\": false,\"include_deleted\": false,\"include_has_explicit_shared_members\": false,\"include_mounted_folders\": true }";
 		
-		
 		Response response = jerseyTarget.request().header("Authorization", "Bearer "+DatabaseOp.getUserDropBoxToken()).header("Content-Type", "application/json").accept(MediaType.APPLICATION_JSON).post(Entity.json(json));
 		
 		if (response.getStatus() != 200) {
