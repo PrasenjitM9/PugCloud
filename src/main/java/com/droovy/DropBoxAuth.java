@@ -28,6 +28,9 @@ import org.glassfish.jersey.client.JerseyInvocation;
 import org.glassfish.jersey.client.JerseyWebTarget;
 import org.glassfish.jersey.server.ResourceConfig;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 
@@ -36,31 +39,24 @@ import com.sun.jersey.api.client.WebResource;
  */
 @Path("dropboxauth")
 public class DropBoxAuth{
-	
 
-	/**
-	 * Method handling HTTP GET requests. The returned object will be sent
-	 * to the client as "text/plain" media type.
-	 *
-	 * @return String that will be returned as a text/plain response.
-	 */
+	//A SUPPRIMER 
+	private String token;
 
+	private String client_id = "i90y72ofs47u9b8";
+	private String client_secret = "7tvoiqp2ivspl7y";
 
+	private ObjectMapper objectMapper = new ObjectMapper();
+
+	private String url = "https://api.dropboxapi.com/oauth2/token";
+	private String redirect_uri = "http://localhost:8080/droovy/dropboxauth/callback";
 
 	@GET
 	@Produces("text/plain")
 	@Path("/callback")
-	public String callBackAuth(@Context UriInfo uriInfo,@QueryParam("code") String code) {
-
-
-		String client_id = "i90y72ofs47u9b8";
-		String client_secret = "7tvoiqp2ivspl7y";
+	public String callBackAuth(@Context UriInfo uriInfo,@QueryParam("code") String code) throws JsonProcessingException, IOException {
 
 		System.out.println("callback receive");
-
-		String url = "https://api.dropboxapi.com/oauth2/token";
-
-		String redirect_uri = "http://localhost:8080/droovy/dropboxauth/callback";
 
 		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
 		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
@@ -86,6 +82,12 @@ public class DropBoxAuth{
 		}
 		
 		String output =  response.readEntity(String.class);
+
+		JsonNode rootNode = objectMapper.readTree(output);
+		JsonNode tokenNode = rootNode.path("access_token");
+
+		token = tokenNode.asText();
+
 		System.out.println("Output from Server .... "+output+"\n");
 		System.out.println(response.toString());
 
