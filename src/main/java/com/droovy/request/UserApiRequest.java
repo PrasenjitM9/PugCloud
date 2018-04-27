@@ -13,7 +13,7 @@ public class UserApiRequest {
 	@GET
 	@Produces("text/plain")
 	@Path("/list")
-	public String getFilesList(@Context UriInfo uriInfo,@QueryParam("path") String path,@QueryParam("id") String id) {
+	public String getFilesList(@Context UriInfo uriInfo,@QueryParam("path") String path,@QueryParam("id") String id) {		
 		return new UserRequestDropbox().getFilesList(path)+new UserRequestGoogleDrive().getFilesList(path);
 	}
 	

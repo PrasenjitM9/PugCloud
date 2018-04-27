@@ -60,16 +60,9 @@ public class GoogledriveAuth implements Auth{
     @Produces("text/plain")
     @Path("/callback")
     public String callBackAuth(@Context UriInfo uriInfo,@QueryParam("code") String code) throws JsonProcessingException, IOException {
-    	
-
-    	
-    	System.out.println("callback receive");
-    	
-    	Client client = Client.create();
-		
+      			
 		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
 		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
-		JerseyInvocation.Builder jerseyInvocation = jerseyTarget.request("application/json");
 
 		MultivaluedMap<String, String> formData = new MultivaluedHashMap<String, String>();
 		formData.add("client_id", client_id);
