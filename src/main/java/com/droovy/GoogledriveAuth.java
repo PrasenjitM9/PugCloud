@@ -49,19 +49,7 @@ public class GoogledriveAuth {
     private String url = "https://www.googleapis.com/oauth2/v4/token";
     private String redirect_uri = "http://localhost:8080/droovy/googledriveauth/callback";
 	
-	
-    /**
-     * Method handling HTTP GET requests. The returned object will be sent
-     * to the client as "text/plain" media type.
-     *
-     * @return String that will be returned as a text/plain response.
-     */
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public String getIt() {
-        return "Got it!";
-    }
-    
+
     
     @GET
     @Produces("text/plain")
