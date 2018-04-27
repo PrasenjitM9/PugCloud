@@ -30,7 +30,7 @@ public class UserAuth {
 		
 		 DatabaseOp db = new DatabaseOp();
 		 
-		 if(db.checkIfUserExist(name, password)) {
+		 if(db.checkIfUserExist(name)) {
 			 return "{\"reason\" : \"alreadyExist\","
 						+ "\"success\" : \"false\"}";
 		 }

@@ -49,7 +49,6 @@ public class DatabaseOp {
 		String sql_get_user_id = "SELECT MAX(id) as id FROM users";
 		
 		try {
-			Connection conn;
 			try {
 				conn = connectDb();
 			} catch (ClassNotFoundException e) {
@@ -77,11 +76,10 @@ public class DatabaseOp {
 
 	}
 
-	public boolean checkIfUserExist(String name,String password) {
-		String sql_get_user = "SELECT id FROM users WHERE name == ? and password == ?";
+	public boolean checkIfUserExist(String name) {
+		String sql_get_user = "SELECT id FROM users WHERE name == ?";
 		
 		try {
-			Connection conn;
 			try {
 				conn = connectDb();
 			} catch (ClassNotFoundException e) {
@@ -89,7 +87,6 @@ public class DatabaseOp {
 			}
 			PreparedStatement st = conn.prepareStatement(sql_get_user);
 			st.setString(1, name);
-			st.setString(2, password);
 			st.execute();
 			
 			
@@ -114,7 +111,6 @@ public class DatabaseOp {
 		String sql_get_user = "SELECT id FROM users WHERE name == ? and password == ?";
 		
 		try {
-			Connection conn;
 			try {
 				conn = connectDb();
 			} catch (ClassNotFoundException e) {
@@ -144,32 +140,154 @@ public class DatabaseOp {
 	}
 
 
-	public static void updateUserOneDriveToken(String token){
-		tokenOneDrive = token;
+	public boolean updateUserOneDriveToken(String token,String id){
+		String sql_update_user = "UPDATE users SET onedrivetoken = ? WHERE id == ?;";
+
+		
+		try {
+			try {
+				conn = connectDb();
+			} catch (ClassNotFoundException e) {
+				return false;
+			}
+			PreparedStatement st = conn.prepareStatement(sql_update_user);
+			st.setString(1, token);
+			st.setString(2, id);
+			st.executeUpdate();
+		
+			conn.close();
+		
+			return true;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
-	public static void updateUserDropBoxToken(String token){
-		tokenDropBox = token;
+	public boolean updateUserDropBoxToken(String token,String id){
+		String sql_update_user = "UPDATE users SET dropboxtoken = ? WHERE id == ?;";
+
+		
+		try {
+			try {
+				conn = connectDb();
+			} catch (ClassNotFoundException e) {
+				return false;
+			}
+			PreparedStatement st = conn.prepareStatement(sql_update_user);
+			st.setString(1, token);
+			st.setString(2, id);
+			st.executeUpdate();
+		
+			conn.close();
+		
+			return true;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}	
 	}
 
-	public static void updateUserGoogleDriveToken(String token){
-		tokenGoogleDrive = token;
+	public boolean updateUserGoogleDriveToken(String token,String id){
+		String sql_update_user = "UPDATE users SET googledrivetoken = ? WHERE id == ?;";
+
+		
+		try {
+			try {
+				conn = connectDb();
+			} catch (ClassNotFoundException e) {
+				return false;
+			}
+			PreparedStatement st = conn.prepareStatement(sql_update_user);
+			st.setString(1, token);
+			st.setString(2, id);
+			st.executeUpdate();
+		
+			conn.close();
+		
+			return true;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 
 
 
 
-	public static String getUserOneDriveToken(){
-		return tokenOneDrive;
+	public String getUserOneDriveToken(String id){
+		String sql_create_user = "SELECT onedrivetoken FROM users WHERE id == ?;";
+
+		
+		try {
+			try {
+				conn = connectDb();
+			} catch (ClassNotFoundException e) {
+				return "";
+			}
+			PreparedStatement st = conn.prepareStatement(sql_create_user);
+			st.setString(1, id);
+			st.executeUpdate();
+		
+			conn.close();
+		
+			return "";
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return "";
+		}
 	}
 
-	public static String getUserDropBoxToken(){
-		return tokenDropBox;
+	public String getUserDropBoxToken(String id){
+			String sql_create_user = "SELECT dropboxtoken FROM users WHERE id == ?;";
+
+			
+			try {
+				try {
+					conn = connectDb();
+				} catch (ClassNotFoundException e) {
+					return "";
+				}
+				PreparedStatement st = conn.prepareStatement(sql_create_user);
+				st.setString(1, id);
+				st.executeUpdate();
+			
+				conn.close();
+			
+				return "";
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return "";
+			}
 	}
 
-	public static String getUserGoogleDriveToken(){
-		return tokenGoogleDrive;
+	public String getUserGoogleDriveToken(String id){
+		String sql_create_user = "SELECT googledrivetoken FROM users WHERE id == ?;";
+
+		try {
+			try {
+				conn = connectDb();
+			} catch (ClassNotFoundException e) {
+				return "";
+			}
+			PreparedStatement st = conn.prepareStatement(sql_create_user);
+			st.setString(1, id);
+			st.executeUpdate();
+		
+			conn.close();
+		
+			return "";
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return "";
+		}
 	}
 
 
