@@ -10,10 +10,10 @@ public class File {
 	
 	private Date creationDate, lastUpdateDate;
 
-	private int taille;
+	private long taille;
 	
 	public File(String name, String id, String url, String[] source, Date creationDate, Date lastUpdateDate,
-			int taille) {
+			long taille) {
 		this.name = name;
 		this.id = id;
 		this.url = url;
@@ -47,9 +47,10 @@ public class File {
 		return lastUpdateDate;
 	}
 
-	public int getTaille() {
+	public long getTaille() {
 		return taille;
 	}
+	
 	
 	
 }

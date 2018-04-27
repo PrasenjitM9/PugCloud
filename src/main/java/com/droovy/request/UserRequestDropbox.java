@@ -23,43 +23,49 @@ public class UserRequestDropbox implements UserRequest{
 
 	@Override
 	public String getFilesList(String path) {
-		
-		String url = "https://api.dropboxapi.com/2/files/list_folder";
 
-		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
-		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
-		
-		String json = "{\"path\": \""+path+"\",\"recursive\": false,\"include_media_info\": false,\"include_deleted\": false,\"include_has_explicit_shared_members\": false,\"include_mounted_folders\": true }";
-		
-		Response response = jerseyTarget.request().header("Authorization", "Bearer "+DatabaseOp.getUserDropBoxToken()).header("Content-Type", "application/json").accept(MediaType.APPLICATION_JSON).post(Entity.json(json));
-		
-		if (response.getStatus() != 200) {
-			throw new RuntimeException("Failed : HTTP error code : "
-					+ response.getStatus()+ " "+ response.toString());
-		}		
+		try{
+			String url = "https://api.dropboxapi.com/2/files/list_folder";
 
-		String output =  response.readEntity(String.class);
-	
-		ObjectMapper mapper = new ObjectMapper();
-		JsonNode rootNode;
-		try {
-			rootNode = mapper.readTree(output);
-			JsonNode entries = rootNode.path("entries");
+			JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+			JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+
+			String json = "{\"path\": \""+path+"\",\"recursive\": false,\"include_media_info\": false,\"include_deleted\": false,\"include_has_explicit_shared_members\": false,\"include_mounted_folders\": true }";
+
+			Response response = jerseyTarget.request().header("Authorization", "Bearer "+DatabaseOp.getUserDropBoxToken()).header("Content-Type", "application/json").accept(MediaType.APPLICATION_JSON).post(Entity.json(json));
+
+			if (response.getStatus() != 200) {
+				throw new RuntimeException("Failed : HTTP error code : "
+						+ response.getStatus()+ " "+ response.toString());
+			}		
+
+			String output =  response.readEntity(String.class);
+
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode rootNode;
+			try {
+				rootNode = mapper.readTree(output);
+				JsonNode entries = rootNode.path("entries");
+
+
+			} catch (JsonProcessingException e) {
+				output = "{}";
+			} catch (IOException e) {
+				output = "{}";
+			}
+
+
+			System.out.println("Files from Server .... "+output+"\n");
+			System.out.println(response.toString());
+
+			return output;
 			
-			
-		} catch (JsonProcessingException e) {
-			output = "{}";
-		} catch (IOException e) {
-			output = "{}";
+		}catch(Exception e){
+			e.printStackTrace();
 		}
-		
-		
-		System.out.println("Files from Server .... "+output+"\n");
-		System.out.println(response.toString());
-		
 
-		return output;
-		
+		return "-1";
+
 	}
 
 }
