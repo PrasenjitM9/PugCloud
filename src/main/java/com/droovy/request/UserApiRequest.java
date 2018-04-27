@@ -21,7 +21,12 @@ public class UserApiRequest {
 		
 	}
 	
-	
+	@GET
+	@Produces("text/plain")
+	@Path("/list")
+	public String getFilesList(@Context UriInfo uriInfo,@QueryParam("password") String mdp,@QueryParam("id") String id) {
+		return new UserRequestDropbox().getFilesList();
+	}
 	
 	
 	
