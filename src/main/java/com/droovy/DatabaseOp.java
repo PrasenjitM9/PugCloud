@@ -231,16 +231,20 @@ public class DatabaseOp {
 			}
 			PreparedStatement st = conn.prepareStatement(sql_create_user);
 			st.setString(1, id);
-			st.executeUpdate();
-		
-			conn.close();
-		
-			return "";
+			ResultSet rs = st.executeQuery();
+
+			
+			while (rs.next()) {
+				String token =  rs.getString("onedrivetoken")+"";
+				conn.close();
+				return token;
+			}
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return "";
 		}
+		return "";
 	}
 
 	public String getUserDropBoxToken(String id){
@@ -255,16 +259,20 @@ public class DatabaseOp {
 				}
 				PreparedStatement st = conn.prepareStatement(sql_create_user);
 				st.setString(1, id);
-				st.executeUpdate();
-			
-				conn.close();
-			
-				return "";
+				ResultSet rs = st.executeQuery();
+
+				
+				while (rs.next()) {
+					String token =  rs.getString("dropboxtoken")+"";
+					conn.close();
+					return token;
+				}
 
 			} catch (SQLException e) {
 				e.printStackTrace();
 				return "";
 			}
+			return "";
 	}
 
 	public String getUserGoogleDriveToken(String id){
@@ -278,16 +286,20 @@ public class DatabaseOp {
 			}
 			PreparedStatement st = conn.prepareStatement(sql_create_user);
 			st.setString(1, id);
-			st.executeUpdate();
-		
-			conn.close();
-		
-			return "";
+			ResultSet rs = st.executeQuery();
+
+			
+			while (rs.next()) {
+				String token =  rs.getString("googledrivetoken")+"";
+				conn.close();
+				return token;
+			}
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return "";
 		}
+		return "";
 	}
 
 
