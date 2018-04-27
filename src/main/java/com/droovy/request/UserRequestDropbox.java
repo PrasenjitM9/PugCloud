@@ -23,18 +23,21 @@ public class UserRequestDropbox implements UserRequest {
 		
 		DatabaseOp.updateUserDropBoxToken("senU5G790IAAAAAAAAAArfc5TEtCNrjYE6dR_AhHa7MVnVub9BgzDlHb0gmwNHFY");
 		
-		String url = "https://api.dropboxapi.com/2/file_requests/list";
+		String url = "https://api.dropboxapi.com/2/files/list_folder";
 
 		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
 		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
 		
-		MultivaluedMap<String, String> formData = new MultivaluedHashMap<String, String>();
-		Response response = jerseyTarget.request().header("Authorization", "Bearer "+DatabaseOp.getUserDropBoxToken()).accept(MediaType.APPLICATION_JSON).post(Entity.form(formData));
+	
+		String json = "{\"path\": \"/test\",\"recursive\": false,\"include_media_info\": false,\"include_deleted\": false,\"include_has_explicit_shared_members\": false,\"include_mounted_folders\": true }";
+		
+		
+		Response response = jerseyTarget.request().header("Authorization", "Bearer "+DatabaseOp.getUserDropBoxToken()).header("Content-Type", "application/json").header("data", "{\"path\": \"/test\",\"recursive\": false,\"include_media_info\": false,\"include_deleted\": false,\"include_has_explicit_shared_members\": false,\"include_mounted_folders\": true }").accept(MediaType.APPLICATION_JSON).post(Entity.json(json));
 		
 		if (response.getStatus() != 200) {
 			throw new RuntimeException("Failed : HTTP error code : "
 					+ response.getStatus()+ " "+ response.toString());
-		}		JerseyInvocation.Builder jerseyInvocation = jerseyTarget.request("application/json");
+		}		
 
 		String output =  response.readEntity(String.class);
 	
