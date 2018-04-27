@@ -5,21 +5,28 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
 
 import org.glassfish.jersey.client.JerseyClient;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.glassfish.jersey.client.JerseyInvocation;
 import org.glassfish.jersey.client.JerseyWebTarget;
+import org.glassfish.jersey.server.ResourceConfig;
 
 import com.droovy.DatabaseOp;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 
-public class UserRequestDropbox implements UserRequest {
+public class UserRequestDropbox implements UserRequest{
 
 	@Override
 	public String getFilesList() {
+		
+		System.out.println("Debut");
+		
+		
+		try{
 		
 		DatabaseOp.updateUserDropBoxToken("senU5G790IAAAAAAAAAArfc5TEtCNrjYE6dR_AhHa7MVnVub9BgzDlHb0gmwNHFY");
 		
@@ -42,8 +49,10 @@ public class UserRequestDropbox implements UserRequest {
 		System.out.println("Files from Server .... "+output+"\n");
 		System.out.println(response.toString());
 		
-
-		return "Response : "+output;
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return "Response : ";
 		
 		
 		
