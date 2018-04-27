@@ -11,6 +11,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
@@ -57,22 +59,25 @@ public class GoogledriveAuth {
 
         String url = "https://www.googleapis.com/oauth2/v4/token";
         
-        String redirect_uri = "http:localhost:8080/googledriveauth/tokenreceiver";
+        String redirect_uri = "http://localhost:8080/droovy/googledriveauth/tokenreceiver";
 		
 		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
 		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
 		JerseyInvocation.Builder jerseyInvocation = jerseyTarget.request("application/json");
 		
 		jerseyInvocation.header("Context-type", "application/json");
-		jerseyInvocation.header("code", code);
-		jerseyInvocation.header("client_id",client_id);
-		jerseyInvocation.header("client_secret", client_secret);
-		jerseyInvocation.header("grant_type", "authorization_code");
-		jerseyInvocation.header("redirect_uri", redirect_uri);
-
-		Response response = jerseyInvocation.post(Entity.entity("", MediaType.APPLICATION_JSON), Response.class);
 		
-		System.out.println(response.toString());
+		
+		 MultivaluedMap<String, String> formData = new MultivaluedHashMap<String, String>();		
+		    formData.add("code", code);
+		    formData.add("client_id",client_id);
+		    formData.add("client_secret", client_secret);
+		    formData.add("grant_type", "authorization_code");
+		    formData.add("redirect_uri", redirect_uri);
+
+		Response response = jerseyInvocation.post(Entity.form(formData));
+		
+		System.out.println(response.readEntity(String.class));
 		
 		
 /*
@@ -94,6 +99,7 @@ public class GoogledriveAuth {
     @GET
     @Path("/tokenreceiver")
     public String toto(@QueryParam("code") String code) {
+    	System.out.println("Receive");
     	return "toto";
     }
     
