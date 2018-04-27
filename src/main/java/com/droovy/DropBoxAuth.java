@@ -67,16 +67,6 @@ public class DropBoxAuth{
 
 		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
 		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
-		JerseyInvocation.Builder jerseyInvocation = jerseyTarget.request("application/json");
-
-
-
-		String input = "{\"client_id\" : \""+client_id+"\""
-				+ "\"client_secret\" : \""+client_secret+"\""
-				+ "\"grant_type\" : \""+"authorization_code"+"\""
-				+ "\"code\" : \""+code+"\""
-				+ "\"redirect_uri\" : \""+redirect_uri+"\"}";
-
 
 		MultivaluedMap<String, String> formData = new MultivaluedHashMap<String, String>();
 		formData.add("client_id", client_id);
