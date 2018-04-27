@@ -28,6 +28,7 @@ import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.glassfish.jersey.client.JerseyInvocation;
 import org.glassfish.jersey.client.JerseyWebTarget;
 
+import com.droovy.DatabaseOp;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -39,7 +40,7 @@ import com.sun.jersey.api.client.WebResource;
  * Root resource (exposed at "myresource" path)
  */
 @Path("googledriveauth")
-public class GoogledriveAuth {
+public class GoogledriveAuth implements Auth{
 	
 	
 	//A SUPPRIMER 
@@ -90,8 +91,7 @@ public class GoogledriveAuth {
 		JsonNode rootNode = objectMapper.readTree(output);
 		JsonNode tokenNode = rootNode.path("access_token");
 		
-		token = tokenNode.asText();
-		
+		DatabaseOp.updateUserGoogleDriveToken(tokenNode.asText());	
 		
 		System.out.println("Output from Server .... "+output+"\n");
 		System.out.println(response.toString());
@@ -100,6 +100,6 @@ public class GoogledriveAuth {
 		return "Response : "+output;
 		
     }
-    
+
     
 }

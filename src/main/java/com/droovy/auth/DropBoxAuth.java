@@ -28,6 +28,7 @@ import org.glassfish.jersey.client.JerseyInvocation;
 import org.glassfish.jersey.client.JerseyWebTarget;
 import org.glassfish.jersey.server.ResourceConfig;
 
+import com.droovy.DatabaseOp;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,7 +39,7 @@ import com.sun.jersey.api.client.WebResource;
  * Root resource (exposed at "myresource" path)
  */
 @Path("dropboxauth")
-public class DropBoxAuth{
+public class DropBoxAuth implements Auth{
 
 	//A SUPPRIMER 
 	private String token;
@@ -86,7 +87,7 @@ public class DropBoxAuth{
 		JsonNode rootNode = objectMapper.readTree(output);
 		JsonNode tokenNode = rootNode.path("access_token");
 
-		token = tokenNode.asText();
+		DatabaseOp.updateUserDropBoxToken(tokenNode.asText());
 
 		System.out.println("Output from Server .... "+output+"\n");
 		System.out.println(response.toString());
@@ -94,6 +95,7 @@ public class DropBoxAuth{
 		return "Response : "+output;
 
 	}
+
 
 
 }
