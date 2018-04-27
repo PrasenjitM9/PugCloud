@@ -96,7 +96,6 @@ public class DatabaseOp {
 			ResultSet rs = st.getResultSet();
 			
 			while (rs.next()) {
-				int id =  rs.getInt("id");
 				conn.close();
 				return true;
 			}
