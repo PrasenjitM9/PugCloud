@@ -21,12 +21,17 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+
 import org.glassfish.jersey.client.ClientResponse;
 import org.glassfish.jersey.client.JerseyClient;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.glassfish.jersey.client.JerseyInvocation;
 import org.glassfish.jersey.client.JerseyWebTarget;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 
@@ -35,7 +40,16 @@ import com.sun.jersey.api.client.WebResource;
  */
 @Path("googledriveauth")
 public class GoogledriveAuth {
+	
+	private String client_id = "783584831345-rpngg6uic1i0iorvp2l5agc9ajmdm64v.apps.googleusercontent.com";
+	private String client_secret = "0VnkLfVVZlE3c5SGiBk5AP7p" ;
 
+	private ObjectMapper objectMapper = new ObjectMapper();
+	
+    private String url = "https://www.googleapis.com/oauth2/v4/token";
+    private String redirect_uri = "http://localhost:8080/droovy/googledriveauth/callback";
+	
+	
     /**
      * Method handling HTTP GET requests. The returned object will be sent
      * to the client as "text/plain" media type.
@@ -52,24 +66,17 @@ public class GoogledriveAuth {
     @GET
     @Produces("text/plain")
     @Path("/callback")
-    public String callBackAuth(@Context UriInfo uriInfo,@QueryParam("code") String code) {
+    public String callBackAuth(@Context UriInfo uriInfo,@QueryParam("code") String code) throws JsonProcessingException, IOException {
     	
-    	String client_id = "783584831345-rpngg6uic1i0iorvp2l5agc9ajmdm64v.apps.googleusercontent.com";
-    	String client_secret = "0VnkLfVVZlE3c5SGiBk5AP7p" ;
+
     	
     	System.out.println("callback receive");
     	
-    	
     	Client client = Client.create();
-
-        String url = "https://www.googleapis.com/oauth2/v4/token";
-        
-        String redirect_uri = "http://localhost:8080/droovy/googledriveauth/callback";		
+		
 		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
 		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
 		JerseyInvocation.Builder jerseyInvocation = jerseyTarget.request("application/json");
-		
-
 
 		MultivaluedMap<String, String> formData = new MultivaluedHashMap<String, String>();
 		formData.add("client_id", client_id);
@@ -81,23 +88,27 @@ public class GoogledriveAuth {
 
 		Response response = jerseyTarget.request().accept(MediaType.APPLICATION_JSON).post(Entity.form(formData));
 
-
-
-		System.out.println(response.toString());
-
 		if (response.getStatus() != 200) {
 			throw new RuntimeException("Failed : HTTP error code : "
 					+ response.getStatus()+ " "+ response.toString());
 		}
 		String output =  response.readEntity(String.class);
+		
+		
+		JsonNode rootNode = objectMapper.readTree(output);
+		JsonNode tokenNode = rootNode.path("access_token");
+		
+		String token_client = tokenNode.asText();
+		
+		
 		System.out.println("Output from Server .... "+output+"\n");
 		System.out.println(response.toString());
+		System.out.println("token:"+token_client);
 
 		return "Response : "+output;
 		
     }
     
-
     public static void updateUserDatabase(String token) {
     	 
         String url = "./" + "users.sqlite";
