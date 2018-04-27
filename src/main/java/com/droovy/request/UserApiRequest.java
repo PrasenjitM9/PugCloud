@@ -14,6 +14,9 @@ public class UserApiRequest {
 	@Produces("text/plain")
 	@Path("/list")
 	public String getFilesList(@Context UriInfo uriInfo,@QueryParam("path") String path,@QueryParam("id") String id) {
+		
+		System.out.println("Path ; "+path);
+		
 		return new UserRequestDropbox().getFilesList(path)+new UserRequestGoogleDrive().getFilesList(path);
 	}
 	

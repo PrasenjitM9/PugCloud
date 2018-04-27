@@ -1,5 +1,8 @@
 package com.droovy.request;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -22,7 +25,6 @@ public class UserRequestDropbox implements UserRequest{
 		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
 		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
 		
-	
 		String json = "{\"path\": \""+path+"\",\"recursive\": false,\"include_media_info\": false,\"include_deleted\": false,\"include_has_explicit_shared_members\": false,\"include_mounted_folders\": true }";
 		
 		Response response = jerseyTarget.request().header("Authorization", "Bearer "+DatabaseOp.getUserDropBoxToken()).header("Content-Type", "application/json").accept(MediaType.APPLICATION_JSON).post(Entity.json(json));
@@ -39,7 +41,7 @@ public class UserRequestDropbox implements UserRequest{
 		System.out.println(response.toString());
 		
 
-		return "Response : ";
+		return "Response : "+output;
 		
 		
 		
