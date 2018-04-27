@@ -3,20 +3,20 @@ package com.droovy.request;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
 
 import org.glassfish.jersey.client.JerseyClient;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.glassfish.jersey.client.JerseyWebTarget;
+import org.glassfish.jersey.server.ResourceConfig;
 
 import com.droovy.DatabaseOp;
 
-public class UserRequestDropbox implements UserRequest {
+public class UserRequestDropbox implements UserRequest{
 
 	@Override
 	public String getFilesList(String path) {
-		
-		DatabaseOp.updateUserDropBoxToken("senU5G790IAAAAAAAAAArfc5TEtCNrjYE6dR_AhHa7MVnVub9BgzDlHb0gmwNHFY");
-		
+				
 		String url = "https://api.dropboxapi.com/2/files/list_folder";
 
 		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
@@ -39,7 +39,7 @@ public class UserRequestDropbox implements UserRequest {
 		System.out.println(response.toString());
 		
 
-		return "Response : "+output;
+		return "Response : ";
 		
 		
 		
