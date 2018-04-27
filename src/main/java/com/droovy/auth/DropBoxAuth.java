@@ -55,7 +55,7 @@ public class DropBoxAuth implements Auth{
 	@GET
 	@Produces("text/plain")
 	@Path("/callback")
-	public String callBackAuth(@Context UriInfo uriInfo,@QueryParam("code") String code) throws JsonProcessingException, IOException {
+	public String callBackAuth(@Context UriInfo uriInfo,@QueryParam("code") String code,@QueryParam("state") String state) throws JsonProcessingException, IOException {
 
 		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
 		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
@@ -85,7 +85,9 @@ public class DropBoxAuth implements Auth{
 		JsonNode rootNode = objectMapper.readTree(output);
 		JsonNode tokenNode = rootNode.path("access_token");
 
-		DatabaseOp.updateUserDropBoxToken(tokenNode.asText());
+		DatabaseOp db = new DatabaseOp();
+		
+		db.updateUserDropBoxToken(tokenNode.asText(),"10");
 
 		System.out.println("Output from Server .... "+output+"\n");
 		System.out.println(response.toString());

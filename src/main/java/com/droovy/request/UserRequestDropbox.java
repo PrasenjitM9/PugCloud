@@ -22,17 +22,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class UserRequestDropbox implements UserRequest{
 
 	@Override
-	public String getFilesList(String path) {
+	public String getFilesList(String path,String id) {
+
+		String url = "https://api.dropboxapi.com/2/files/list_folder";
+
 
 		try{
-			String url = "https://api.dropboxapi.com/2/files/list_folder";
 
 			JerseyClient jerseyClient = JerseyClientBuilder.createClient();
 			JerseyWebTarget jerseyTarget = jerseyClient.target(url);
 
 			String json = "{\"path\": \""+path+"\",\"recursive\": false,\"include_media_info\": false,\"include_deleted\": false,\"include_has_explicit_shared_members\": false,\"include_mounted_folders\": true }";
 
-			Response response = jerseyTarget.request().header("Authorization", "Bearer "+DatabaseOp.getUserDropBoxToken()).header("Content-Type", "application/json").accept(MediaType.APPLICATION_JSON).post(Entity.json(json));
+			DatabaseOp db = new DatabaseOp();
+			System.out.println("Token : " +db.getUserDropBoxToken(id)+" id : "+id);
+			Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserDropBoxToken(id)).header("Content-Type", "application/json").accept(MediaType.APPLICATION_JSON).post(Entity.json(json));
 
 			if (response.getStatus() != 200) {
 				throw new RuntimeException("Failed : HTTP error code : "
@@ -59,7 +63,7 @@ public class UserRequestDropbox implements UserRequest{
 			System.out.println(response.toString());
 
 			return output;
-			
+
 		}catch(Exception e){
 			e.printStackTrace();
 		}
