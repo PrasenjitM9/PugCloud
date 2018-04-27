@@ -12,20 +12,9 @@ public class UserApiRequest {
 
 	@GET
 	@Produces("text/plain")
-	@Path("/googledrive")
-	public String getFileGoogleDrive(@Context UriInfo uriInfo,@QueryParam("code") String code){
-		System.out.println("recu");
-		UserRequest requestGoogleDrive = new UserRequestGoogleDrive();
-		requestGoogleDrive.getFilesList();
-		return "";
-		
-	}
-	
-	@GET
-	@Produces("text/plain")
 	@Path("/list")
-	public String getFilesList(@Context UriInfo uriInfo,@QueryParam("password") String mdp,@QueryParam("id") String id) {
-		return new UserRequestDropbox().getFilesList();
+	public String getFilesList(@Context UriInfo uriInfo,@QueryParam("path") String path,@QueryParam("id") String id) {
+		return new UserRequestDropbox().getFilesList(path)+new UserRequestGoogleDrive().getFilesList(path);
 	}
 	
 	
