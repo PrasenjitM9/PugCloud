@@ -23,7 +23,7 @@ public class UserRequestDropbox implements UserRequest{
 
 	@Override
 	public String getFilesList(String path) {
-				
+		
 		String url = "https://api.dropboxapi.com/2/files/list_folder";
 
 		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
@@ -59,9 +59,6 @@ public class UserRequestDropbox implements UserRequest{
 		
 
 		return output;
-		
-		
-		
 		
 	}
 

@@ -31,7 +31,7 @@ public class UserRequestGoogleDrive implements UserRequest{
 			JerseyWebTarget jerseyTarget = jerseyClient.target(url);
 
 			MultivaluedMap<String, String> formData = new MultivaluedHashMap<String, String>();
-			Response response = jerseyTarget.request().header("Authorization", "Bearer "+DatabaseOp.getUserGoogleDriveToken()).accept(MediaType.APPLICATION_JSON).post(Entity.form(formData));
+			Response response = jerseyTarget.request().header("Authorization", "Bearer "+DatabaseOp.getUserGoogleDriveToken()).accept(MediaType.APPLICATION_JSON).get();
 
 			if (response.getStatus() != 200) {
 				throw new RuntimeException("Failed : HTTP error code : "
