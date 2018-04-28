@@ -30,7 +30,6 @@ public class UserRequestGoogleDrive implements UserRequest{
 	JSONParser parser = new JSONParserGoogledrive();
 
 	@Override
-
 	public String getFilesList(String path,String id) {
 
 		try{
@@ -44,7 +43,7 @@ public class UserRequestGoogleDrive implements UserRequest{
 
 			DatabaseOp db = new DatabaseOp();
 			Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserGoogleDriveToken(id)).accept(MediaType.APPLICATION_JSON).get();
-
+			
 			if (response.getStatus() != 200) {
 				throw new RuntimeException("Failed : HTTP error code : "
 						+ response.getStatus()+ " "+ response.toString());
@@ -69,5 +68,40 @@ public class UserRequestGoogleDrive implements UserRequest{
 		return "-1";
 	}
 
+	@Override
+	public String addFile(String filename, String id) {
+		try{
 
+			String url = "https://www.googleapis.com/drive/v2/files";
+
+			JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+			JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+
+			MultivaluedMap<String, String> formData = new MultivaluedHashMap<String, String>();
+			formData.add("title:", filename);
+
+			DatabaseOp db = new DatabaseOp();
+			Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserGoogleDriveToken(id)).accept(MediaType.APPLICATION_JSON).post(Entity.text("title:test"));
+
+						
+			if (response.getStatus() != 200) {
+				throw new RuntimeException("Failed : HTTP error code : "
+						+ response.getStatus()+ " "+ response.toString());
+			}		
+
+			return "1";
+
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		return "-1";
+	}
+
+
+	@Override
+	public boolean removeFile(String id_file, String id) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

@@ -8,6 +8,20 @@ public class UserRequestOneDrive implements UserRequest {
 		return null;
 	}
 
+	@Override
+	public boolean removeFile(String id_file, String id) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public String addFile(String filename, String id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
 	
 
 }

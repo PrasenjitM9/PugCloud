@@ -41,9 +41,6 @@ import com.sun.jersey.api.client.WebResource;
 @Path("dropboxauth")
 public class DropBoxAuth implements Auth{
 
-	//A SUPPRIMER 
-	private String token;
-
 	private String client_id = "i90y72ofs47u9b8";
 	private String client_secret = "7tvoiqp2ivspl7y";
 

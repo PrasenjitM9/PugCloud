@@ -43,9 +43,6 @@ import com.sun.jersey.api.client.WebResource;
 public class GoogledriveAuth implements Auth{
 	
 	
-	//A SUPPRIMER 
-	private String token;
-	
 	private String client_id = "783584831345-rpngg6uic1i0iorvp2l5agc9ajmdm64v.apps.googleusercontent.com";
 	private String client_secret = "0VnkLfVVZlE3c5SGiBk5AP7p" ;
 

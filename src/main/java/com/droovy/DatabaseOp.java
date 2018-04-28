@@ -17,7 +17,7 @@ public class DatabaseOp {
 
 	private Connection conn;
 	
-	private String url = "./" + "users.sqlite";
+	private String url = "./" + "users.db";
 
 	private String sql_create_table = "CREATE TABLE IF NOT EXISTS users (\n"
 			+ "	id integer PRIMARY KEY AUTOINCREMENT,\n"
