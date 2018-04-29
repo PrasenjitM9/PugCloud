@@ -2,6 +2,8 @@ package com.droovy.auth;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -36,6 +38,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 
+import javassist.compiler.SyntaxError;
+
 /**
  * Root resource (exposed at "myresource" path)
  */
@@ -56,7 +60,7 @@ public class GoogledriveAuth implements Auth{
     @GET
     @Produces("text/plain")
     @Path("/callback")
-    public String callBackAuth(@Context UriInfo uriInfo,@QueryParam("code") String code,@QueryParam("state") String state) throws JsonProcessingException, IOException {
+    public Response callBackAuth(@Context UriInfo uriInfo,@QueryParam("code") String code,@QueryParam("state") String state) throws JsonProcessingException, IOException, URISyntaxException {
       			
 		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
 		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
@@ -71,9 +75,10 @@ public class GoogledriveAuth implements Auth{
 
 		Response response = jerseyTarget.request().accept(MediaType.APPLICATION_JSON).post(Entity.form(formData));
 
-		if (response.getStatus() != 200) {
+		if (response.getStatus() != 200) {/*
 			throw new RuntimeException("Failed : HTTP error code : "
-					+ response.getStatus()+ " "+ response.toString());
+					+ response.getStatus()+ " "+ response.toString());*/
+			return Response.temporaryRedirect(new URI("http://localhost:4200?success=false")).build();
 		}
 		String output =  response.readEntity(String.class);
 		
@@ -82,13 +87,14 @@ public class GoogledriveAuth implements Auth{
 		JsonNode tokenNode = rootNode.path("access_token");
 		
 		DatabaseOp db = new DatabaseOp();
-		db.updateUserGoogleDriveToken(tokenNode.asText(),state);	
 		
-		System.out.println("Output from Server .... "+output+"\n");
-		System.out.println(response.toString());
-		
-
-		return "Response : "+output;
+		if(db.updateUserGoogleDriveToken(tokenNode.asText(),state)) {
+			return Response.temporaryRedirect(new URI("http://localhost:4200?success=true")).build();
+		}
+		else {
+			/*Peut être retourner un erreur 400 à la place*/
+			return Response.temporaryRedirect(new URI("http://localhost:4200?success=false")).build();
+		}
 		
     }
 
