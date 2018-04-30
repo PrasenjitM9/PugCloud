@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.droovy.request.File;
+import com.droovy.request.FileType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,9 +38,7 @@ public class JSONParserGoogledrive implements JSONParser {
 		ObjectMapper mapper = new ObjectMapper();
 
 		String name = file.path("title").asText();
-		
-		System.out.println(name);
-		
+			
 		
 		String id = file.path("id").asText();
 		String url = file.path("webContentLink").asText();
@@ -50,12 +49,17 @@ public class JSONParserGoogledrive implements JSONParser {
 			creationDate = formatter.parse(file.path("createdDate").asText());
 			lastUpdateDate = formatter.parse(file.path("modifiedDate").asText());
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		long taille = file.path("fileSize").asLong();
 
-		return new File(name, id, url, source, creationDate, lastUpdateDate, taille);
+		FileType type = FileType.FILE;
+		
+		if(file.path("mimeType").asText().equals("application/vnd.google-apps.folder")) {
+			type = FileType.FOLDER;
+		}
+		
+		return new File(name,type, id, url, source, creationDate, lastUpdateDate, taille,"");
 
 	}
 

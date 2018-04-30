@@ -1,9 +1,11 @@
 package com.droovy.request;
 
+import java.util.List;
+
 public class UserRequestOneDrive implements UserRequest {
 
 	@Override
-	public String getFilesList(String path,String id) {
+	public List<File> getFilesList(String path,String id) {
 		// TODO Auto-generated method stub
 		return null;
 	}

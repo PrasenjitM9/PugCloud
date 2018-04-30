@@ -1,5 +1,6 @@
 package com.droovy.request;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.ws.rs.client.Entity;
@@ -30,7 +31,7 @@ public class UserRequestGoogleDrive implements UserRequest{
 	JSONParser parser = new JSONParserGoogledrive();
 
 	@Override
-	public String getFilesList(String path,String id) {
+	public List<File> getFilesList(String path,String id) {
 
 		try{
 
@@ -50,22 +51,13 @@ public class UserRequestGoogleDrive implements UserRequest{
 			}		
 			String output =  response.readEntity(String.class);
 			
-			List<File> listFile = parser.parserFiles((output));
-			
-			ObjectMapper mapper = new ObjectMapper();
-			
-			String json = "";
-			for (File file : listFile) {
-				json = json + mapper.writeValueAsString(file);
-			}
-
-			return json;
+			return parser.parserFiles((output));
 
 		}catch(Exception e){
 			e.printStackTrace();
 		}
 		
-		return "-1";
+		return new LinkedList<>();
 	}
 
 	@Override

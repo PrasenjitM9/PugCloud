@@ -12,6 +12,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public interface JSONParser {
 
-	public List parserFiles(String result) throws JsonProcessingException, IOException, ParseException;
+	public List<File> parserFiles(String result) throws JsonProcessingException, IOException, ParseException;
 	public File parserFile(JsonNode file) throws JsonProcessingException, IOException, ParseException;
 }

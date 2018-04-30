@@ -1,11 +1,16 @@
 package com.droovy.request;
 
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Path("request")
 public class UserApiRequest {
@@ -18,8 +23,36 @@ public class UserApiRequest {
 	@GET
 	@Produces("text/plain")
 	@Path("/list")
-	public String getFilesList(@Context UriInfo uriInfo,@QueryParam("path") String path,@QueryParam("id") String id) {		
-		return request_dropbox.getFilesList(path,id)+request_googledrive.getFilesList(path,id);
+	public String getFilesList(@Context UriInfo uriInfo,@QueryParam("path") String path,@QueryParam("id") String id) throws JsonProcessingException {
+		
+		//TO DO : Merge les sources et fusionner si fichier identique
+		
+		List<File> listDropbox, listGoogleDrive,listOneDrive;
+		listDropbox = request_dropbox.getFilesList(path,id);
+		listGoogleDrive = request_googledrive.getFilesList(path,id);
+		
+		Merger merge = new Merger();
+		
+		List<File> mergedList = merge.merge(listDropbox, listGoogleDrive);
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		String output = "[";
+
+		for (File file : mergedList) {
+			
+			output = output + mapper.writeValueAsString(file)+",";
+		}
+
+		if(mergedList.isEmpty()) {
+			output += "]";
+		}
+		else {
+			output = output.substring(0,output.length()-1);//Retire la virgule en trop
+			output += "]";
+		}
+		
+		return output; 
 	}
 	
 	@GET
