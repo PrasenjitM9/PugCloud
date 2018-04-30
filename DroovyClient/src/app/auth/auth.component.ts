@@ -42,6 +42,10 @@ export class AuthComponent implements OnInit {
     //  window.location.href= "https://accounts.google.com/o/oauth2/v2/auth?response_type=token&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.metadata.readonly&client_id=783584831345-rpngg6uic1i0iorvp2l5agc9ajmdm64v.apps.googleusercontent.com&access_type=online&redirect_uri=http://localhost:8080/droovy/googledriveauth/callback/";
   }
 
+  authOneDrive(){
+	window.location.href = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=7da78622-f4f8-47d0-bbb0-9b777af993a7&response_type=code&redirect_uri=http://localhost:8080/droovy/onedriveauth/callback/&response_mode=query&scope=offline_access%20user.read%20mail.read&state=10";
+  }
+
   authDropBox() {
     window.location.href = "https://www.dropbox.com/oauth2/authorize?response_type=code&client_id=i90y72ofs47u9b8&redirect_uri=http://localhost:8080/droovy/dropboxauth/callback&state=10";
   }
