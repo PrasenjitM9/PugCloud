@@ -32,14 +32,14 @@ public class UserApiRequest {
 	@GET
 	@Produces("text/plain")
 	@Path("/list")
-	public String getFilesList(@Context UriInfo uriInfo,@QueryParam("path") String path,@QueryParam("id") String id) throws JsonProcessingException {
+	public String getFilesList(@Context UriInfo uriInfo,@QueryParam("path") String path,@QueryParam("idUser") String idUser,@QueryParam("idFolder") String idFolder) throws JsonProcessingException {
 		
 		//TO DO : Merge les sources et fusionner si fichier identique
 		
 		List<File> listDropbox, listGoogleDrive,listOneDrive;
-		listDropbox = request_dropbox.getFilesList(path,id);
-		listGoogleDrive = request_googledrive.getFilesList(path,id);
-		listOneDrive = request_onedrive.getFilesList(path, id);
+		listDropbox = request_dropbox.getFilesList(path,idUser);
+		listGoogleDrive = request_googledrive.getFilesList(idFolder,idUser);
+		listOneDrive = request_onedrive.getFilesList(path, idUser);
 		
 		Merger merge = new Merger();
 		

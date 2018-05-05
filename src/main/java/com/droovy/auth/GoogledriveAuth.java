@@ -89,11 +89,11 @@ public class GoogledriveAuth implements Auth{
 		DatabaseOp db = new DatabaseOp();
 		
 		if(db.updateUserGoogleDriveToken(tokenNode.asText(),state)) {
-			return Response.temporaryRedirect(new URI("http://localhost:4200?success=true")).build();
+			return Response.temporaryRedirect(new URI("http://localhost:4200/manager?success=true")).build();
 		}
 		else {
 			/*Peut être retourner un erreur 400 à la place*/
-			return Response.temporaryRedirect(new URI("http://localhost:4200?success=false")).build();
+			return Response.temporaryRedirect(new URI("http://localhost:4200/manager?success=false")).build();
 		}
 		
     }

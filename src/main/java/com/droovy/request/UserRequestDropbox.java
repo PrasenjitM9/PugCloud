@@ -35,6 +35,10 @@ public class UserRequestDropbox implements UserRequest{
 
 		try{
 
+			if(path.equals("root")) {
+				path="";
+			}
+			
 			JerseyClient jerseyClient = JerseyClientBuilder.createClient();
 			JerseyWebTarget jerseyTarget = jerseyClient.target(url);
 

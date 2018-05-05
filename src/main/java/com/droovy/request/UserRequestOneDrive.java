@@ -20,8 +20,13 @@ public class UserRequestOneDrive implements UserRequest {
 	public List<File> getFilesList(String path,String id) {
 		
 		try{
-
-			String url = "https://graph.microsoft.com/v1.0/me/drive/root:/"+path+":/children";
+			if(!path.equals("root")) {
+				path=":"+path+":";
+			}
+			else {
+				path="";
+			}
+			String url = "https://graph.microsoft.com/v1.0/me/drive/root"+path+"/children";
 			JSONParser parser = new JSONParserOneDrive();
 
 			JerseyClient jerseyClient = JerseyClientBuilder.createClient();

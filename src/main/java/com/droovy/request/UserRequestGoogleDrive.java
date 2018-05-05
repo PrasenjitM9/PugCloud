@@ -35,7 +35,14 @@ public class UserRequestGoogleDrive implements UserRequest{
 
 		try{
 
-			String url = "https://www.googleapis.com/drive/v2/files";
+			if(path.equals("root")) {
+				path="";
+			}
+			else {
+				path = "q="+path+" in parents";
+			}
+			
+			String url = "https://www.googleapis.com/drive/v2/files?"+path;
 
 			JerseyClient jerseyClient = JerseyClientBuilder.createClient();
 			JerseyWebTarget jerseyTarget = jerseyClient.target(url);

@@ -90,10 +90,10 @@ public class DropBoxAuth implements Auth{
 			
 			if(db.updateUserDropBoxToken(tokenNode.asText(),state)) {
 				
-				return Response.temporaryRedirect(new URI("http://localhost:4200?success=true")).build();
+				return Response.temporaryRedirect(new URI("http://localhost:4200/manager?success=true")).build();
 			}
 			else {
-				return Response.temporaryRedirect(new URI("http://localhost:4200?success=false")).build();
+				return Response.temporaryRedirect(new URI("http://localhost:4200/manager?success=false")).build();
 			}
 		}
 		

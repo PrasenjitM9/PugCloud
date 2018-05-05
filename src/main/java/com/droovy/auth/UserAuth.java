@@ -41,7 +41,8 @@ public class UserAuth {
 		 try {
 				db.close();
 			} catch (SQLException e) {
-			 	return "{\"success\" : \"false\"}";
+				 return "{\"id\" : \"-1\","
+							+ "\"success\" : \"false\"}";
 			}
 			 
 		 if(idClient == -1) {
@@ -53,7 +54,8 @@ public class UserAuth {
 						+ "\"success\" : \"true\"}";
 		 }
 		 else {
-			 	return "{\"success\" : \"false\"}";
+			 return "{\"id\" : \"-1\","
+						+ "\"success\" : \"false\"}";
 		 }
 	}
 
@@ -74,7 +76,8 @@ public class UserAuth {
 		 try {
 			db.close();
 		} catch (SQLException e) {
-		 	return "{\"success\" : \"false\"}";
+			 return "{\"id\" : \"-1\","
+						+ "\"success\" : \"false\"}";
 		}
 		 
 		 if(idClient == -1) {
@@ -86,7 +89,8 @@ public class UserAuth {
 						+ "\"success\" : \"true\"}";
 		 }
 		 else {
-			 	return "{\"success\" : \"false\"}";
+			 return "{\"id\" : \"-1\","
+						+ "\"success\" : \"false\"}";
 		 }
 	}
 
