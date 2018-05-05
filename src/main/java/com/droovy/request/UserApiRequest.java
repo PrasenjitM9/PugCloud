@@ -1,16 +1,25 @@
 package com.droovy.request;
 
+import java.io.InputStream;
 import java.util.List;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.jersey.core.header.FormDataContentDisposition;
 
 @Path("request")
 public class UserApiRequest {
@@ -30,10 +39,11 @@ public class UserApiRequest {
 		List<File> listDropbox, listGoogleDrive,listOneDrive;
 		listDropbox = request_dropbox.getFilesList(path,id);
 		listGoogleDrive = request_googledrive.getFilesList(path,id);
+		listOneDrive = request_onedrive.getFilesList(path, id);
 		
 		Merger merge = new Merger();
 		
-		List<File> mergedList = merge.merge(listDropbox, listGoogleDrive);
+		List<File> mergedList = merge.merge(listDropbox, listGoogleDrive,listOneDrive);
 		
 		ObjectMapper mapper = new ObjectMapper();
 		
@@ -75,6 +85,15 @@ public class UserApiRequest {
 		return result;
 	}
 	
+	@POST
+	@Produces("text/plain")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Path("/upload")
+	public String uploadFile(@FormDataParam("file") InputStream uploadInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail) {
+	
+		return fileDetail.toString();
+	}
+
 	
 	
 }

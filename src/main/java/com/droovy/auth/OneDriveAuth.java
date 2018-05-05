@@ -51,7 +51,7 @@ public class OneDriveAuth implements Auth{
 		Form formData = new Form();
 		formData.add("client_id", client_id);
 		formData.add("client_secret", client_secret);
-		formData.add("scope", "user.read mail.read");
+		formData.add("scope", "Files.Read Files.ReadWrite Files.Read.All Files.ReadWrite.All Sites.Read.All Sites.ReadWrite.All");
 		formData.add("code", code);
 		formData.add("grant_type", "authorization_code");
 		formData.add("redirect_uri", redirect_uri);

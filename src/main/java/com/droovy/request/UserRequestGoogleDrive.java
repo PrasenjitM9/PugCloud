@@ -40,8 +40,6 @@ public class UserRequestGoogleDrive implements UserRequest{
 			JerseyClient jerseyClient = JerseyClientBuilder.createClient();
 			JerseyWebTarget jerseyTarget = jerseyClient.target(url);
 
-			MultivaluedMap<String, String> formData = new MultivaluedHashMap<String, String>();
-
 			DatabaseOp db = new DatabaseOp();
 			Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserGoogleDriveToken(id)).accept(MediaType.APPLICATION_JSON).get();
 			

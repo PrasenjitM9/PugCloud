@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
-public class JSONParserDropbox implements JSONParser {
+public class JSONParserOneDrive implements JSONParser {
 
 	SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 	
@@ -24,7 +24,7 @@ public class JSONParserDropbox implements JSONParser {
 		List<File> listFile = new ArrayList<File>();
 
 		JsonNode rootNode = mapper.readTree(result);
-		JsonNode items = (ArrayNode) rootNode.path("entries");
+		JsonNode items = (ArrayNode) rootNode.path("value");
 
 		for (final JsonNode file : items) {
 			listFile.add(parserFile(file));
@@ -35,24 +35,24 @@ public class JSONParserDropbox implements JSONParser {
 	@Override
 	public File parserFile(JsonNode file) throws JsonProcessingException, IOException, ParseException {
 
-		String type = file.path(".tag").asText();
 		String id = file.path("id").asText();
 		String name = file.path("name").asText();
-		String source[] = {"Dropbox"};
-		String url = "";
+		String source[] = {"OneDrive"};
+		String url = file.path("webUrl").asText();
 		
-		if(type.equals("folder")) {
+		if(file.has("folder")) {
 			return new File(name, FileType.FOLDER, id, url,source, null,null, 0, null);
 		}
 		else {
 			
-			Date lastUpdateDate = formatter.parse(file.path("server_modified").asText());
+			Date creationDate = formatter.parse(file.path("createdDateTime").asText());
+			Date lastUpdateDate = formatter.parse(file.path("lastModifiedDateTime").asText());
 			Long size =  file.path("size").asLong();
-			String contentHash = file.path("content_hash").asText();
-			return new File(name, FileType.FILE, id, url,source,new Date(),lastUpdateDate,size,contentHash);
+			String contentHash = "";//file.path("content_hash").asText();
+			return new File(name, FileType.FILE, id, url,source,creationDate,lastUpdateDate,size,contentHash);
 		}
 		
 	
 	}
-
+	
 }
