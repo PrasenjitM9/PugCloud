@@ -1,5 +1,6 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit,Input} from '@angular/core';
 import {AuthService} from './../auth.service';
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-auth',
@@ -8,46 +9,61 @@ import {AuthService} from './../auth.service';
 })
 export class AuthComponent implements OnInit {
 
-  result: string;
-
-  constructor(private auth: AuthService) {
+  constructor(private auth: AuthService,private router: Router) {
   }
 
   ngOnInit() {
 
   }
 
-  authGoogleDrive() {
+  connect(){
+    this.auth.connect(this.password,this.name).subscribe(
+      data => {
 
-    var scope1 = "https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive";
-    var scope2 = " https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.appdata";
-    var scope3 = " https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.apps.readonly";
-    var scope4 = " https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.file";
-    var scope5 = " https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.metadata";
-    var scope6 = " https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.metadata.readonly";
-    var scope7 = " https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.photos.readonly";
-    var scope8 = " https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.readonly";
 
-    window.location.href = "https://accounts.google.com/o/oauth2/v2/auth?response_type=code&scope="
-      +scope1
-      +scope2
-      +scope3
-      +scope4
-      +scope5
-      +scope6
-      +scope7
-      +scope8
-      +"&redirect_uri=http://localhost:8080/droovy/googledriveauth/callback&client_id=783584831345-rpngg6uic1i0iorvp2l5agc9ajmdm64v.apps.googleusercontent.com&state=10";
+        if(data.success == "true") {
+          this.createCookie("id",data['id'],1);
+          this.router.navigate(['/manager']);
 
-    //  window.location.href= "https://accounts.google.com/o/oauth2/v2/auth?response_type=token&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fdrive.metadata.readonly&client_id=783584831345-rpngg6uic1i0iorvp2l5agc9ajmdm64v.apps.googleusercontent.com&access_type=online&redirect_uri=http://localhost:8080/droovy/googledriveauth/callback/";
+        }
+        else{
+
+        }
+      }
+    );
+
   }
 
-  authOneDrive(){
-	window.location.href = "https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=7da78622-f4f8-47d0-bbb0-9b777af993a7&response_type=code&redirect_uri=http://localhost:8080/droovy/onedriveauth/callback/&response_mode=query&scope=offline_access%20user.read%20mail.read&state=10";
+  createAccount(){
+     this.auth.createAccount(this.password,this.name).subscribe(
+      data => {
+
+        if(data.success == "true") {
+          this.createCookie("id",data['id'],1);
+          this.router.navigate(['/manager']);
+
+        }
+        else{
+
+        }
+      }
+    );
   }
 
-  authDropBox() {
-    window.location.href = "https://www.dropbox.com/oauth2/authorize?response_type=code&client_id=i90y72ofs47u9b8&redirect_uri=http://localhost:8080/droovy/dropboxauth/callback&state=10";
+
+
+
+  createCookie(name,value,days) {
+    if (days) {
+      var date = new Date();
+      date.setTime(date.getTime()+(days*24*60*60*1000));
+      var expires = "; expires="+date.toUTCString();
+    }
+    else var expires = "";
+    document.cookie = name+"="+value+expires+"; path=/";
   }
 
+
+  @Input() name: string;
+  @Input() password: string;
 }

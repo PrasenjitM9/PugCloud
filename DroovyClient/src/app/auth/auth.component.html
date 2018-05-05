@@ -1,9 +1,38 @@
-<div>
-<h2>Authentification : </h2>
-<div>
-  <button (click) ="authGoogleDrive()" >Google Drive</button>
-  <button (click) ="authOneDrive()" >One Drive</button>
-  <button (click) ="authDropBox()" >DropBox</button>
 
+<div class="row " >
+  <div class="col s6 m4 ">
+  <div class="card ">
+    <div class="card-content valign center " >
+    <h4>Droovy</h4>
+  </div>
+  <div class="card-tabs">
+    <ul class="tabs tabs-fixed-width">
+      <li class="tab"><a class="active" href="#connexion">Connexion</a></li>
+      <li class="tab"><a href="#create">Créer un compte</a></li>
+    </ul>
+  </div>
+  <div class="card-content grey lighten-4">
+    <div id="connexion">
+      <form (ngSubmit)="connect()">
+      Nom :
+      <input [(ngModel)]="name" type="text" name="username" required="required" pattern="[A-Za-z]{3}" ><br>
+      Mot de passe :
+      <input [(ngModel)]="password" type="password" name="password" required="required" pattern="[A-Za-z]{3}" ><br>
+
+        <input  class="btn waves-effect waves-light" type="submit" value="Connexion">
+
+      </form>
+    </div>
+    <div id="create">
+      <form (ngSubmit)="createAccount()">
+        Nom :
+        <input [(ngModel)]="name" type="text" name="username" required="required" pattern="[A-Za-z]{3}" ><br>
+        Mot de passe :
+        <input [(ngModel)]="password" type="password" name="password" required="required" pattern="[A-Za-z]{3}" ><br>
+        <input  class="btn waves-effect waves-light" type="submit" value="Créer">
+      </form>
+    </div>
+  </div>
+  </div>
 </div>
 </div>

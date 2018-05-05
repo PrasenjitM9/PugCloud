@@ -1,0 +1,60 @@
+<nav class="nav-extended">
+  <div class="nav-wrapper">
+    <a href="#" class="brand-logo">Droovy</a>
+    <ul id="nav-mobile" class="right hide-on-med-and-down">
+      <li> <form>
+        <div class="input-field">
+          <input id="search" type="search" required>
+          <label class="label-icon" for="search"><i class="material-icons">search</i></label>
+          <i class="material-icons">close</i>
+        </div>
+      </form></li>
+      <li><a href="">Déconnexion</a></li>
+    </ul>
+
+  </div>
+
+  <div class="nav-content">
+    <ul class="tabs tabs-transparent">
+      <li class="tab"><a class="active" href="#page1">Fichiers</a></li>
+      <li class="tab"><a href="#page2">Ajouter un drive</a></li>
+    </ul>
+  </div>
+
+</nav>
+
+
+
+<div  id="page1" class="col s12">
+
+  <ul class="collection">
+    <li *ngFor="let file of fileList" class="collection-item avatar" >
+
+      <div *ngIf="file.type=='FOLDER'; else fileImg" >
+        <img src="./../../assets/images/folder.svg" alt="" class="circle">
+        <span class="title">{{ file.name }}</span>
+        <p> {{ file.lastUpdateDate }} <br>
+          {{ file.source }}
+        </p>
+        <a href="{{ file.url }}" class="secondary-content">Voir</a>
+
+      </div>
+
+      <ng-template #fileImg><img src="./../../assets/images/file.svg" alt="" class="circle">
+        <span class="title">{{ file.name }}</span>
+        <p> {{ file.lastUpdateDate | date :  "dd.MM.y"}} <br>
+          {{ file.taille | fileSize }} <br>
+          {{ file.source }}
+        </p>
+        <a href="{{ file.url }}" class="secondary-content">Voir</a>
+
+      </ng-template>
+    </li>
+
+
+  </ul>
+</div>
+
+<div id="page2" class="col s12"><app-auth-drive></app-auth-drive></div>
+
+
