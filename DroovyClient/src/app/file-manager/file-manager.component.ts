@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {FileDroovy, RequestService} from "../request.service";
+import { AuthService} from '../auth.service';
 
 @Component({
   selector: 'app-file-manager',
@@ -8,7 +9,9 @@ import {FileDroovy, RequestService} from "../request.service";
 })
 export class FileManagerComponent implements OnInit {
 
-  constructor(private request: RequestService) { }
+  authStatus : boolean;
+
+  constructor(private request: RequestService, private authService:AuthService) { }
 
   protected fileList : FileDroovy[];
   private userID : string;
@@ -18,6 +21,7 @@ export class FileManagerComponent implements OnInit {
   ngOnInit() {
      this.initUserId();
      this.initRoot();
+     this.authStatus=this.authService.isAuth;
   }
 
   initUserId(){
@@ -61,6 +65,11 @@ export class FileManagerComponent implements OnInit {
   }
 
 
+  }
+
+  onSignOut(){
+    this.authService.signOut();
+    this.authStatus = this.authService.isAuth;
   }
 
 }

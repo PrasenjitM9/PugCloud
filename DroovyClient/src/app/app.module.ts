@@ -19,9 +19,11 @@ import { RouterModule, Routes } from '@angular/router';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { RequestService } from './request.service';
 import { FileSizePipe } from './file-size.pipe';
+import {AuthGuard} from './auth-guard.service';
 
 const appRoutes: Routes = [
-  { path: 'manager', component: FileManagerComponent },
+  { path: 'manager', canActivate:[AuthGuard], component: FileManagerComponent },
+  { path: 'auth', component: AuthComponent },
   { path: '', component: AuthComponent },
   { path: '**', component: PageNotFoundComponent }
 ];
@@ -48,7 +50,7 @@ const appRoutes: Routes = [
     FormsModule,
     AppRoutingModule
   ],
-  providers: [AuthService,RequestService,HttpClient],
+  providers: [AuthService,RequestService,HttpClient,AuthGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
