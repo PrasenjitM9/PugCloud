@@ -43,7 +43,7 @@ public class UserApiRequest {
 		
 		Merger merge = new Merger();
 		
-		List<File> mergedList = merge.merge(listDropbox, listGoogleDrive,listOneDrive);
+		List<File> mergedList = merge.merge(listGoogleDrive, listDropbox, listOneDrive);
 		
 		ObjectMapper mapper = new ObjectMapper();
 		

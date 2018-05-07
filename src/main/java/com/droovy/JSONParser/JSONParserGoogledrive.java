@@ -42,7 +42,7 @@ public class JSONParserGoogledrive implements JSONParser {
 		
 		String id = file.path("id").asText();
 		String url = file.path("webContentLink").asText();
-		String source[] = {"GoogleDrive"};
+		String source = "GoogleDrive";
 		Date creationDate = null;
 		Date lastUpdateDate = null;
 		try {
@@ -51,15 +51,12 @@ public class JSONParserGoogledrive implements JSONParser {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		long taille = file.path("fileSize").asLong();
-
-		FileType type = FileType.FILE;
+		long size = file.path("fileSize").asLong();
 		
 		if(file.path("mimeType").asText().equals("application/vnd.google-apps.folder")) {
-			type = FileType.FOLDER;
+			return new File(name, FileType.FOLDER, id, url,source, null,null, 0, null);
 		}
-		
-		return new File(name,type, id, url, source, creationDate, lastUpdateDate, taille,"");
+		return new File(name, FileType.FILE, id, url,source,creationDate,lastUpdateDate,size,"TO DO");
 
 	}
 

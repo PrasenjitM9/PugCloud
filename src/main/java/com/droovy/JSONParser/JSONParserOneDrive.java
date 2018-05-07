@@ -37,7 +37,7 @@ public class JSONParserOneDrive implements JSONParser {
 
 		String id = file.path("id").asText();
 		String name = file.path("name").asText();
-		String source[] = {"OneDrive"};
+		String source = "OneDrive";
 		String url = file.path("webUrl").asText();
 		
 		if(file.has("folder")) {
@@ -51,7 +51,7 @@ public class JSONParserOneDrive implements JSONParser {
 			String contentHash = "";//file.path("content_hash").asText();
 			return new File(name, FileType.FILE, id, url,source,creationDate,lastUpdateDate,size,contentHash);
 		}
-		
+	
 	
 	}
 	
