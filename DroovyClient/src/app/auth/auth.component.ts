@@ -19,12 +19,14 @@ export class AuthComponent implements OnInit {
   connect(){
     this.auth.connect(this.password,this.name).subscribe(
       data => {
+        console.log(data);
 
 
         if(data.success == "true") {
-          this.createCookie("id",data['id'],1);
-          this.router.navigate(['/manager']);
 
+          this.createCookie("id",data['id'],1);
+         // this.router.navigate(['/manager']);
+          this.router.navigateByUrl("/manager");
         }
         else{
 
@@ -37,6 +39,7 @@ export class AuthComponent implements OnInit {
   createAccount(){
      this.auth.createAccount(this.password,this.name).subscribe(
       data => {
+        console.log(data);
 
         if(data.success == "true") {
           this.createCookie("id",data['id'],1);

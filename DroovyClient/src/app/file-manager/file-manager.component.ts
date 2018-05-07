@@ -12,6 +12,8 @@ export class FileManagerComponent implements OnInit {
 
   protected fileList : FileDroovy[];
   private userID : string;
+  private currentPath : string;
+  private currentFolderId : string;
 
   ngOnInit() {
      this.initUserId();
@@ -28,6 +30,8 @@ export class FileManagerComponent implements OnInit {
       data => {
         console.log(data);
         this.fileList = data;
+        this.currentFolderId="root";
+        this.currentPath="";
       });
   }
 
@@ -41,6 +45,22 @@ export class FileManagerComponent implements OnInit {
       if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
     }
     return null;
+  }
+
+  onSelect(f :FileDroovy){
+
+  if(f.type == "FOLDER"){
+    this.currentPath+="/"+f.name;
+    this.currentFolderId=f.id;
+
+    this.request.getFiles(this.currentPath,this.currentFolderId,this.userID).subscribe(
+      data => {
+        console.log(data);
+        this.fileList = data;
+      });
+  }
+
+
   }
 
 }
