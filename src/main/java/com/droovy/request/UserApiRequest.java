@@ -1,6 +1,11 @@
 package com.droovy.request;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -19,7 +24,7 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.jersey.core.header.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 
 @Path("request")
 public class UserApiRequest {
@@ -65,35 +70,51 @@ public class UserApiRequest {
 		return output; 
 	}
 	
-	@GET
-	@Produces("text/plain")
-	@Path("/add")
-	public String addFile(@Context UriInfo uriInfo,@QueryParam("filename") String filename,
-			@QueryParam("googledrive") boolean googledrive,@QueryParam("dropbox") boolean dropbox,
-			@QueryParam("onedrive") boolean onedrive, @QueryParam("id") String id) {
-		
-		String result = "";
-		if(googledrive){
-			result += request_googledrive.addFile(filename, id);
-		}
-		if(dropbox){
-			result += request_dropbox.addFile(filename, id);
-		}
-		if(onedrive){
-			result += request_onedrive.addFile(filename, id);
-		}
-		return result;
-	}
+
 	
 	@POST
 	@Produces("text/plain")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Path("/upload")
-	public String uploadFile(@FormDataParam("file") InputStream uploadInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail) {
+	public String uploadFile(@FormDataParam("file") InputStream uploadInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail, @QueryParam("idUser") String idUser, @QueryParam("drive") String drive) throws IOException {
 	
-		return fileDetail.toString();
+		OutputStream outputStream = new FileOutputStream(new java.io.File(fileDetail.getFileName()));
+	
+		int read = 0;
+		byte[] bytes = new byte[150000000];
+	
+		while ((read = uploadInputStream.read(bytes)) != -1) {
+			outputStream.write(bytes, 0, read);
+		}
+
+		outputStream.close();
+		uploadInputStream.close();
+		
+		System.out.println("upload ");
+		
+		request_dropbox.uploadFile(fileDetail.getFileName(), "/test/"+fileDetail.getFileName(), idUser);
+		
+		System.out.println("upload ");
+
+		return fileDetail.getFileName()+" "+fileDetail.getSize()+" "+fileDetail.getType()+" "+fileDetail;
 	}
 
+	@GET
+	@Produces("text/plain")
+	@Path("/delete")
+	public String uploadFile( @QueryParam("idUser") String idUser, @QueryParam("path") String path, @QueryParam("idFile") String idFile,@QueryParam("drive") String drive) throws IOException {
+		
+		if(drive.equals("dropbox")) {
+			request_dropbox.removeFile(idFile, path, idUser);
+		}
+		else if(drive.equals("onedrive")) {
+			request_onedrive.removeFile(idFile, path, idUser);
+		}
+		else if(drive.equals("googledrive")) {
+			request_googledrive.removeFile(idFile, path, idUser);
+		}
+		return "";
+	}
 	
 	
 }

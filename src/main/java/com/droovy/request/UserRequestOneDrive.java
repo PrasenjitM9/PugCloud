@@ -3,12 +3,14 @@ package com.droovy.request;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.glassfish.jersey.client.JerseyClient;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.glassfish.jersey.client.JerseyWebTarget;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 
 import com.droovy.DatabaseOp;
 import com.droovy.JSONParser.JSONParser;
@@ -53,15 +55,36 @@ public class UserRequestOneDrive implements UserRequest {
 	}
 
 	@Override
-	public boolean removeFile(String id_file, String id) {
-		// TODO Auto-generated method stub
+	public boolean removeFile(String idFile,String path, String idUser) {
+		String url = "https://graph.microsoft.com/v1.0/me/drive/items/"+idFile;
+		
+		try{
+			
+			JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+			jerseyClient.register(MultiPartFeature.class);
+			JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+			
+	
+			DatabaseOp db = new DatabaseOp();
+			
+		    Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserOneDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).delete();
+			
+			if (response.getStatus() != 204) {//204 == success de la suppression du fichier
+				throw new RuntimeException("Failed : HTTP error code : "
+						+ response.getStatus()+ " "+ response.toString());
+			}		
+			return true;		
+
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+
 		return false;
 	}
 
 	@Override
-	public String addFile(String filename, String id) {
-		// TODO Auto-generated method stub
-		return null;
+	public boolean uploadFile(String pathToFile, String pathInDrive,String userId) {
+		return false;
 	}
 
 

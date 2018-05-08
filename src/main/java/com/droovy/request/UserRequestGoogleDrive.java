@@ -15,6 +15,7 @@ import org.glassfish.jersey.client.JerseyClient;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.glassfish.jersey.client.JerseyInvocation;
 import org.glassfish.jersey.client.JerseyWebTarget;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import com.droovy.DatabaseOp;
@@ -65,39 +66,40 @@ public class UserRequestGoogleDrive implements UserRequest{
 		return new LinkedList<>();
 	}
 
+
+
 	@Override
-	public String addFile(String filename, String id) {
+	public boolean removeFile(String idFile,String path, String idUser) {
+	String url = "https://www.googleapis.com/drive/v2/files/"+idFile;
+		
 		try{
-
-			String url = "https://www.googleapis.com/drive/v2/files";
-
+			
 			JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+			jerseyClient.register(MultiPartFeature.class);
 			JerseyWebTarget jerseyTarget = jerseyClient.target(url);
-
-			MultivaluedMap<String, String> formData = new MultivaluedHashMap<String, String>();
-			formData.add("title:", filename);
-
+			
+	
 			DatabaseOp db = new DatabaseOp();
-			Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserGoogleDriveToken(id)).accept(MediaType.APPLICATION_JSON).post(Entity.text("title:test"));
-
-						
-			if (response.getStatus() != 200) {
+			
+		    Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserGoogleDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).delete();
+			
+			if (response.getStatus() != 204) {//204 == success de la suppression du fichier
 				throw new RuntimeException("Failed : HTTP error code : "
 						+ response.getStatus()+ " "+ response.toString());
 			}		
-
-			return "1";
+			return true;		
 
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-		
-		return "-1";
+
+		return false;
 	}
 
 
+
 	@Override
-	public boolean removeFile(String id_file, String id) {
+	public boolean uploadFile(String pathToFile, String pathInDrive,String userId) {
 		// TODO Auto-generated method stub
 		return false;
 	}

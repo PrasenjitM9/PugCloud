@@ -48,7 +48,7 @@ public class JSONParserOneDrive implements JSONParser {
 			Date creationDate = formatter.parse(file.path("createdDateTime").asText());
 			Date lastUpdateDate = formatter.parse(file.path("lastModifiedDateTime").asText());
 			Long size =  file.path("size").asLong();
-			String contentHash = "";//file.path("content_hash").asText();
+			String contentHash = file.path("file").path("hashes").path("sha1Hash").asText();
 			return new File(name, FileType.FILE, id, url,source,creationDate,lastUpdateDate,size,contentHash);
 		}
 		
