@@ -28,7 +28,7 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 
 public class UserRequestGoogleDrive implements UserRequest{
-	
+
 	JSONParser parser = new JSONParserGoogledrive();
 
 	@Override
@@ -36,13 +36,9 @@ public class UserRequestGoogleDrive implements UserRequest{
 
 		try{
 
-			if(path.equals("root")) {
-				path="";
-			}
-			else {
-				path = "q="+path+" in parents";
-			}
-			
+			path = "q=%27"+path+"%27%20in%20parents";
+
+
 			String url = "https://www.googleapis.com/drive/v2/files?"+path;
 
 			JerseyClient jerseyClient = JerseyClientBuilder.createClient();
@@ -50,19 +46,19 @@ public class UserRequestGoogleDrive implements UserRequest{
 
 			DatabaseOp db = new DatabaseOp();
 			Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserGoogleDriveToken(id)).accept(MediaType.APPLICATION_JSON).get();
-			
+
 			if (response.getStatus() != 200) {
 				throw new RuntimeException("Failed : HTTP error code : "
 						+ response.getStatus()+ " "+ response.toString());
 			}		
 			String output =  response.readEntity(String.class);
-			
+
 			return parser.parserFiles((output));
 
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-		
+
 		return new LinkedList<>();
 	}
 
@@ -84,6 +80,7 @@ public class UserRequestGoogleDrive implements UserRequest{
 		    Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserGoogleDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).delete();
 			
 			if (response.getStatus() != 204) {//204 == success de la suppression du fichier
+
 				throw new RuntimeException("Failed : HTTP error code : "
 						+ response.getStatus()+ " "+ response.toString());
 			}		
@@ -92,8 +89,8 @@ public class UserRequestGoogleDrive implements UserRequest{
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-
 		return false;
+
 	}
 
 

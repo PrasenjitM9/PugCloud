@@ -38,7 +38,7 @@ public class JSONParserDropbox implements JSONParser {
 		String type = file.path(".tag").asText();
 		String id = file.path("id").asText();
 		String name = file.path("name").asText();
-		String source[] = {"Dropbox"};
+		String source = "Dropbox";
 		String url = "";
 		
 		if(type.equals("folder")) {
