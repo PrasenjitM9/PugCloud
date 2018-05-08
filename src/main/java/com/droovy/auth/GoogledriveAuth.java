@@ -84,11 +84,13 @@ public class GoogledriveAuth implements Auth{
 		
 		
 		JsonNode rootNode = objectMapper.readTree(output);
-		JsonNode tokenNode = rootNode.path("access_token");
+		JsonNode token = rootNode.path("access_token");
+		JsonNode tokenRefresh = rootNode.path("refresh_token");
+
 		
 		DatabaseOp db = new DatabaseOp();
 		
-		if(db.updateUserGoogleDriveToken(tokenNode.asText(),state)) {
+		if(db.updateUserGoogleDriveToken(token.asText(),tokenRefresh.asText(),state)) {
 			return Response.temporaryRedirect(new URI("http://localhost:4200/manager?success=true")).build();
 		}
 		else {
@@ -97,6 +99,42 @@ public class GoogledriveAuth implements Auth{
 		}
 		
     }
+
+
+
+	@Override
+	public String refreshToken(String refreshToken,String idUser) throws JsonProcessingException, IOException {
+		
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+
+		MultivaluedMap<String, String> formData = new MultivaluedHashMap<String, String>();
+		formData.add("client_id", client_id);
+		formData.add("client_secret", client_secret);
+		formData.add("grant_type", "refresh_token");
+		formData.add("refresh_token", refreshToken);
+
+
+		Response response = jerseyTarget.request().accept(MediaType.APPLICATION_JSON).post(Entity.form(formData));
+
+		if (response.getStatus() != 200) {
+			throw new RuntimeException("Failed : HTTP error code : "
+					+ response.getStatus()+ " "+ response.toString());
+		}
+		String output =  response.readEntity(String.class);
+		
+		
+		JsonNode rootNode = objectMapper.readTree(output);
+		JsonNode token = rootNode.path("access_token");
+		
+		DatabaseOp db = new DatabaseOp();
+		
+		db.updateUserGoogleDriveToken(token.asText(),refreshToken,idUser);
+		
+		System.out.println("New token : "+token.asText());
+		return token.asText();
+		
+	}
 
     
 }

@@ -14,4 +14,5 @@ public interface Auth {
 
 	public Response callBackAuth(@Context UriInfo uriInfo,@QueryParam("code") String code,@QueryParam("state") String state) throws JsonProcessingException, IOException, URISyntaxException;
 
+	public String refreshToken(String refreshToken,String idUser) throws JsonProcessingException, IOException;	
 }

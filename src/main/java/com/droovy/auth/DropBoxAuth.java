@@ -100,6 +100,12 @@ public class DropBoxAuth implements Auth{
 
 	}
 
+	@Override
+	public String refreshToken(String refreshToken, String idUser) throws JsonProcessingException, IOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
+	
 
 }

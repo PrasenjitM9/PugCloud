@@ -5,7 +5,7 @@ import java.util.Date;
 
 public class PropertiesFile implements Serializable {
 	
-	public String id, url, contentHash;;
+	public String id, url, contentHash;
 	public Date creationDate, lastUpdateDate;
 	
 	

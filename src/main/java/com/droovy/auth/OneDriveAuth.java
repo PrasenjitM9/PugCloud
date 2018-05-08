@@ -71,10 +71,13 @@ public class OneDriveAuth implements Auth{
 			
 			JsonNode rootNode = objectMapper.readTree(output);
 			JsonNode tokenNode = rootNode.path("access_token");
+			JsonNode tokenRefreshNode = rootNode.path("refresh_token");
+
+			
 			
 			DatabaseOp db = new DatabaseOp();
 			
-			if(db.updateUserOneDriveToken(tokenNode.asText(),state)) {
+			if(db.updateUserOneDriveToken(tokenNode.asText(),tokenRefreshNode.asText(),state)) {
 				
 				return Response.temporaryRedirect(new URI("http://localhost:4200/manager?success=true")).build();
 			}
@@ -88,6 +91,49 @@ public class OneDriveAuth implements Auth{
 		
 		
     }
+
+
+
+	@Override
+	public String refreshToken(String refreshToken, String idUser) throws JsonProcessingException, IOException {
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		JerseyWebTarget jerseyTarget = jerseyClient.target("https://login.live.com/oauth20_token.srf");
+
+		Form formData = new Form();
+		formData.add("client_id", client_id);
+		formData.add("client_secret", client_secret);
+		formData.add("grant_type", "refresh_token");
+		formData.add("redirect_uri", redirect_uri);
+		formData.add("refresh_token", refreshToken);
+
+		Response response = jerseyTarget.request().header("Content-Type", "application/x-www-form-urlencoded").accept(MediaType.APPLICATION_JSON).post(Entity.form(formData));
+
+		if (response.getStatus() != 200) {
+			
+			throw new RuntimeException("Failed : HTTP error code : "
+					+ response.getStatus()+ " "+ response.toString());
+
+		}
+		else {
+			String output =  response.readEntity(String.class);
+			
+			
+			JsonNode rootNode = objectMapper.readTree(output);
+			JsonNode tokenNode = rootNode.path("access_token");
+			JsonNode tokenRefreshNode = rootNode.path("refresh_token");
+
+			
+			
+			DatabaseOp db = new DatabaseOp();
+			
+			db.updateUserOneDriveToken(tokenNode.asText(),tokenRefreshNode.asText(),idUser);
+				
+			System.out.println("new token one drive : "+tokenNode.asText());
+			
+			return tokenNode.asText();
+		}
+	}
+
 
     
 }
