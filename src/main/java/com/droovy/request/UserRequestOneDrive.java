@@ -87,6 +87,18 @@ public class UserRequestOneDrive implements UserRequest {
 		return false;
 	}
 
+	@Override
+	public boolean renameFile(String idFile, String path, String name, String idUser) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean moveFile(String idFile, String path, String idParent, String pathParent, String idUser) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 
 
 	

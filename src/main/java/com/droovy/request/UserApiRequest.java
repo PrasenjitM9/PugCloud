@@ -116,5 +116,39 @@ public class UserApiRequest {
 		return "";
 	}
 	
+	@GET
+	@Produces("text/plain")
+	@Path("/rename")
+	public String renameFile( @QueryParam("idUser") String idUser, @QueryParam("path") String path, @QueryParam("idFile") String idFile,@QueryParam("drive") String drive, @QueryParam("name") String name) throws IOException {
+
+		if(drive.equals("dropbox")) {
+			request_dropbox.renameFile(idFile, path, name, idUser);
+		}
+		else if(drive.equals("onedrive")) {
+			request_onedrive.renameFile(idFile, path, name, idUser);
+		}
+		else if(drive.equals("googledrive")) {
+			request_googledrive.renameFile(idFile, path, name, idUser);
+		}
+		return "";
+	}
+	
+	@GET
+	@Produces("text/plain")
+	@Path("/move")
+	public String moveFile( @QueryParam("idUser") String idUser, @QueryParam("path") String path, @QueryParam("idFile") String idFile,@QueryParam("drive") String drive, @QueryParam("idParent") String idParent, @QueryParam("pathParent") String pathParent) throws IOException {
+
+		if(drive.equals("dropbox")) {
+			request_dropbox.moveFile(idFile, path, idParent, pathParent, idUser);
+		}
+		else if(drive.equals("onedrive")) {
+			request_onedrive.moveFile(idFile, path, idParent, pathParent, idUser);
+		}
+		else if(drive.equals("googledrive")) {
+			request_googledrive.moveFile(idFile, path, idParent, pathParent, idUser);
+		}
+		return "";
+	}
+	
 	
 }

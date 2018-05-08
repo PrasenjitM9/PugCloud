@@ -100,4 +100,66 @@ public class UserRequestGoogleDrive implements UserRequest{
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+
+
+	@Override
+	public boolean renameFile(String idFile, String path, String name, String idUser) {
+		String url = "https://www.googleapis.com/drive/v2/files/"+idFile;
+		
+		try{
+			
+			JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+			jerseyClient.register(MultiPartFeature.class);
+			JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+			
+			String json = "{\"title\":\""+name+"\"}";
+	
+			DatabaseOp db = new DatabaseOp();
+			
+		    Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserGoogleDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).put(Entity.json(json));
+			
+			if (response.getStatus() != 200) {//204 == success rename
+
+				throw new RuntimeException("Failed : HTTP error code : "
+						+ response.getStatus()+ " "+ response.toString());
+			}		
+			return true;		
+
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+
+
+	@Override
+	public boolean moveFile(String idFile, String path, String idParent, String pathParent, String idUser) {
+	String url = "https://www.googleapis.com/drive/v2/files/"+idFile;
+		
+		try{
+			
+			JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+			jerseyClient.register(MultiPartFeature.class);
+			JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+			
+			String json = "{\"parents\":[{\"kind\": \"drive#parentReference\",\"id\":\""+idParent+"\"}]}";
+	
+			DatabaseOp db = new DatabaseOp();
+			
+		    Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserGoogleDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).put(Entity.json(json));
+			
+			if (response.getStatus() != 200) {//204 == success rename
+
+				throw new RuntimeException("Failed : HTTP error code : "
+						+ response.getStatus()+ " "+ response.toString());
+			}		
+			return true;		
+
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return false;
+	}
 }

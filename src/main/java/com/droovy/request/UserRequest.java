@@ -16,5 +16,9 @@ public interface UserRequest {
 	public boolean removeFile(String idFile,String path,String idUser);
 	
 	public boolean uploadFile(String pathToFile, String pathInDrive,String userId);
+	
+	public boolean moveFile(String idFile,String path, String idParent, String pathParent, String idUser);
+	
+	public boolean renameFile(String idFile,String path, String name, String idUser);
 	 
 }
