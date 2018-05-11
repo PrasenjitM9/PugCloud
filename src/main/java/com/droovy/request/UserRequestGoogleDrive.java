@@ -110,11 +110,16 @@ public class UserRequestGoogleDrive implements UserRequest{
 	@Override
 	public boolean uploadFile(String pathToFile, String pathInDrive,String userId) {
 		System.out.println("fdsfd");
-
+/**
+ * To do :
+ * dire le parent du ficheir
+ * diviser en chunk ( comment definir la taille ?)
+ * resume si echec connexion?
+ */
 		try{	
 			java.io.File file = new java.io.File(pathToFile);
 
-			String url = "https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable";
+			String url = "https://www.googleapis.com/upload/drive/v3/files/?uploadType=resumable";
 
 			JerseyClient jerseyClient = JerseyClientBuilder.createClient();
 			jerseyClient.register(MultiPartFeature.class);
@@ -128,7 +133,10 @@ public class UserRequestGoogleDrive implements UserRequest{
 			 * Start resumable session
 			 */
 			String jsonData = "{\n" + 
-					"  \"name\": \""+file.getName()+"\"\n" + 
+					"	\"name\": \"file.getName()\",\n" + 
+					"	\"parents\": [{\n" + 
+					"		\"id\": \"1yyiiS_h-b6z2uOSrzd0RMlLFeZl_Wm2U\"\n" + 
+					"	}]\n" + 
 					"}";
 
 			String mimeType = URLConnection.guessContentTypeFromName(file.getName());
@@ -177,6 +185,7 @@ public class UserRequestGoogleDrive implements UserRequest{
 
 				}
 				else if(response.getStatus() != 308) {
+					//resume
 					throw new RuntimeException("Failed : HTTP error code : "
 							+ response.getStatus()+ " "+ response.toString() +  response.readEntity(String.class));
 				}
