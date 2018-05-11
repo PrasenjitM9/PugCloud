@@ -3,6 +3,7 @@ package com.droovy.request;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,6 +16,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import org.glassfish.jersey.client.JerseyClient;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.glassfish.jersey.client.JerseyWebTarget;
+import org.glassfish.jersey.logging.LoggingFeature;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPart;
@@ -30,6 +32,7 @@ import com.droovy.JSONParser.JSONParserGoogledrive;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.jersey.api.client.filter.LoggingFilter;
 
 import errors.ApplicationException;
 import errors.UserFaultException;
@@ -110,9 +113,138 @@ public class UserRequestDropbox implements UserRequest{
 
 	@Override
 	public boolean uploadFile(String pathToFile, String pathInDrive,String userId) {
-		String url = "https://content.dropboxapi.com/2/files/upload";
+		
+		System.out.println("fdsfd");
+		/**
+		 * To do :
+		 * dire le parent du fichier => avec path
+		 * diviser en chunk ( comment definir la taille ?)
+		 * resume si echec connexion?
+		 */
+				try{	
+					java.io.File file = new java.io.File(pathToFile);
 
-		System.out.println("upload ");
+					String url = "https://content.dropboxapi.com/2/files/upload_session/start";
+
+					JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+					jerseyClient.register(MultiPartFeature.class);
+					jerseyClient.register(new LoggingFilter());
+					JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+					jerseyClient.property(LoggingFeature.LOGGING_FEATURE_VERBOSITY_CLIENT, LoggingFeature.Verbosity.PAYLOAD_ANY);
+
+					DatabaseOp db = new DatabaseOp();
+
+					/*
+					 * Start resumable session
+					 */
+					String dropboxargs = "{\"close\": false}" ;
+
+					String mimeType = URLConnection.guessContentTypeFromName(file.getName());
+
+					System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
+
+					Response response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Dropbox-API-Arg", dropboxargs).header("Content-Type","application/octet-stream").header("Authorization", "Bearer "+db.getUserDropBoxToken("2"))
+							.post(Entity.entity(null,MediaType.APPLICATION_OCTET_STREAM));
+
+
+					if (response.getStatus() != 200) {
+
+						throw new RuntimeException("Failed : HTTP error code : "
+								+ response.getStatus()+ " "+ response.toString() +  response.readEntity(String.class));
+					}
+
+					ObjectMapper mapper = new ObjectMapper();
+
+					String responseJSON = response.readEntity(String.class);
+					JsonNode rootNode = mapper.readTree(responseJSON);
+					String sessionID  = rootNode.path("session_id").asText();
+
+					String uploadURL = "https://content.dropboxapi.com/2/files/upload_session/append_v2";
+					/*
+					 * Send chunk
+					 */
+					jerseyClient = JerseyClientBuilder.createClient();
+					jerseyClient.register(MultiPartFeature.class);
+					jerseyTarget = jerseyClient.target(uploadURL);
+
+					long chunkSize = file.length();//Mieux calculer car upload en un seul chunk useless
+					long startRange = 0;
+					boolean done = false;
+
+					//while(!done) {
+						dropboxargs = "{\"cursor\": {\"session_id\": \""+sessionID+"\",\"offset\": "+startRange+"},\"close\": false}";
+
+						byte[] buffer = new byte[(int) chunkSize];
+						FileInputStream fileInputStream = new FileInputStream(file);
+						fileInputStream.getChannel().position(startRange);
+						fileInputStream.read(buffer, 0, (int) chunkSize);
+						fileInputStream.close();
+
+						System.out.println("bytes "+startRange+"-"+(startRange+chunkSize-1)+"/"+file.length());
+						response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Dropbox-API-Arg", dropboxargs).header("Content-Type", "application/octet-stream").header("Authorization", "Bearer "+db.getUserDropBoxToken("2"))
+								.post(Entity.entity(buffer,"application/octet-stream"));
+
+						if (response.getStatus() == 200) {//Success
+							done=true;
+							System.out.println(" : = "+response.readEntity(String.class));
+
+						}
+						/*else if(response.getStatus() != 202) {
+							//resume
+							throw new RuntimeException("Failed : HTTP error code : "
+									+ response.getStatus()+ " "+ response.toString() +  response.readEntity(String.class));
+						}
+						else {
+							String range = response.getHeaderString("range");
+							System.out.println(range);
+
+							//startRange = Long.parseLong(range.substring(range.lastIndexOf("-") + 1, range.length())) + 1;
+							//chunkSize = file.length()-startRange;
+
+							
+							System.out.println("startrange = "+startRange);
+						}*/
+
+
+//					}
+
+						dropboxargs="{" + 
+								"    \"cursor\": {" + 
+								"        \"session_id\": \""+sessionID+"\"," + 
+								"        \"offset\": "+file.length() + 
+								"    }," + 
+								"    \"commit\": {" + 
+								"        \"path\": \""+pathInDrive+"\"," + 
+								"        \"mode\": \"add\"," + 
+								"        \"autorename\": true," + 
+								"        \"mute\": false" + 
+								"    }" + 
+								"}";
+						jerseyTarget = jerseyClient.target("https://content.dropboxapi.com/2/files/upload_session/finish");
+	
+					response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Dropbox-API-Arg", dropboxargs).header("Content-Type", "application/octet-stream").header("Authorization", "Bearer "+db.getUserDropBoxToken("2"))
+							.post(Entity.entity(null,MediaType.APPLICATION_OCTET_STREAM));
+	
+					if (response.getStatus() != 200) {
+						done=true;
+						System.out.println("File : = "+response.readEntity(String.class));
+
+					}
+
+					return true;		
+
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+				return false;
+		
+		
+		
+		
+		
+		
+		/*
+		String url = "https://content.dropboxapi.com/2/files/upload";
 
 		try{
 
@@ -122,47 +254,11 @@ public class UserRequestDropbox implements UserRequest{
 
 			String jsonData = "{\"path\": \""+pathInDrive+"\",\"mode\": \"add\",\"autorename\": true,\"mute\": false}";
 
-			/*
-			 * --header "Authorization: Bearer " \
-    --header "Dropbox-API-Arg: {\"path\": \"/Homework/math/Matrices.txt\",\"mode\": \"add\",\"autorename\": true,\"mute\": false}" \
-    --header "Content-Type: application/octet-stream" \
-    --data-binary @local_file.txt
-			 */
-
 			DatabaseOp db = new DatabaseOp();
 
 			java.io.File file = new java.io.File(pathToFile);
 
-
-			byte[] fileData = new byte[(int) file.length()];
-			FileInputStream in = new FileInputStream(file);
-			in.read(fileData);
-			in.close();
-			System.out.println("file : "+fileData.toString());
-
-			/*
-		    FileDataBodyPart filePart = new FileDataBodyPart("file", 
-		                                             new java.io.File(pathToFile));
-
-		    filePart.setContentDisposition(
-		            FormDataContentDisposition.name("file")
-		                                    .fileName(pathToFile).build());
-
-			 */
-			/*
-
-			 MultiPart multiPart = new MultiPart();
-		        multiPart.setMediaType(MediaType.MULTIPART_FORM_DATA_TYPE);
-
-		        FileDataBodyPart fileDataBodyPart = new FileDataBodyPart("file",
-		        		new java.io.File(pathToFile)
-		            );
-		        multiPart.bodyPart(fileDataBodyPart);*/ 
-			System.out.println("uploading ");
-
-			Response response = jerseyTarget.request().header("Dropbox-API-Arg", jsonData).header("Content-Type", "application/octet-stream").header("Authorization", "Bearer "+db.getUserDropBoxToken(userId)).post(Entity.entity(fileData.toString(), MediaType.APPLICATION_OCTET_STREAM));
-
-			System.out.println("uploaded ");
+			Response response = jerseyTarget.request().header("Dropbox-API-Arg", jsonData).header("Content-Type", "application/octet-stream").header("Authorization", "Bearer "+db.getUserDropBoxToken(userId)).post(Entity.entity(new FileInputStream(file),"application/octet-stream"));
 
 			if (response.getStatus() != 200) {
 				throw new RuntimeException("Failed : HTTP error code : "
@@ -174,7 +270,7 @@ public class UserRequestDropbox implements UserRequest{
 			e.printStackTrace();
 		}
 
-		return false;
+		return false;*/
 	}
 
 
