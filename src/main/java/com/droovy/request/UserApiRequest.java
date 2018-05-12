@@ -99,10 +99,7 @@ public class UserApiRequest {
 		}
 
 		outputStream.close();
-		uploadInputStream.close();
-		
-		System.out.println(pathInDrive+ " "+drive);
-		
+		uploadInputStream.close();		
 		
 		if(drive.equals("dropbox")) {
 			request_dropbox.uploadFile(fileDetail.getFileName(),pathInDrive, idUser);

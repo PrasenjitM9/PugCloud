@@ -203,12 +203,7 @@ public class UserRequestGoogleDrive implements UserRequest{
 
 					if(file.length() - startRange  < chunkSize) {
 						chunkSize = file.length() - startRange;
-					}
-
-					System.out.println("chunk"+chunkSize+ " start"+startRange);
-					
-					
-					System.out.println("startrange = "+startRange);
+					}	
 				}
 
 
