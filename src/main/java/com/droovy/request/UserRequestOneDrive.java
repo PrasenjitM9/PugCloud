@@ -1,6 +1,7 @@
 package com.droovy.request;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.URLConnection;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,6 +22,7 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import com.droovy.DatabaseOp;
 import com.droovy.JSONParser.JSONParser;
 import com.droovy.JSONParser.JSONParserOneDrive;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -168,12 +170,12 @@ public class UserRequestOneDrive implements UserRequest {
 						response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Content-Length",chunkSize).header("Content-Range", "bytes "+startRange+"-"+(startRange+chunkSize-1)+"/"+file.length())
 								.put(Entity.entity(buffer,"application/octet-stream"));
 
-						if (response.getStatus() == 200) {//Success
+						if (response.getStatus() == 201) {//Success
 							done=true;
 							System.out.println("File : = "+response.readEntity(String.class));
 
 						}
-						else if(response.getStatus() != 202) {
+						else if(response.getStatus() != 202 ||response.getStatus() !=200  ) {
 							//resume
 							throw new RuntimeException("Failed : HTTP error code : "
 									+ response.getStatus()+ " "+ response.toString() +  response.readEntity(String.class));
@@ -248,6 +250,36 @@ String url = "https://graph.microsoft.com/v1.0/me/drive/items/"+idFile;
 	}
 
 
+
+	@Override
+	public String freeSpaceRemaining(String idUser) throws JsonProcessingException, IOException {
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		JerseyWebTarget jerseyTarget = jerseyClient.target("https://graph.microsoft.com/v1.0/me/drive");
+
+		DatabaseOp db = new DatabaseOp();
+
+		Response response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization", "Bearer "+db.getUserOneDriveToken("2"))
+				.get();
+		
+		
+		if (response.getStatus() != 200) {
+			throw new RuntimeException("Failed : HTTP error code : "
+					+ response.getStatus()+ " "+ response.toString());
+		}		
+		
+		ObjectMapper mapper = new ObjectMapper();
+
+		String responseJSON = response.readEntity(String.class);
+		JsonNode rootNode = mapper.readTree(responseJSON);
+		JsonNode quotaNode  = rootNode.path("quota");
+
+		
+		long quota  = quotaNode.path("total").asLong();
+		long free  = quotaNode.path("remaining").asLong();
+
+				
+		return "{ \"quota\" : \""+quota+"\",\"used\" : \""+(quota-free)+"\",\"freeSpace\" : \""+free+"\" }";
+	}
 
 	
 

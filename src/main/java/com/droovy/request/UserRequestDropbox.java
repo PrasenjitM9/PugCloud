@@ -167,7 +167,19 @@ public class UserRequestDropbox implements UserRequest{
 					jerseyClient.register(MultiPartFeature.class);
 					jerseyTarget = jerseyClient.target(uploadURL);
 
-					long chunkSize = file.length();//Mieux calculer car upload en un seul chunk useless
+					
+					
+					
+					long chunkSize =0;
+
+					if(file.length() < 1024*1024) { //Si la taille du fichier inférieur à un mo
+						chunkSize = file.length();
+					}
+					else if (file.length() <0) {
+						chunkSize = 0;
+					}
+					
+					
 					long startRange = 0;
 					boolean done = false;
 
@@ -330,6 +342,40 @@ public class UserRequestDropbox implements UserRequest{
 					+ response.getStatus()+ " "+ response.toString());
 		}		
 		return true;	
+	}
+
+
+	@Override
+	public String freeSpaceRemaining(String idUser) throws JsonProcessingException, IOException {
+
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		JerseyWebTarget jerseyTarget = jerseyClient.target("https://api.dropboxapi.com/2/users/get_space_usage");
+
+		DatabaseOp db = new DatabaseOp();
+
+		Response response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization", "Bearer "+db.getUserDropBoxToken("2"))
+				.post(null);
+		
+		
+		if (response.getStatus() != 200) {
+			throw new RuntimeException("Failed : HTTP error code : "
+					+ response.getStatus()+ " "+ response.toString()+ response.readEntity(String.class));
+		}		
+		
+		ObjectMapper mapper = new ObjectMapper();
+
+		String responseJSON = response.readEntity(String.class);
+		JsonNode rootNode = mapper.readTree(responseJSON);
+		JsonNode quotaNode  = rootNode.path("allocation");
+		
+		long quota  = quotaNode.path("allocated").asLong();
+		long used  = rootNode.path("used").asLong();
+
+		
+		long freeSpace = quota - used;
+		
+		return "{ \"quota\" : \""+quota+"\",\"used\" : \""+used+"\",\"freeSpace\" : \""+freeSpace+"\" }";
+		
 	}
 
 

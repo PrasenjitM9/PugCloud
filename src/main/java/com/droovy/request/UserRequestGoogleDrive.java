@@ -1,6 +1,7 @@
 package com.droovy.request;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.URLConnection;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
@@ -33,6 +34,7 @@ import com.droovy.DatabaseOp;
 import com.droovy.JSONParser.JSONParser;
 import com.droovy.JSONParser.JSONParserGoogledrive;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.Client;
@@ -276,4 +278,39 @@ public class UserRequestGoogleDrive implements UserRequest{
 		}
 		return false;
 	}
+	
+	
+
+	@Override
+	public String freeSpaceRemaining(String idUser) throws JsonProcessingException, IOException {
+
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		JerseyWebTarget jerseyTarget = jerseyClient.target("https://www.googleapis.com/drive/v2/about");
+
+		DatabaseOp db = new DatabaseOp();
+
+		Response response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization", "Bearer "+db.getUserGoogleDriveToken("2"))
+				.get();
+		
+		
+		if (response.getStatus() != 200) {
+			throw new RuntimeException("Failed : HTTP error code : "
+					+ response.getStatus()+ " "+ response.toString());
+		}		
+		
+		ObjectMapper mapper = new ObjectMapper();
+
+		String responseJSON = response.readEntity(String.class);
+		JsonNode rootNode = mapper.readTree(responseJSON);
+		
+		long quota  = rootNode.path("quotaBytesTotal").asLong();
+		long used  = rootNode.path("quotaBytesUsed").asLong();
+
+		
+		System.out.println(used+" "+quota+" ");
+		long freeSpace = quota - used ;
+		
+		return "{ \"quota\" : \""+quota+"\",\"used\" : \""+used+"\",\"freeSpace\" : \""+freeSpace+"\" }";
+	}
+	
 }

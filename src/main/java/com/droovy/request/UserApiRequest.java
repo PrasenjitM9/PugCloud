@@ -1,15 +1,13 @@
 package com.droovy.request;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -24,6 +22,11 @@ import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.jersey.api.client.ClientResponse.Status;
+
+import errors.ApplicationException;
+import errors.UserFaultException;
+
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 
 @Path("request")
@@ -35,16 +38,21 @@ public class UserApiRequest {
 	UserRequest request_onedrive = new UserRequestOneDrive();
 
 	@GET
-	@Produces("text/plain")
+	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/list")
-	public String getFilesList(@Context UriInfo uriInfo,@QueryParam("path") String path,@QueryParam("idUser") String idUser,@QueryParam("idFolder") String idFolder) throws JsonProcessingException {
+	public Response getFilesList(@Context UriInfo uriInfo,@QueryParam("path") String path,@QueryParam("idUser") String idUser,@QueryParam("idFolder") String idFolder,@QueryParam("getDropbox") int getDropbox,@QueryParam("getGoogleDrive") int getGoogledrive,@QueryParam("getOnedrive") int getOnedrive) throws JsonProcessingException, ApplicationException, UserFaultException {
+				
+		List<File> listDropbox = new LinkedList<>(), listGoogleDrive = new LinkedList<>(),listOneDrive = new LinkedList<>();
 		
-		//TO DO : Merge les sources et fusionner si fichier identique
-		
-		List<File> listDropbox, listGoogleDrive,listOneDrive;
-		listDropbox = request_dropbox.getFilesList(path,idUser);
-		listGoogleDrive = request_googledrive.getFilesList(idFolder,idUser);
-		listOneDrive = request_onedrive.getFilesList(path, idUser);
+		if(getDropbox==1) {			
+			listDropbox = request_dropbox.getFilesList(path,idUser);
+		}
+		if(getGoogledrive==1) {
+			listGoogleDrive = request_googledrive.getFilesList(idFolder,idUser);
+		}
+		if(getOnedrive==1) {
+			listOneDrive = request_onedrive.getFilesList(path, idUser);
+		}
 		
 		Merger merge = new Merger();
 		
@@ -67,7 +75,7 @@ public class UserApiRequest {
 			output += "]";
 		}
 		
-		return output; 
+		return Response.status(Status.OK).entity(output).build();
 	}
 	
 
@@ -76,10 +84,12 @@ public class UserApiRequest {
 	@Produces("text/plain")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Path("/upload")
-	public String uploadFile(@FormDataParam("file") InputStream uploadInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail, @QueryParam("idUser") String idUser, @QueryParam("drive") String drive) throws IOException {
+	public String uploadFile(@FormDataParam("file") InputStream uploadInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail, @QueryParam("idUser") int idUser, @QueryParam("drive") String drive) throws IOException {
 	
 		OutputStream outputStream = new FileOutputStream(new java.io.File(fileDetail.getFileName()));
 	
+		
+		/*Sockage du fichier en local*/
 		int read = 0;
 		byte[] bytes = new byte[150000000];
 	
@@ -90,19 +100,16 @@ public class UserApiRequest {
 		outputStream.close();
 		uploadInputStream.close();
 		
-		System.out.println("upload ");
 		
-		request_dropbox.uploadFile(fileDetail.getFileName(), "/test/"+fileDetail.getFileName(), idUser);
+		request_dropbox.uploadFile(fileDetail.getFileName(), "/test/"+fileDetail.getFileName(), ""+2);
 		
-		System.out.println("upload ");
-
 		return fileDetail.getFileName()+" "+fileDetail.getSize()+" "+fileDetail.getType()+" "+fileDetail;
 	}
 
 	@GET
 	@Produces("text/plain")
 	@Path("/delete")
-	public String uploadFile( @QueryParam("idUser") String idUser, @QueryParam("path") String path, @QueryParam("idFile") String idFile,@QueryParam("drive") String drive) throws IOException {
+	public String deleteFile( @QueryParam("idUser") String idUser, @QueryParam("path") String path, @QueryParam("idFile") String idFile,@QueryParam("drive") String drive) throws IOException {
 		
 		if(drive.equals("dropbox")) {
 			request_dropbox.removeFile(idFile, path, idUser);
@@ -149,6 +156,22 @@ public class UserApiRequest {
 		}
 		return "";
 	}
-	
+	@GET
+	@Produces("text/plain")
+	@Path("/freespace")
+	public String freeSpace( @QueryParam("idUser") String idUser, @QueryParam("drive") String drive) throws IOException {
+		
+		if(drive.equals("dropbox")) {
+			return request_dropbox.freeSpaceRemaining(idUser);
+		}
+		else if(drive.equals("onedrive")) {
+			return request_onedrive.freeSpaceRemaining(idUser);
+		}
+		else if(drive.equals("googledrive")) {
+			return request_googledrive.freeSpaceRemaining(idUser);
+		}
+		return "{}";
+			
+	}
 	
 }

@@ -234,7 +234,7 @@ public class DatabaseOp {
 
 
 
-	public String getUserOneDriveToken(String id) throws ParseException, JsonProcessingException, IOException{
+	public String getUserOneDriveToken(String id) {
 		String sql_create_user = "SELECT onedrivetoken,onedrivetokencreation,onedrivetokenrefresh FROM users WHERE id == ?;";
 
 
@@ -257,13 +257,26 @@ public class DatabaseOp {
 
 				if(date!=null) {
 
-					Date dateCreation = format.parse(date);
+					Date dateCreation;
+					try {
+						dateCreation = format.parse(date);
+					} catch (ParseException e) {
+						return "";
+					}
 
 					Date dateExpiration = new Date(dateCreation.getTime() + 1 * HOUR);
 					
 					if(dateExpiration.compareTo(new Date()) < 0 ) {
 
-						return new OneDriveAuth().refreshToken(rs.getString("onedrivetokenrefresh"),id);
+						try {
+							return new OneDriveAuth().refreshToken(rs.getString("onedrivetokenrefresh"),id);
+						} catch (JsonProcessingException e) {
+							return "";
+
+						} catch (IOException e) {
+							return "";
+
+						}
 
 					}
 				}
@@ -307,7 +320,7 @@ public class DatabaseOp {
 		return "";
 	}
 
-	public String getUserGoogleDriveToken(String id) throws ParseException, JsonProcessingException, IOException{
+	public String getUserGoogleDriveToken(String id) {
 		String sql_create_user = "SELECT googledrivetoken,googledrivetokencreation,googledrivetokenrefresh FROM users WHERE id == ?;";
 
 		try {
@@ -329,13 +342,24 @@ public class DatabaseOp {
 				String date = rs.getString("googledrivetokencreation");
 				if(date!=null) {
 					
-					Date dateCreation = format.parse(date);
+					Date dateCreation;
+					try {
+						dateCreation = format.parse(date);
+					} catch (ParseException e1) {
+						return "";
+					}
 
 					Date dateExpiration = new Date(dateCreation.getTime() + 1 * HOUR);
 
 					if(dateExpiration.compareTo(new Date()) < 0 ) {		
 						System.out.println("refresh");
-						return new GoogledriveAuth().refreshToken(rs.getString("googledrivetokenrefresh"),id);					
+						try {
+							return new GoogledriveAuth().refreshToken(rs.getString("googledrivetokenrefresh"),id);
+						} catch (JsonProcessingException e) {
+							return "";
+						} catch (IOException e) {
+							return "";
+						}					
 					}
 
 				}
