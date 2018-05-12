@@ -1,11 +1,17 @@
 package com.droovy.request;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLConnection;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
@@ -206,46 +212,69 @@ public class UserRequestOneDrive implements UserRequest {
 
 	@Override
 	public boolean renameFile(String idFile, String path, String name, String idUser) {
-		/*
-String url = "https://graph.microsoft.com/v1.0/me/drive/items/"+idFile;
+		
 		
 		try{
 			
 			JerseyClient jerseyClient = JerseyClientBuilder.createClient();
-			jerseyClient.register(MultiPartFeature.class);
 			jerseyClient.property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true);
 
-			JerseyWebTarget jerseyTarget = jerseyClient.target(url);
-			
-			Client client = ClientBuilder.newClient();
-			WebTarget webTarget = client.target("http://localhost:8082/spring-jersey");
-	
-			webTarget.request().p
-			
+
+			JerseyWebTarget jerseyTarget = jerseyClient.target("https://graph.microsoft.com/v1.0/me/drive/items/"+idFile);
 			DatabaseOp db = new DatabaseOp();
+
 			
-			String jsonData = "{\n" + 
-					"  \"name\": \""+name+"\"\n" + 
-					"}";
+
+		        String jsonData = "{\n" + 
+						"  \"name\": \""+name+"\"\n" + 
+						"}";
+		     
+		    Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserOneDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).method("PATCH", Entity.json(jsonData));;
 			
-		    Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserOneDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).put(Entity.json(jsonData));
-			
-			if (response.getStatus() != 204) {//204 == success de la suppression du fichier
+			if (response.getStatus() != 200) {
 				throw new RuntimeException("Failed : HTTP error code : "
-						+ response.getStatus()+ " "+ response.toString());
+						+ response.getStatus()+ " "+ response.toString() + response.readEntity(String.class));
 			}		
-			return true;		
+			return true;	
 
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-*/
+
 		return false;
 	}
-
+	
 	@Override
-	public boolean moveFile(String idFile, String path, String idParent, String pathParent, String idUser) {
-		// TODO Auto-generated method stub
+	public boolean moveFile(String idFile, String path, String idParent, String pathParent, String idUser,String name) {
+	try{
+			
+			JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+			jerseyClient.property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true);
+
+
+			JerseyWebTarget jerseyTarget = jerseyClient.target("https://graph.microsoft.com/v1.0/me/drive/items/"+idFile);
+			DatabaseOp db = new DatabaseOp();
+
+
+		        String jsonData = "{" + 
+		        		" \"parentReference\": {" + 
+		        		" \"id\": \""+idParent+"\"" + 
+		        		" }," + 
+		        		" \"name\": \""+name+"\"" + 
+		        		"}";
+		     
+		    Response response = jerseyTarget.request().header("Content-type", "application/json").header("Authorization", "Bearer "+db.getUserOneDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).method("PATCH", Entity.json(jsonData));;
+			
+			if (response.getStatus() != 200) {
+				throw new RuntimeException("Failed : HTTP error code : "
+						+ response.getStatus()+ " "+ response.toString() + response.readEntity(String.class));
+			}		
+			return true;	
+
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+
 		return false;
 	}
 

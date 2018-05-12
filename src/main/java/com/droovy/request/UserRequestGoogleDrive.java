@@ -251,7 +251,7 @@ public class UserRequestGoogleDrive implements UserRequest{
 
 
 	@Override
-	public boolean moveFile(String idFile, String path, String idParent, String pathParent, String idUser) {
+	public boolean moveFile(String idFile, String path, String idParent, String pathParent, String idUser,String name) {
 		String url = "https://www.googleapis.com/drive/v2/files/"+idFile;
 
 		try{

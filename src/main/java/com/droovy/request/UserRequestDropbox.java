@@ -319,7 +319,7 @@ public class UserRequestDropbox implements UserRequest{
 
 
 	@Override
-	public boolean moveFile(String idFile, String path, String idParent, String pathParent, String idUser) {
+	public boolean moveFile(String idFile, String path, String idParent, String pathParent, String idUser,String name) {
 		String url = "https://api.dropboxapi.com/2/files/move_v2";
 
 

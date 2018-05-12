@@ -23,7 +23,7 @@ public interface UserRequest {
 	
 	public boolean uploadFile(String pathToFile, String pathInDrive,String userId);
 	
-	public boolean moveFile(String idFile,String path, String idParent, String pathParent, String idUser);
+	public boolean moveFile(String idFile,String path, String idParent, String pathParent, String idUser,String name);
 	
 	public boolean renameFile(String idFile,String path, String name, String idUser);
 	
