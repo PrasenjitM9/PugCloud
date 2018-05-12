@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -84,12 +85,12 @@ public class UserApiRequest {
 	@Produces("text/plain")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Path("/upload")
-	public String uploadFile(@FormDataParam("file") InputStream uploadInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail, @QueryParam("idUser") int idUser, @QueryParam("drive") String drive) throws IOException {
+	public String uploadFile(@FormDataParam("file") InputStream uploadInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail, @FormDataParam("idUser") String idUser, @FormDataParam("drive") String drive,@FormDataParam("pathInDrive") String pathInDrive) throws IOException {
 	
 		OutputStream outputStream = new FileOutputStream(new java.io.File(fileDetail.getFileName()));
 	
 		
-		/*Sockage du fichier en local*/
+		/*Sockage du fichier en local => voir si peut pas utiliser directement l'input stream*/
 		int read = 0;
 		byte[] bytes = new byte[150000000];
 	
@@ -100,8 +101,20 @@ public class UserApiRequest {
 		outputStream.close();
 		uploadInputStream.close();
 		
+		System.out.println(pathInDrive+ " "+drive);
 		
-		request_dropbox.uploadFile(fileDetail.getFileName(), "/test/"+fileDetail.getFileName(), ""+2);
+		
+		if(drive.equals("dropbox")) {
+			request_dropbox.uploadFile(fileDetail.getFileName(),pathInDrive, idUser);
+		}
+		else if(drive.equals("onedrive")) {
+			request_onedrive.uploadFile(fileDetail.getFileName(), pathInDrive, idUser);
+		}
+		else if(drive.equals("googledrive")) {
+			request_googledrive.uploadFile(fileDetail.getFileName(), pathInDrive, idUser);
+		}
+		
+		
 		
 		return fileDetail.getFileName()+" "+fileDetail.getSize()+" "+fileDetail.getType()+" "+fileDetail;
 	}

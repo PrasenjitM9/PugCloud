@@ -113,176 +113,126 @@ public class UserRequestDropbox implements UserRequest{
 
 	@Override
 	public boolean uploadFile(String pathToFile, String pathInDrive,String userId) {
-		
-		System.out.println("fdsfd");
-		/**
-		 * To do :
-		 * dire le parent du fichier => avec path
-		 * diviser en chunk ( comment definir la taille ?)
-		 * resume si echec connexion?
-		 */
-				try{	
-					java.io.File file = new java.io.File(pathToFile);
 
-					String url = "https://content.dropboxapi.com/2/files/upload_session/start";
+		try{	
+			java.io.File file = new java.io.File(pathToFile);
 
-					JerseyClient jerseyClient = JerseyClientBuilder.createClient();
-					jerseyClient.register(MultiPartFeature.class);
-					jerseyClient.register(new LoggingFilter());
-					JerseyWebTarget jerseyTarget = jerseyClient.target(url);
-					jerseyClient.property(LoggingFeature.LOGGING_FEATURE_VERBOSITY_CLIENT, LoggingFeature.Verbosity.PAYLOAD_ANY);
-
-					DatabaseOp db = new DatabaseOp();
-
-					/*
-					 * Start resumable session
-					 */
-					String dropboxargs = "{\"close\": false}" ;
-
-					String mimeType = URLConnection.guessContentTypeFromName(file.getName());
-
-					System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
-
-					Response response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Dropbox-API-Arg", dropboxargs).header("Content-Type","application/octet-stream").header("Authorization", "Bearer "+db.getUserDropBoxToken("2"))
-							.post(Entity.entity(null,MediaType.APPLICATION_OCTET_STREAM));
-
-
-					if (response.getStatus() != 200) {
-
-						throw new RuntimeException("Failed : HTTP error code : "
-								+ response.getStatus()+ " "+ response.toString() +  response.readEntity(String.class));
-					}
-
-					ObjectMapper mapper = new ObjectMapper();
-
-					String responseJSON = response.readEntity(String.class);
-					JsonNode rootNode = mapper.readTree(responseJSON);
-					String sessionID  = rootNode.path("session_id").asText();
-
-					String uploadURL = "https://content.dropboxapi.com/2/files/upload_session/append_v2";
-					/*
-					 * Send chunk
-					 */
-					jerseyClient = JerseyClientBuilder.createClient();
-					jerseyClient.register(MultiPartFeature.class);
-					jerseyTarget = jerseyClient.target(uploadURL);
-
-					
-					
-					
-					long chunkSize =0;
-
-					if(file.length() < 1024*1024) { //Si la taille du fichier inférieur à un mo
-						chunkSize = file.length();
-					}
-					else if (file.length() <0) {
-						chunkSize = 0;
-					}
-					
-					
-					long startRange = 0;
-					boolean done = false;
-
-					//while(!done) {
-						dropboxargs = "{\"cursor\": {\"session_id\": \""+sessionID+"\",\"offset\": "+startRange+"},\"close\": false}";
-
-						byte[] buffer = new byte[(int) chunkSize];
-						FileInputStream fileInputStream = new FileInputStream(file);
-						fileInputStream.getChannel().position(startRange);
-						fileInputStream.read(buffer, 0, (int) chunkSize);
-						fileInputStream.close();
-
-						System.out.println("bytes "+startRange+"-"+(startRange+chunkSize-1)+"/"+file.length());
-						response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Dropbox-API-Arg", dropboxargs).header("Content-Type", "application/octet-stream").header("Authorization", "Bearer "+db.getUserDropBoxToken("2"))
-								.post(Entity.entity(buffer,"application/octet-stream"));
-
-						if (response.getStatus() == 200) {//Success
-							done=true;
-							System.out.println(" : = "+response.readEntity(String.class));
-
-						}
-						/*else if(response.getStatus() != 202) {
-							//resume
-							throw new RuntimeException("Failed : HTTP error code : "
-									+ response.getStatus()+ " "+ response.toString() +  response.readEntity(String.class));
-						}
-						else {
-							String range = response.getHeaderString("range");
-							System.out.println(range);
-
-							//startRange = Long.parseLong(range.substring(range.lastIndexOf("-") + 1, range.length())) + 1;
-							//chunkSize = file.length()-startRange;
-
-							
-							System.out.println("startrange = "+startRange);
-						}*/
-
-
-//					}
-
-						dropboxargs="{" + 
-								"    \"cursor\": {" + 
-								"        \"session_id\": \""+sessionID+"\"," + 
-								"        \"offset\": "+file.length() + 
-								"    }," + 
-								"    \"commit\": {" + 
-								"        \"path\": \""+pathInDrive+"\"," + 
-								"        \"mode\": \"add\"," + 
-								"        \"autorename\": true," + 
-								"        \"mute\": false" + 
-								"    }" + 
-								"}";
-						jerseyTarget = jerseyClient.target("https://content.dropboxapi.com/2/files/upload_session/finish");
-	
-					response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Dropbox-API-Arg", dropboxargs).header("Content-Type", "application/octet-stream").header("Authorization", "Bearer "+db.getUserDropBoxToken("2"))
-							.post(Entity.entity(null,MediaType.APPLICATION_OCTET_STREAM));
-	
-					if (response.getStatus() != 200) {
-						done=true;
-						System.out.println("File : = "+response.readEntity(String.class));
-
-					}
-
-					return true;		
-
-				}catch(Exception e){
-					e.printStackTrace();
-				}
-				return false;
-		
-		
-		
-		
-		
-		
-		/*
-		String url = "https://content.dropboxapi.com/2/files/upload";
-
-		try{
+			String url = "https://content.dropboxapi.com/2/files/upload_session/start";
 
 			JerseyClient jerseyClient = JerseyClientBuilder.createClient();
 			jerseyClient.register(MultiPartFeature.class);
+			jerseyClient.register(new LoggingFilter());
 			JerseyWebTarget jerseyTarget = jerseyClient.target(url);
-
-			String jsonData = "{\"path\": \""+pathInDrive+"\",\"mode\": \"add\",\"autorename\": true,\"mute\": false}";
+			jerseyClient.property(LoggingFeature.LOGGING_FEATURE_VERBOSITY_CLIENT, LoggingFeature.Verbosity.PAYLOAD_ANY);
 
 			DatabaseOp db = new DatabaseOp();
 
-			java.io.File file = new java.io.File(pathToFile);
+			/*
+			 * Start resumable session
+			 */
+			String dropboxargs = "{\"close\": false}" ;
 
-			Response response = jerseyTarget.request().header("Dropbox-API-Arg", jsonData).header("Content-Type", "application/octet-stream").header("Authorization", "Bearer "+db.getUserDropBoxToken(userId)).post(Entity.entity(new FileInputStream(file),"application/octet-stream"));
+			System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
+
+			Response response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Dropbox-API-Arg", dropboxargs).header("Content-Type","application/octet-stream").header("Authorization", "Bearer "+db.getUserDropBoxToken("2"))
+					.post(Entity.entity(null,MediaType.APPLICATION_OCTET_STREAM));
+
 
 			if (response.getStatus() != 200) {
+
 				throw new RuntimeException("Failed : HTTP error code : "
-						+ response.getStatus()+ " "+ response.toString());
-			}		
+						+ response.getStatus()+ " "+ response.toString() +  response.readEntity(String.class));
+			}
+
+			ObjectMapper mapper = new ObjectMapper();
+
+			String responseJSON = response.readEntity(String.class);
+			JsonNode rootNode = mapper.readTree(responseJSON);
+			String sessionID  = rootNode.path("session_id").asText();
+
+			String uploadURL = "https://content.dropboxapi.com/2/files/upload_session/append_v2";
+			
+			/*
+			 * Send chunk
+			 */
+			jerseyClient = JerseyClientBuilder.createClient();
+			jerseyClient.register(MultiPartFeature.class);
+			jerseyTarget = jerseyClient.target(uploadURL);
+
+
+			long chunkSize =0;
+
+			if(file.length() < 10*1024*1024) { //Si la taille du fichier inférieur à 10 mo
+				chunkSize = file.length();
+			}
+			else {
+				chunkSize = 10*1024*1024;
+			}
+
+			long totalUpload = 0;
+			boolean done = false;
+
+			while(!done) {
+				dropboxargs = "{\"cursor\": {\"session_id\": \""+sessionID+"\",\"offset\": "+totalUpload+"},\"close\": false}";
+
+				byte[] buffer = new byte[(int) chunkSize];
+				
+				FileInputStream fileInputStream = new FileInputStream(file);
+				fileInputStream.getChannel().position(totalUpload);
+				fileInputStream.read(buffer, 0, (int) chunkSize);
+				fileInputStream.close();
+
+				response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Dropbox-API-Arg", dropboxargs).header("Content-Type", "application/octet-stream").header("Authorization", "Bearer "+db.getUserDropBoxToken(userId))
+						.post(Entity.entity(buffer,"application/octet-stream"));
+
+				if (response.getStatus() != 200) {
+					
+				}	
+				if (response.getStatus() == 200) {//Success
+
+					totalUpload += chunkSize;
+					
+
+					if(file.length() - totalUpload < chunkSize) {
+						chunkSize = file.length() - totalUpload;
+					}
+
+					if(totalUpload == file.length()) {
+						done=true;
+					}
+
+				}
+			}
+
+			dropboxargs="{" + 
+					"    \"cursor\": {" + 
+					"        \"session_id\": \""+sessionID+"\"," + 
+					"        \"offset\": "+file.length() + 
+					"    }," + 
+					"    \"commit\": {" + 
+					"        \"path\": \""+pathInDrive+"\"," + 
+					"        \"mode\": \"add\"," + 
+					"        \"autorename\": true," + 
+					"        \"mute\": false" + 
+					"    }" + 
+					"}";
+			jerseyTarget = jerseyClient.target("https://content.dropboxapi.com/2/files/upload_session/finish");
+
+			response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Dropbox-API-Arg", dropboxargs).header("Content-Type", "application/octet-stream").header("Authorization", "Bearer "+db.getUserDropBoxToken("2"))
+					.post(Entity.entity(null,MediaType.APPLICATION_OCTET_STREAM));
+
+			if (response.getStatus() != 200) {
+				done=true;
+				System.out.println("File : = "+response.readEntity(String.class));
+
+			}
+
 			return true;		
 
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-
-		return false;*/
+		return false;
 	}
 
 
@@ -302,7 +252,7 @@ public class UserRequestDropbox implements UserRequest{
 				"    \"allow_ownership_transfer\": false\n" + 
 				"}";
 		System.out.println("path : "+path.substring(0, path.lastIndexOf('/')+1)+name);
-		
+
 		DatabaseOp db = new DatabaseOp();
 
 		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserDropBoxToken(idUser)).header("Content-Type", "application/json").accept(MediaType.APPLICATION_JSON).post(Entity.json(jsonData));
@@ -355,27 +305,27 @@ public class UserRequestDropbox implements UserRequest{
 
 		Response response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization", "Bearer "+db.getUserDropBoxToken("2"))
 				.post(null);
-		
-		
+
+
 		if (response.getStatus() != 200) {
 			throw new RuntimeException("Failed : HTTP error code : "
 					+ response.getStatus()+ " "+ response.toString()+ response.readEntity(String.class));
 		}		
-		
+
 		ObjectMapper mapper = new ObjectMapper();
 
 		String responseJSON = response.readEntity(String.class);
 		JsonNode rootNode = mapper.readTree(responseJSON);
 		JsonNode quotaNode  = rootNode.path("allocation");
-		
+
 		long quota  = quotaNode.path("allocated").asLong();
 		long used  = rootNode.path("used").asLong();
 
-		
+
 		long freeSpace = quota - used;
-		
+
 		return "{ \"quota\" : \""+quota+"\",\"used\" : \""+used+"\",\"freeSpace\" : \""+freeSpace+"\" }";
-		
+
 	}
 
 

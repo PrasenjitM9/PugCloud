@@ -111,12 +111,10 @@ public class UserRequestGoogleDrive implements UserRequest{
 
 	@Override
 	public boolean uploadFile(String pathToFile, String pathInDrive,String userId) {
-		System.out.println("fdsfd");
 /**
  * To do :
- * dire le parent du ficheir
- * diviser en chunk ( comment definir la taille ?)
- * resume si echec connexion?
+ * dire le parent du fichier
+ 
  */
 		try{	
 			java.io.File file = new java.io.File(pathToFile);
@@ -135,7 +133,7 @@ public class UserRequestGoogleDrive implements UserRequest{
 			 * Start resumable session
 			 */
 			String jsonData = "{\n" + 
-					"	\"name\": \"file.getName()\",\n" + 
+					"	\"name\": \""+file.getName()+"\",\n" + 
 					"	\"parents\": [{\n" + 
 					"		\"id\": \"1yyiiS_h-b6z2uOSrzd0RMlLFeZl_Wm2U\"\n" + 
 					"	}]\n" + 
@@ -145,7 +143,7 @@ public class UserRequestGoogleDrive implements UserRequest{
 
 			System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
 
-			Response response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("X-Upload-Content-Length", file.length()).header("X-Upload-Content-Type", mimeType).header("Content-Length",400).header("Content-Type","application/json; charset=UTF-8").header("Authorization", "Bearer "+db.getUserGoogleDriveToken("2"))
+			Response response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("X-Upload-Content-Length", file.length()).header("X-Upload-Content-Type", mimeType).header("Content-Length",400).header("Content-Type","application/json; charset=UTF-8").header("Authorization", "Bearer "+db.getUserGoogleDriveToken(userId))
 					.post(Entity.json(jsonData));
 
 
@@ -166,7 +164,14 @@ public class UserRequestGoogleDrive implements UserRequest{
 			jerseyClient.register(MultiPartFeature.class);
 			jerseyTarget = jerseyClient.target(uploadURL);
 
-			long chunkSize = file.length();//Mieux calculer car upload en un seul chunk useless
+			long chunkSize =0;
+
+			if(file.length() < 10*1024*1024) { //Si la taille du fichier inférieur à 10 mo
+				chunkSize = file.length();
+			}
+			else {
+				chunkSize = 10*1024*1024;
+			}
 			long startRange = 0;
 			boolean done = false;
 
@@ -177,7 +182,6 @@ public class UserRequestGoogleDrive implements UserRequest{
 				fileInputStream.read(buffer, 0, (int) chunkSize);
 				fileInputStream.close();
 
-				System.out.println("bytes "+startRange+"-"+(startRange+chunkSize-1)+"/"+file.length());
 				response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Content-Length",chunkSize).header("Content-Type",mimeType).header("Content-Range", "bytes "+startRange+"-"+(startRange+chunkSize-1)+"/"+file.length())
 						.put(Entity.entity(buffer,"application/octet-stream"));
 
@@ -193,11 +197,16 @@ public class UserRequestGoogleDrive implements UserRequest{
 				}
 				else {
 					String range = response.getHeaderString("range");
-					System.out.println(range);
 
 					startRange = Long.parseLong(range.substring(range.lastIndexOf("-") + 1, range.length())) + 1;
-					chunkSize = file.length()-startRange;
+					
 
+					if(file.length() - startRange  < chunkSize) {
+						chunkSize = file.length() - startRange;
+					}
+
+					System.out.println("chunk"+chunkSize+ " start"+startRange);
+					
 					
 					System.out.println("startrange = "+startRange);
 				}
