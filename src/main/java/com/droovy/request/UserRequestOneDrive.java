@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -302,6 +303,40 @@ public class UserRequestOneDrive implements UserRequest {
 
 				
 		return "{ \"quota\" : \""+quota+"\",\"used\" : \""+(quota-free)+"\",\"freeSpace\" : \""+free+"\" }";
+	}
+
+	@Override
+	public boolean shareFile(String idUser, String message, String idFile, String mail, FilePermission permission,boolean folder) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public List<File> searchFile(String idUser, String query) {
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		JerseyWebTarget jerseyTarget = jerseyClient.target("https://graph.microsoft.com/v1.0/me/drive/root/search(q='"+query+"')");
+
+		DatabaseOp db = new DatabaseOp();
+
+		Response response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization", "Bearer "+db.getUserOneDriveToken("2"))
+				.get();
+		
+		
+		if (response.getStatus() != 200) {
+			throw new RuntimeException("Failed : HTTP error code : "
+					+ response.getStatus()+ " "+ response.toString()+ ""+response.readEntity(String.class) );
+		}		
+		
+		JSONParserOneDrive parser = new JSONParserOneDrive();
+		String output = response.readEntity(String.class);
+		try {
+			return parser.parserFilesSearch(output);
+		} catch (IOException | ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+
 	}
 
 	

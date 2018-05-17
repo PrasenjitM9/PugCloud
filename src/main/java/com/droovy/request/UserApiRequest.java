@@ -56,7 +56,6 @@ public class UserApiRequest {
 		}
 		
 		Merger merge = new Merger();
-		
 		List<File> mergedList = merge.merge(listGoogleDrive, listDropbox, listOneDrive);
 		
 		ObjectMapper mapper = new ObjectMapper();
@@ -182,6 +181,63 @@ public class UserApiRequest {
 		}
 		return "{}";
 			
+	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/share")
+	public Response shareFile(@QueryParam("folder") String folder,@QueryParam("permission") String permission, @QueryParam("message") String message,@QueryParam("idUser") String idUser,@QueryParam("idFile") String idFile,@QueryParam("mail") String mail){
+				
+		FilePermission permissionFile = FilePermission.READ;
+		if(permission.equals("read")) {
+			permissionFile = FilePermission.WRITE;
+		}
+		
+		
+		request_dropbox.shareFile(idUser, message, idFile, mail,permissionFile,(folder.equals("1")) ? true : false);
+		
+		return Response.status(Status.OK).entity("").build();
+		
+	}
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/search")
+	public Response searchFile(@QueryParam("idUser") String idUser,@QueryParam("query") String query,@QueryParam("getDropbox") int getDropbox,@QueryParam("getGoogleDrive") int getGoogledrive,@QueryParam("getOnedrive") int getOnedrive) throws JsonProcessingException{
+	
+
+		List<File> listDropbox = new LinkedList<>(), listGoogleDrive = new LinkedList<>(),listOneDrive = new LinkedList<>();
+		
+		if(getDropbox==1) {			//Transformer en fonction ou hasmpa qui regarde si token null
+			listDropbox = request_dropbox.searchFile(idUser,query);
+		}
+		if(getGoogledrive==1) {
+			listGoogleDrive = request_googledrive.searchFile(idUser,query);
+		}
+		if(getOnedrive==1) {
+			listOneDrive = request_onedrive.searchFile(idUser,query);
+		}
+		
+		listDropbox.addAll(listOneDrive);
+		listDropbox.addAll(listGoogleDrive);
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		String output = "[";
+
+		for (File file : listDropbox) {
+			
+			output = output + mapper.writeValueAsString(file)+",";
+		}
+
+		if(listDropbox.isEmpty()) {
+			output += "]";
+		}
+		else {
+			output = output.substring(0,output.length()-1);//Retire la virgule en trop
+			output += "]";
+		}
+		
+		return Response.status(Status.OK).entity(output).build();
 	}
 	
 }

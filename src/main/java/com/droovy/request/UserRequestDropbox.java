@@ -39,7 +39,6 @@ import errors.UserFaultException;
 
 
 public class UserRequestDropbox implements UserRequest{
-
 	@Override
 	public List<File> getFilesList(String path,String id) throws ApplicationException, UserFaultException {
 
@@ -69,16 +68,15 @@ public class UserRequestDropbox implements UserRequest{
 		}		
 
 		String output =  response.readEntity(String.class);
-
 		List<File> list = new LinkedList<>();
 		try {
-			parser.parserFiles(output);
+			list = parser.parserFiles(output);
 		} catch (Exception e) {
 			throw new ApplicationException();
 		}
-
 		return list;		
 	}
+
 
 
 	@Override
@@ -327,6 +325,118 @@ public class UserRequestDropbox implements UserRequest{
 		return "{ \"quota\" : \""+quota+"\",\"used\" : \""+used+"\",\"freeSpace\" : \""+freeSpace+"\" }";
 
 	}
+
+
+	@Override
+	public boolean shareFile(String idUser, String message, String idFile, String mail,FilePermission permission,boolean folder) {
+		String url = "https://api.dropboxapi.com/2/sharing/add_file_member";
+
+		
+		try{
+
+			String filePermission = "editor";
+			if(permission == FilePermission.WRITE) {
+				filePermission="viewer";
+			}
+			
+			String jsonData = "";
+						
+			if(folder) {
+				url = "https://api.dropboxapi.com/2/sharing/add_folder_member";
+				jsonData = "{" + 
+						"    \"shared_folder_id\": \""+idFile+"\"," + 
+						"    \"members\": [ {" + 
+						"       \"member\": {" + 
+						"                \".tag\": \"email\"," + 
+						"                \"email\": \""+mail+"\"" + 
+						"            }," + 
+						"            \"access_level\": \""+filePermission+"\""+
+						"			}"+
+						"    ]," + 
+						"    \"custom_message\": \""+message+"\"," + 
+						"    \"quiet\": false" + 
+						"}";
+
+			}
+			else {
+				jsonData = "{" + 
+						"    \"file\": \""+idFile+"\"," + 
+						"    \"members\": [" + 
+						"        {" + 
+						"            \".tag\": \"email\"," + 
+						"            \"email\": \""+mail+"\"" + 
+						"        }" + 
+						"    ]," + 
+						"    \"custom_message\": \""+message+"\"," + 
+						"    \"quiet\": false," + 
+						"    \"access_level\": \""+filePermission+"\"," + 
+						"    \"add_message_as_comment\": false" + 
+						"}";
+
+			}
+			
+			JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+			jerseyClient.register(MultiPartFeature.class);
+			JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+
+			
+			 
+			DatabaseOp db = new DatabaseOp();
+
+			Response response = jerseyTarget.request().header("Content-Type", "application/json").header("Authorization", "Bearer "+db.getUserDropBoxToken(idUser)).accept(MediaType.APPLICATION_JSON).post(Entity.json(jsonData));
+
+			if (response.getStatus() != 200) {
+				throw new RuntimeException("Failed : HTTP error code : "
+						+ response.getStatus()+ " "+ response.toString()+ response.readEntity(String.class));
+			}		
+			return true;		
+
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+
+
+
+	@Override
+	public List<File> searchFile(String idUser, String query) {
+		String url = "https://api.dropboxapi.com/2/files/search";
+		JSONParser parser = new JSONParserDropbox();
+
+
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+
+		String jsonData = "" + 
+				"{" +
+				"    \"path\": \"\"," + 
+				"    \"query\": \""+query+"\"," + 
+				"    \"start\": 0," + 
+				"    \"max_results\": 100," + 
+				"    \"mode\": \"filename\"" + 
+				"}";
+		DatabaseOp db = new DatabaseOp();
+
+		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserDropBoxToken(idUser)).header("Content-Type", "application/json").accept(MediaType.APPLICATION_JSON).post(Entity.json(jsonData));
+
+		if (response.getStatus() != 200) {
+			throw new RuntimeException("Failed : HTTP error code : "
+					+ response.getStatus()+ " "+ response.toString()+ response.readEntity(String.class));
+
+		}		
+
+		String output =  response.readEntity(String.class);
+		System.out.println(output);
+		List<File> list = new LinkedList<>();
+		try {
+			list = parser.parserFilesSearch(output);
+		} catch (Exception e) {
+		}
+		return list;
+	}
+
 
 
 

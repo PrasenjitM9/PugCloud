@@ -316,5 +316,46 @@ public class UserRequestGoogleDrive implements UserRequest{
 		
 		return "{ \"quota\" : \""+quota+"\",\"used\" : \""+used+"\",\"freeSpace\" : \""+freeSpace+"\" }";
 	}
+
+
+
+	@Override
+	public boolean shareFile(String idUser, String message, String idFile, String mail, FilePermission permission,boolean folder) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+
+	@Override
+	public List<File> searchFile(String idUser, String query) {
+
+		try{
+
+			String path = "q=name%20contains%20%27"+query+"%27";
+
+
+			String url = "https://www.googleapis.com/drive/v3/files?"+path;
+
+			JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+			JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+
+			DatabaseOp db = new DatabaseOp();
+			Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserGoogleDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).get();
+
+			if (response.getStatus() != 200) {
+				throw new RuntimeException("Failed : HTTP error code : "
+						+ response.getStatus()+ " "+ response.toString()+ response.readEntity(String.class));
+			}		
+			String output =  response.readEntity(String.class);
+			System.out.println(output);
+			return parser.parserFilesSearch(output);
+
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+
+		return new LinkedList<>();
+	}
 	
 }
