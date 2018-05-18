@@ -36,247 +36,251 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.filter.LoggingFilter;
 
+import errors.InternalServerError;
+import errors.UserApplicationError;
+
 public class UserRequestOneDrive implements UserRequest {
 
 	@Override
 	public List<File> getFilesList(String path,String id) {
-		
-		try{
-			if(!path.equals("root")) {
-				path=":"+path+":";
+
+		if(!path.equals("root")) {
+			path=":"+path+":";
+		}
+		else {
+			path="";
+		}
+		String url = "https://graph.microsoft.com/v1.0/me/drive/root"+path+"/children";
+		JSONParser parser = new JSONParserOneDrive();
+
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+
+		DatabaseOp db = new DatabaseOp();
+		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserOneDriveToken(id)).accept(MediaType.APPLICATION_JSON).get();
+
+		if (response.getStatus() != 200) {
+			if(response.getStatus()==401 || response.getStatus() == 400) {
+				throw new UserApplicationError("Set/Update your onedrive token,or your token is invalid",401);
 			}
 			else {
-				path="";
+				throw new InternalServerError();
 			}
-			String url = "https://graph.microsoft.com/v1.0/me/drive/root"+path+"/children";
-			JSONParser parser = new JSONParserOneDrive();
+		}		
+		String output =  response.readEntity(String.class);
 
-			JerseyClient jerseyClient = JerseyClientBuilder.createClient();
-			JerseyWebTarget jerseyTarget = jerseyClient.target(url);
-
-			DatabaseOp db = new DatabaseOp();
-			Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserOneDriveToken(id)).accept(MediaType.APPLICATION_JSON).get();
-			
-			if (response.getStatus() != 200) {
-				throw new RuntimeException("Failed : HTTP error code : "
-						+ response.getStatus()+ " "+ response.toString());
-			}		
-			String output =  response.readEntity(String.class);
-			
+		try {
 			return parser.parserFiles((output));
-
-		}catch(Exception e){
-			e.printStackTrace();
+		} catch (Exception e) {
+			throw new InternalServerError();
 		}
-		
-		return new LinkedList<>();
-		
-		
+
 	}
 
 	@Override
 	public boolean removeFile(String idFile,String path, String idUser) {
 		String url = "https://graph.microsoft.com/v1.0/me/drive/items/"+idFile;
-		
-		try{
-			
-			JerseyClient jerseyClient = JerseyClientBuilder.createClient();
-			jerseyClient.register(MultiPartFeature.class);
-			JerseyWebTarget jerseyTarget = jerseyClient.target(url);
-			
-	
-			DatabaseOp db = new DatabaseOp();
-			
-		    Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserOneDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).delete();
-			
-			if (response.getStatus() != 204) {//204 == success de la suppression du fichier
-				throw new RuntimeException("Failed : HTTP error code : "
-						+ response.getStatus()+ " "+ response.toString());
-			}		
-			return true;		
 
-		}catch(Exception e){
-			e.printStackTrace();
-		}
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		jerseyClient.register(MultiPartFeature.class);
+		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
 
-		return false;
+
+		DatabaseOp db = new DatabaseOp();
+
+		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserOneDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).delete();
+
+		if (response.getStatus() != 204) {//204 == success de la suppression du fichier
+			if(response.getStatus()==401 || response.getStatus() == 400) {
+				throw new UserApplicationError("Set/Update your onedrive token,or your token is invalid",401);
+			}
+			else {
+				throw new InternalServerError();
+			}
+		}		
+		return true;		
 	}
 
 	@Override
-	public boolean uploadFile(String pathToFile, String pathInDrive,String userId) {
-		
-				try{	
-					java.io.File file = new java.io.File(pathToFile);
+	public File uploadFile(String pathToFile, String pathInDrive,String userId,String parentId) {
 
-					String url = "https://graph.microsoft.com/v1.0/me/drive/items/root:"+pathInDrive+":/createUploadSession";
+		java.io.File file = new java.io.File(pathToFile);
 
-					JerseyClient jerseyClient = JerseyClientBuilder.createClient();
-					jerseyClient.register(MultiPartFeature.class);
-					jerseyClient.register(new LoggingFilter());
-					JerseyWebTarget jerseyTarget = jerseyClient.target(url);
-					jerseyClient.property(LoggingFeature.LOGGING_FEATURE_VERBOSITY_CLIENT, LoggingFeature.Verbosity.PAYLOAD_ANY);
+		/**
+		 * TODO upload to root 
+		 */
 
-					DatabaseOp db = new DatabaseOp();
+		String url = "https://graph.microsoft.com/v1.0/me/drive/items/root:"+pathInDrive+":/createUploadSession";
 
-					/*
-					 * Start resumable session
-					 */
-					String jsonData = "{\n" + 
-							"  \"item\": {\n" + 
-							"    \"@microsoft.graph.conflictBehavior\": \"rename\",\n" + 
-							"    \"name\": \""+file.getName()+"\"\n" + 
-							"  }\n" + 
-							"}";
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		jerseyClient.register(MultiPartFeature.class);
+		jerseyClient.register(new LoggingFilter());
+		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+		jerseyClient.property(LoggingFeature.LOGGING_FEATURE_VERBOSITY_CLIENT, LoggingFeature.Verbosity.PAYLOAD_ANY);
 
-					System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
+		DatabaseOp db = new DatabaseOp();
 
-					Response response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Content-Type","application/json; charset=UTF-8").header("Authorization", "Bearer "+db.getUserOneDriveToken(userId))
-							.post(Entity.json(jsonData));
+		/*
+		 * Start resumable session
+		 */
+		String jsonData = "{\n" + 
+				"  \"item\": {\n" + 
+				"    \"@microsoft.graph.conflictBehavior\": \"rename\",\n" + 
+				"    \"name\": \""+file.getName()+"\"\n" + 
+				"  }\n" + 
+				"}";
 
+		System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
 
-					if (response.getStatus() != 200) {
-
-						throw new RuntimeException("Failed : HTTP error code : "
-								+ response.getStatus()+ " "+ response.toString() +  response.readEntity(String.class));
-					}
-
-					ObjectMapper mapper = new ObjectMapper();
-
-					String responseJSON = response.readEntity(String.class);
-					JsonNode rootNode = mapper.readTree(responseJSON);
-					String uploadURL  = rootNode.path("uploadUrl").asText();
-					
-					/*
-					 * Send chunk
-					 */
-
-					jerseyClient = JerseyClientBuilder.createClient();
-					jerseyClient.register(MultiPartFeature.class);
-					jerseyTarget = jerseyClient.target(uploadURL);
-
-					long chunkSize =0;
-
-					if(file.length() < 10*1024*1024) { //Si la taille du fichier inférieur à 10 mo
-						chunkSize = file.length();
-					}
-					else {
-						chunkSize = 10*1024*1024;
-					}
-					long startRange = 0;
-					boolean done = false;
-
-					while(!done) {
-						byte[] buffer = new byte[(int) chunkSize];
-						FileInputStream fileInputStream = new FileInputStream(file);
-						fileInputStream.getChannel().position(startRange);
-						fileInputStream.read(buffer, 0, (int) chunkSize);
-						fileInputStream.close();
-
-						response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Content-Length",chunkSize).header("Content-Range", "bytes "+startRange+"-"+(startRange+chunkSize-1)+"/"+file.length())
-								.put(Entity.entity(buffer,"application/octet-stream"));
-
-						if (response.getStatus() == 201) {//Success
-							done=true;
-							System.out.println("File : = "+response.readEntity(String.class));
-
-						}
-						else if(response.getStatus() != 202 && response.getStatus() !=200  ) {
-							throw new RuntimeException("Failed : HTTP error code : "
-									+ response.getStatus()+ " "+ response.toString() +  response.readEntity(String.class));
-						}
-						else {
-
-							startRange += chunkSize;
-							
-
-							if(file.length() - startRange  < chunkSize) {
-								chunkSize = file.length() - startRange;
-							}
-							
-						}
+		Response response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Content-Type","application/json; charset=UTF-8").header("Authorization", "Bearer "+db.getUserOneDriveToken(userId))
+				.post(Entity.json(jsonData));
 
 
-					}
-					return true;		
+		if (response.getStatus() != 200) {
 
-				}catch(Exception e){
-					e.printStackTrace();
+			throw new RuntimeException("Failed : HTTP error code : "
+					+ response.getStatus()+ " "+ response.toString() +  response.readEntity(String.class));
+		}
+
+		ObjectMapper mapper = new ObjectMapper();
+
+		String responseJSON = response.readEntity(String.class);
+		JsonNode rootNode;
+		try {
+			rootNode = mapper.readTree(responseJSON);
+		} catch (Exception e) {
+			throw new InternalServerError();
+		}
+		String uploadURL  = rootNode.path("uploadUrl").asText();
+
+		/*
+		 * Send chunk
+		 */
+
+		jerseyClient = JerseyClientBuilder.createClient();
+		jerseyClient.register(MultiPartFeature.class);
+		jerseyTarget = jerseyClient.target(uploadURL);
+
+		long chunkSize =0;
+
+		if(file.length() < 10*1024*1024) { //Si la taille du fichier inférieur à 10 mo
+			chunkSize = file.length();
+		}
+		else {
+			chunkSize = 10*1024*1024;
+		}
+		long startRange = 0;
+		boolean done = false;
+
+		while(!done) {
+			byte[] buffer = new byte[(int) chunkSize];
+
+			try {
+				FileInputStream fileInputStream = new FileInputStream(file);
+				fileInputStream.getChannel().position(startRange);
+				fileInputStream.read(buffer, 0, (int) chunkSize);
+				fileInputStream.close();
+			}
+			catch(Exception e) {
+				throw new InternalServerError();
+			}
+
+
+
+			response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Content-Length",chunkSize).header("Content-Range", "bytes "+startRange+"-"+(startRange+chunkSize-1)+"/"+file.length())
+					.put(Entity.entity(buffer,"application/octet-stream"));
+
+			if (response.getStatus() == 201) {//Success
+				done=true;
+			}
+			else if(response.getStatus() != 202 && response.getStatus() !=200  ) {
+				if(response.getStatus()==401 || response.getStatus() == 400) {
+					throw new UserApplicationError("Set/Update your onedrive token,or your token is invalid",401);
 				}
-				return false;
-	}
+				else {
+					throw new InternalServerError();
+				}
+			}
+			else {
 
-	@Override
-	public boolean renameFile(String idFile, String path, String name, String idUser) {
-		
-		
-		try{
-			
-			JerseyClient jerseyClient = JerseyClientBuilder.createClient();
-			jerseyClient.property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true);
+				startRange += chunkSize;
 
 
-			JerseyWebTarget jerseyTarget = jerseyClient.target("https://graph.microsoft.com/v1.0/me/drive/items/"+idFile);
-			DatabaseOp db = new DatabaseOp();
+				if(file.length() - startRange  < chunkSize) {
+					chunkSize = file.length() - startRange;
+				}
 
-			
+			}
 
-		        String jsonData = "{\n" + 
-						"  \"name\": \""+name+"\"\n" + 
-						"}";
-		     
-		    Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserOneDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).method("PATCH", Entity.json(jsonData));;
-			
-			if (response.getStatus() != 200) {
-				throw new RuntimeException("Failed : HTTP error code : "
-						+ response.getStatus()+ " "+ response.toString() + response.readEntity(String.class));
-			}		
-			return true;	
 
-		}catch(Exception e){
-			e.printStackTrace();
 		}
+		return new File();		
 
-		return false;
-	}
-	
-	@Override
-	public boolean moveFile(String idFile, String path, String idParent, String pathParent, String idUser,String name) {
-	try{
-			
-			JerseyClient jerseyClient = JerseyClientBuilder.createClient();
-			jerseyClient.property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true);
-
-
-			JerseyWebTarget jerseyTarget = jerseyClient.target("https://graph.microsoft.com/v1.0/me/drive/items/"+idFile);
-			DatabaseOp db = new DatabaseOp();
-
-
-		        String jsonData = "{" + 
-		        		" \"parentReference\": {" + 
-		        		" \"id\": \""+idParent+"\"" + 
-		        		" }," + 
-		        		" \"name\": \""+name+"\"" + 
-		        		"}";
-		     
-		    Response response = jerseyTarget.request().header("Content-type", "application/json").header("Authorization", "Bearer "+db.getUserOneDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).method("PATCH", Entity.json(jsonData));;
-			
-			if (response.getStatus() != 200) {
-				throw new RuntimeException("Failed : HTTP error code : "
-						+ response.getStatus()+ " "+ response.toString() + response.readEntity(String.class));
-			}		
-			return true;	
-
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-
-		return false;
 	}
 
+	@Override
+	public File renameFile(String idFile, String path, String name, String idUser) {
+
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		jerseyClient.property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true);
+
+
+		JerseyWebTarget jerseyTarget = jerseyClient.target("https://graph.microsoft.com/v1.0/me/drive/items/"+idFile);
+		DatabaseOp db = new DatabaseOp();
+
+		String jsonData = "{\n" + 
+				"  \"name\": \""+name+"\"\n" + 
+				"}";
+
+		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserOneDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).method("PATCH", Entity.json(jsonData));;
+
+		if (response.getStatus() != 200) {
+			throw new RuntimeException("Failed : HTTP error code : "
+					+ response.getStatus()+ " "+ response.toString() + response.readEntity(String.class));
+		}		
+		String output = response.readEntity(String.class);
+
+		return new File();
+
+
+	}
+
+	@Override
+	public File moveFile(String idFile, String path, String idParent, String pathParent, String idUser,String name) {
+
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		jerseyClient.property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true);
+
+
+		JerseyWebTarget jerseyTarget = jerseyClient.target("https://graph.microsoft.com/v1.0/me/drive/items/"+idFile);
+		DatabaseOp db = new DatabaseOp();
+
+
+		String jsonData = "{" + 
+				" \"parentReference\": {" + 
+				" \"id\": \""+idParent+"\"" + 
+				" }," + 
+				" \"name\": \""+name+"\"" + 
+				"}";
+
+		Response response = jerseyTarget.request().header("Content-type", "application/json").header("Authorization", "Bearer "+db.getUserOneDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).method("PATCH", Entity.json(jsonData));;
+
+		if (response.getStatus() != 200) {
+			if(response.getStatus()==401 || response.getStatus() == 400) {
+				throw new UserApplicationError("Set/Update your onedrive token,or your token is invalid",401);
+			}
+			else {
+				throw new InternalServerError();
+			}
+		}		
+		return new File();	
+
+	}
+
 
 
 	@Override
-	public String freeSpaceRemaining(String idUser) throws JsonProcessingException, IOException {
+	public String freeSpaceRemaining(String idUser)  {
 		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
 		JerseyWebTarget jerseyTarget = jerseyClient.target("https://graph.microsoft.com/v1.0/me/drive");
 
@@ -284,35 +288,46 @@ public class UserRequestOneDrive implements UserRequest {
 
 		Response response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization", "Bearer "+db.getUserOneDriveToken("2"))
 				.get();
-		
-		
+
+
 		if (response.getStatus() != 200) {
-			throw new RuntimeException("Failed : HTTP error code : "
-					+ response.getStatus()+ " "+ response.toString());
+			if(response.getStatus()==401 || response.getStatus() == 400) {
+				throw new UserApplicationError("Set/Update your onedrive token,or your token is invalid",401);
+			}
+			else {
+				throw new InternalServerError();
+			}
 		}		
-		
+
 		ObjectMapper mapper = new ObjectMapper();
 
 		String responseJSON = response.readEntity(String.class);
-		JsonNode rootNode = mapper.readTree(responseJSON);
+		JsonNode rootNode;
+		try {
+			rootNode = mapper.readTree(responseJSON);
+		} catch (Exception e) {
+			throw new InternalServerError();
+		}
 		JsonNode quotaNode  = rootNode.path("quota");
 
-		
+
 		long quota  = quotaNode.path("total").asLong();
 		long free  = quotaNode.path("remaining").asLong();
 
-				
+
 		return "{ \"quota\" : \""+quota+"\",\"used\" : \""+(quota-free)+"\",\"freeSpace\" : \""+free+"\" }";
 	}
 
+	/*
 	@Override
 	public boolean shareFile(String idUser, String message, String idFile, String mail, FilePermission permission,boolean folder) {
 		// TODO Auto-generated method stub
 		return false;
-	}
+	}*/
 
 	@Override
 	public List<File> searchFile(String idUser, String query) {
+
 		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
 		JerseyWebTarget jerseyTarget = jerseyClient.target("https://graph.microsoft.com/v1.0/me/drive/root/search(q='"+query+"')");
 
@@ -320,25 +335,27 @@ public class UserRequestOneDrive implements UserRequest {
 
 		Response response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization", "Bearer "+db.getUserOneDriveToken("2"))
 				.get();
-		
-		
+
+
 		if (response.getStatus() != 200) {
-			throw new RuntimeException("Failed : HTTP error code : "
-					+ response.getStatus()+ " "+ response.toString()+ ""+response.readEntity(String.class) );
+			if(response.getStatus()==401 || response.getStatus() == 400) {
+				throw new UserApplicationError("Set/Update your onedrive token,or your token is invalid",401);
+			}
+			else {
+				throw new InternalServerError();
+			}	
 		}		
-		
+
 		JSONParserOneDrive parser = new JSONParserOneDrive();
 		String output = response.readEntity(String.class);
 		try {
 			return parser.parserFilesSearch(output);
-		} catch (IOException | ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			throw new InternalServerError();
 		}
-		return null;
 
 	}
 
-	
+
 
 }

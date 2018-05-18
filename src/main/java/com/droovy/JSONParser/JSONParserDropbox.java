@@ -30,7 +30,6 @@ public class JSONParserDropbox implements JSONParser {
 			System.out.println(file);
 			listFile.add(parserFile(file));
 		}
-		System.out.println(listFile);
 
 		return listFile;
 	}
@@ -70,9 +69,10 @@ public class JSONParserDropbox implements JSONParser {
 		for (final JsonNode file : items) {
 			listFile.add(parserFile(file.path("metadata")));
 		}
-		System.out.println(listFile);
 
 		return listFile;
 	}
+
+
 
 }
