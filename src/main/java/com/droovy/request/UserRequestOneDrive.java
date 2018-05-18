@@ -1,21 +1,11 @@
 package com.droovy.request;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
 import java.text.ParseException;
-import java.util.LinkedList;
 import java.util.List;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -32,8 +22,6 @@ import com.droovy.JSONParser.JSONParserOneDrive;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.filter.LoggingFilter;
 
 import errors.InternalServerError;
@@ -106,10 +94,6 @@ public class UserRequestOneDrive implements UserRequest {
 
 		java.io.File file = new java.io.File(pathToFile);
 
-		/**
-		 * TODO upload to root 
-		 */
-
 		String url = "https://graph.microsoft.com/v1.0/me/drive/items/root:"+pathInDrive+":/createUploadSession";
 
 		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
@@ -172,6 +156,8 @@ public class UserRequestOneDrive implements UserRequest {
 		long startRange = 0;
 		boolean done = false;
 
+		String output ="";
+		
 		while(!done) {
 			byte[] buffer = new byte[(int) chunkSize];
 
@@ -191,6 +177,7 @@ public class UserRequestOneDrive implements UserRequest {
 					.put(Entity.entity(buffer,"application/octet-stream"));
 
 			if (response.getStatus() == 201) {//Success
+				output=response.readEntity(String.class);
 				done=true;
 			}
 			else if(response.getStatus() != 202 && response.getStatus() !=200  ) {
@@ -214,7 +201,11 @@ public class UserRequestOneDrive implements UserRequest {
 
 
 		}
-		return new File();		
+		try {
+			return new JSONParserOneDrive().parserFile(new ObjectMapper().readTree(output));
+		} catch (Exception e) {
+			throw new InternalServerError();
+		}
 
 	}
 
@@ -239,8 +230,11 @@ public class UserRequestOneDrive implements UserRequest {
 					+ response.getStatus()+ " "+ response.toString() + response.readEntity(String.class));
 		}		
 		String output = response.readEntity(String.class);
-
-		return new File();
+		try {
+			return new JSONParserOneDrive().parserFile(new ObjectMapper().readTree(output));
+		} catch (Exception e) {
+			throw new InternalServerError();
+		}
 
 
 	}
@@ -273,7 +267,13 @@ public class UserRequestOneDrive implements UserRequest {
 				throw new InternalServerError();
 			}
 		}		
-		return new File();	
+		
+		String output = response.readEntity(String.class);
+		try {
+			return new JSONParserOneDrive().parserFile(new ObjectMapper().readTree(output));
+		} catch (Exception e) {
+			throw new InternalServerError();
+		}
 
 	}
 
@@ -286,7 +286,7 @@ public class UserRequestOneDrive implements UserRequest {
 
 		DatabaseOp db = new DatabaseOp();
 
-		Response response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization", "Bearer "+db.getUserOneDriveToken("2"))
+		Response response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization", "Bearer "+db.getUserOneDriveToken(idUser))
 				.get();
 
 

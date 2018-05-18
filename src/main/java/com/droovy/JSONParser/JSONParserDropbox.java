@@ -27,7 +27,6 @@ public class JSONParserDropbox implements JSONParser {
 		JsonNode items = (ArrayNode) rootNode.path("entries");
 
 		for (final JsonNode file : items) {
-			System.out.println(file);
 			listFile.add(parserFile(file));
 		}
 

@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -93,13 +92,11 @@ public class UserApiRequest {
 			throw new UserApplicationError("At least one argument is missing", 400);
 		}
 		
-		
 		OutputStream outputStream = new FileOutputStream(new java.io.File(fileDetail.getFileName()));
-	
 		
 		/*Sockage du fichier en local => voir si peut pas utiliser directement l'input stream*/
 		int read = 0;
-		byte[] bytes = new byte[150000000];
+		byte[] bytes = new byte[1024];
 	
 		while ((read = uploadInputStream.read(bytes)) != -1) {
 			outputStream.write(bytes, 0, read);

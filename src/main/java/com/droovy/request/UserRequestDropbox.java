@@ -2,11 +2,9 @@ package com.droovy.request;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -47,7 +45,7 @@ public class UserRequestDropbox implements UserRequest{
 		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserDropBoxToken(id)).header("Content-Type", "application/json").accept(MediaType.APPLICATION_JSON).post(Entity.json(jsonData));
 
 		if (response.getStatus() != 200) {
-			if(response.getStatus()==401 ) {
+			if(response.getStatus()==401 || response.getStatus() == 400) {
 				throw new UserApplicationError("Set/Update your dropbox token", 401);
 			}
 			else {
@@ -89,10 +87,9 @@ public class UserRequestDropbox implements UserRequest{
 				throw new UserApplicationError("Set/Update your dropbox token", 401);
 			}
 			else if(response.getStatus() == 409) {
-				throw new UserApplicationError("File/folder not found", 409);
+				throw new UserApplicationError("File/folder not found", 404);
 			}
 			else {
-
 				throw new InternalServerError();
 			}
 		}		
@@ -130,8 +127,12 @@ public class UserRequestDropbox implements UserRequest{
 
 		if (response.getStatus() != 200) {
 
-			throw new RuntimeException("Failed : HTTP error code : "
-					+ response.getStatus()+ " "+ response.toString() +  response.readEntity(String.class));
+			if(response.getStatus()==401 || response.getStatus() == 400) {
+				throw new UserApplicationError("Set/Update your dropbox token,or your token is invalid",401);
+			}
+			else {
+				throw new InternalServerError();
+			}
 		}
 
 		ObjectMapper mapper = new ObjectMapper();
@@ -231,6 +232,9 @@ public class UserRequestDropbox implements UserRequest{
 				.post(Entity.entity(null,MediaType.APPLICATION_OCTET_STREAM));
 
 		if (response.getStatus() != 200) {
+			if(response.getStatus()==409) {
+				throw new UserApplicationError("This file already exist",409);
+			}
 			throw new InternalServerError();
 		}
 
@@ -266,8 +270,8 @@ public class UserRequestDropbox implements UserRequest{
 
 
 		if (response.getStatus() != 200) {
-			if(response.getStatus() == 409) {
-				throw new UserApplicationError("Conflict, a file already has this name",409);
+			if(response.getStatus() == 409) {				
+				throw new UserApplicationError("Conflict, a file already has this name, or this file doesn't exist",409);
 			}
 			else if(response.getStatus()==401 || response.getStatus() == 400) {
 				throw new UserApplicationError("Set/Update your dropbox token,or your token is invalid",401);
@@ -275,7 +279,7 @@ public class UserRequestDropbox implements UserRequest{
 			else {
 				throw new InternalServerError();
 			}
-			
+
 		}		
 		String output = response.readEntity(String.class);
 
@@ -292,39 +296,42 @@ public class UserRequestDropbox implements UserRequest{
 	@Override
 	public File moveFile(String idFile, String path, String idParent, String pathParent, String idUser,String name) {
 
-			String url = "https://api.dropboxapi.com/2/files/move_v2";
+		String url = "https://api.dropboxapi.com/2/files/move_v2";
 
 
-			JerseyClient jerseyClient = JerseyClientBuilder.createClient();
-			JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
 
-			String jsonData = "{\n" + 
-					"    \"from_path\": \""+pathParent+"\",\n" + 
-					"    \"to_path\": \""+path+"\",\n" + 
-					"    \"allow_shared_folder\": false,\n" + 
-					"    \"autorename\": false,\n" + 
-					"    \"allow_ownership_transfer\": false\n" + 
-					"}";
-			DatabaseOp db = new DatabaseOp();
+		String jsonData = "{\n" + 
+				"    \"from_path\": \""+pathParent+"\",\n" + 
+				"    \"to_path\": \""+path+"\",\n" + 
+				"    \"allow_shared_folder\": false,\n" + 
+				"    \"autorename\": false,\n" + 
+				"    \"allow_ownership_transfer\": false\n" + 
+				"}";
+		DatabaseOp db = new DatabaseOp();
 
-			Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserDropBoxToken(idUser)).header("Content-Type", "application/json").accept(MediaType.APPLICATION_JSON).post(Entity.json(jsonData));
+		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserDropBoxToken(idUser)).header("Content-Type", "application/json").accept(MediaType.APPLICATION_JSON).post(Entity.json(jsonData));
 
-			if (response.getStatus() != 200) {
-				if(response.getStatus()==401 || response.getStatus() == 400) {
-					throw new UserApplicationError("Set/Update your dropbox token,or your token is invalid",401);
-				}
-				else {
-					throw new InternalServerError();
-				}
-			}		
-			String output = response.readEntity(String.class);
-
-			try {
-				return new JSONParserDropbox().parserFile(new ObjectMapper().readTree(output).path("metadata"));
-			} catch (Exception e) {
+		if (response.getStatus() != 200) {
+			if(response.getStatus()==401 || response.getStatus() == 400) {
+				throw new UserApplicationError("Set/Update your dropbox token,or your token is invalid",401);
+			}
+			else if(response.getStatus() == 409) {				
+				throw new UserApplicationError("Conflict, a file already has this name",409);
+			}
+			else {
 				throw new InternalServerError();
 			}
-		
+		}		
+		String output = response.readEntity(String.class);
+
+		try {
+			return new JSONParserDropbox().parserFile(new ObjectMapper().readTree(output).path("metadata"));
+		} catch (Exception e) {
+			throw new InternalServerError();
+		}
+
 	}
 
 
@@ -336,7 +343,7 @@ public class UserRequestDropbox implements UserRequest{
 
 		DatabaseOp db = new DatabaseOp();
 
-		Response response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization", "Bearer "+db.getUserDropBoxToken("2"))
+		Response response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization", "Bearer "+db.getUserDropBoxToken(idUser))
 				.post(null);
 
 
@@ -365,7 +372,7 @@ public class UserRequestDropbox implements UserRequest{
 
 	}
 
-/*
+	/*
 	@Override
 	public boolean shareFile(String idUser, String message, String idFile, String mail,FilePermission permission,boolean folder) {
 		String url = "https://api.dropboxapi.com/2/sharing/add_file_member";
@@ -437,11 +444,11 @@ public class UserRequestDropbox implements UserRequest{
 		return false;
 	}
 
-*/
+	 */
 
 	@Override
 	public List<File> searchFile(String idUser, String query) {
-		
+
 		String url = "https://api.dropboxapi.com/2/files/search";
 		JSONParser parser = new JSONParserDropbox();
 
@@ -471,7 +478,7 @@ public class UserRequestDropbox implements UserRequest{
 		}		
 
 		String output =  response.readEntity(String.class);
-		System.out.println(output);
+
 		List<File> list = new LinkedList<>();
 		try {
 			list = parser.parserFilesSearch(output);

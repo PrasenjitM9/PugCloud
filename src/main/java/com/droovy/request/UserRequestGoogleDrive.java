@@ -298,7 +298,7 @@ public class UserRequestGoogleDrive implements UserRequest{
 
 		DatabaseOp db = new DatabaseOp();
 
-		Response response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization", "Bearer "+db.getUserGoogleDriveToken("2"))
+		Response response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization", "Bearer "+db.getUserGoogleDriveToken(idUser))
 				.get();
 
 
@@ -358,7 +358,6 @@ public class UserRequestGoogleDrive implements UserRequest{
 			}
 		}		
 		String output =  response.readEntity(String.class);
-		System.out.println(output);
 		try {
 			return parser.parserFilesSearch(output);
 		} catch (Exception e) {
