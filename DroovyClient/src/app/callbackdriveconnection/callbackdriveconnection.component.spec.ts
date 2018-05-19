@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { CallbackdriveconnectionComponent } from './callbackdriveconnection.component';
+import {CallbackdriveconnectionComponent} from './callbackdriveconnection.component';
 
 describe('CallbackdriveconnectionComponent', () => {
   let component: CallbackdriveconnectionComponent;
@@ -8,9 +8,9 @@ describe('CallbackdriveconnectionComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CallbackdriveconnectionComponent ]
+      declarations: [CallbackdriveconnectionComponent]
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

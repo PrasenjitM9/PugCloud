@@ -14,11 +14,17 @@
 
   </div>
 
-  <div class="nav-content">
-    <ul class="tabs tabs-transparent">
-      <li class="tab"><a class="active" href="#page1">Fichiers</a></li>
-      <li class="tab"><a href="#page2">Ajouter un drive</a></li>
-    </ul>
+  <div class="row">
+    <div class="col s2">
+      <a class="btn-floating btn-large waves-effect waves-light blue-grey" (click)="navigatePrevious()"><i
+        class="large material-icons">arrow_back</i></a>
+    </div>
+    <div class=" col s10 nav-content">
+      <ul class="tabs tabs-transparent">
+        <li class="tab"><a class="active" href="#page1">Fichiers</a></li>
+        <li class="tab"><a href="#page2">Ajouter un drive</a></li>
+      </ul>
+    </div>
   </div>
 
 </nav>
@@ -28,8 +34,8 @@
 
 
   <li *ngFor="let file of fileList">
-    <app-file-display [fileDroovy]="file" (action)="initRoot($event)"></app-file-display><!-- Faire une focntion de refresh selon le path courant pour l'action-->
-    </li>
+    <app-file-display [fileDroovy]="file" (action)="initRoot($event)" [file_manager]="this"></app-file-display>
+  </li>
 
 
 </div>

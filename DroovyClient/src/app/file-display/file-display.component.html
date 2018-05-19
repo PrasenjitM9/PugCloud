@@ -1,5 +1,4 @@
-<div class="row " *ngIf="fileDroovy.type=='FOLDER'; else fileImg">
-
+<div class="row" (dblclick)="openFolder()" *ngIf="fileDroovy.type=='FOLDER'; else fileImg">
   <div class="col s1">
     <img src="./../../assets/images/folder.svg" alt="" class="circle">
   </div>

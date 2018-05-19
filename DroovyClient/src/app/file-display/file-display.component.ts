@@ -1,7 +1,9 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {FileDroovy, PropertiesFileDroovy, RequestService} from "../request.service";
+import {RequestService} from "../request.service";
 import {AuthService} from "../auth.service";
 import {destinationMove} from "../search-folder/search-folder.component";
+import {FileDroovy, PropertiesFileDroovy} from "../request.service";
+import {FileManagerComponent} from "../file-manager/file-manager.component";
 
 @Component({
   selector: 'app-file-display',
@@ -11,6 +13,7 @@ import {destinationMove} from "../search-folder/search-folder.component";
 export class FileDisplayComponent implements OnInit {
 
   @Input() fileDroovy: FileDroovy;
+  @Input() file_manager: FileManagerComponent;
   @Output() action = new EventEmitter<string>();
 
   display_properties = false;
@@ -101,5 +104,27 @@ export class FileDisplayComponent implements OnInit {
   refreshList(){
     this.action.next("");
   }
+  openFolder() {
+    var path: string;
 
+    var getGoogleDrive = 0;
+    var getOneDrive = 0;
+    var getDropbox = 0;
+
+    if (this.fileDroovy.sourceProperties["Dropbox"]) {
+      path = this.fileDroovy.sourceProperties["Dropbox"].path;
+      getDropbox = 1
+    }
+    if (this.fileDroovy.sourceProperties["Onecloud"]) {
+      path = this.fileDroovy.sourceProperties["Onecloud"].path;
+      getOneDrive = 1
+    }
+
+    if (this.fileDroovy.sourceProperties["GoogleDrive"]) {
+      getGoogleDrive = 1
+    }
+
+    this.file_manager.navigate(path, this.fileDroovy.sourceProperties["GoogleDrive"].id, getGoogleDrive, getOneDrive, getDropbox)
+  }
 }
+

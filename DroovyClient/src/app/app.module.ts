@@ -20,8 +20,8 @@ import {RequestService} from './request.service';
 import {FileSizePipe} from './file-size.pipe';
 import {AuthGuard} from './auth-guard.service';
 import {UtilitaireService} from "./utilitaire.service";
-import { UploadComponent } from './upload/upload.component';
-import { CallbackdriveconnectionComponent } from './callbackdriveconnection/callbackdriveconnection.component';
+import {UploadComponent} from './upload/upload.component';
+import {CallbackdriveconnectionComponent} from './callbackdriveconnection/callbackdriveconnection.component';
 import {FileDisplayComponent} from './file-display/file-display.component';
 import { SearchFolderComponent } from './search-folder/search-folder.component';
 
@@ -29,8 +29,8 @@ const appRoutes: Routes = [
   { path: 'manager', canActivate:[AuthGuard], component: FileManagerComponent },
   { path: 'auth', component: AuthComponent },
   { path: '', component: AuthComponent },
-  { path: 'connectedToDrive/:drive/:success', component: CallbackdriveconnectionComponent },
-  { path: '**', component: PageNotFoundComponent },
+  {path: 'connectedToDrive/:drive/:success', component: CallbackdriveconnectionComponent},
+  {path: '**', component: PageNotFoundComponent},
 
 
 
