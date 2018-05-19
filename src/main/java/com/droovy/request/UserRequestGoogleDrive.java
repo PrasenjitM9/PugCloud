@@ -150,7 +150,7 @@ public class UserRequestGoogleDrive implements UserRequest{
 			
 		    Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserGoogleDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).put(Entity.json(json));
 			
-			if (response.getStatus() != 200) {//204 == success rename
+			if (response.getStatus() != 200) {//204 == success move
 
 				throw new RuntimeException("Failed : HTTP error code : "
 						+ response.getStatus()+ " "+ response.toString());
