@@ -11,14 +11,12 @@ import {User} from "../User";
 })
 export class AuthComponent implements OnInit {
 
-  private user : User;
 
   constructor(private auth: AuthService, private router: Router, private utilitaire: UtilitaireService) {
 
   }
 
   ngOnInit() {
-    this.user = this.auth.user;
   }
 
   connect(){
@@ -28,18 +26,17 @@ export class AuthComponent implements OnInit {
 
         if(data.success == "true") {
 
+          this.auth.user.isAuth = true;
+          this.auth.user.id = data.id;
           this.utilitaire.createCookie("id", data['id'], 1);
           this.utilitaire.createCookie("isAuth", true, 1);
           this.router.navigateByUrl("/manager");
-
-          this.user.isAuth = true;
-          this.user.id = data.id;
 
 
 
         }
         else{
-          this.user.isAuth = false;
+          this.auth.user.isAuth = false;
         }
       }
     );
@@ -50,17 +47,17 @@ export class AuthComponent implements OnInit {
 
      this.auth.createAccount(this.password,this.name).subscribe(
       data => {
-
         if(data.success == "true") {
+
+          this.auth.user.isAuth = true;
+          this.auth.user.id = data.id;
           this.utilitaire.createCookie("id", data['id'], 1);
           this.utilitaire.createCookie("isAuth", true, 1);
-          this.router.navigate(['/manager']);
-          this.user.isAuth = true;
-          this.user.id = data.id;
-
+          this.router.navigateByUrl("/manager");
+          
         }
         else{
-          this.user.isAuth = false;
+          this.auth.user.isAuth = false;
         }
       }
     );

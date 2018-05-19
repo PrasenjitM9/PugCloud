@@ -20,18 +20,16 @@ export class FileManagerComponent implements OnInit {
   private currentPath : string;
   private currentFolderId : string;
 
-  private user:User;
 
   ngOnInit() {
-     this.user = this.authService.user;
      this.initRoot();
-     console.log(this.user);
+     console.log(this.authService.user);
   }
 
 
   initRoot(){
 
-    this.request.getFiles("root","root",this.user.id).subscribe(
+    this.request.getFiles("root","root",this.authService.user.id).subscribe(
       data => {
         console.log(data);
         this.fileList = data;
@@ -46,7 +44,7 @@ export class FileManagerComponent implements OnInit {
     this.currentPath+="/"+f.name;
     this.currentFolderId=f.id;
 
-    this.request.getFiles(this.currentPath,this.currentFolderId,this.user.id).subscribe(
+    this.request.getFiles(this.currentPath,this.currentFolderId,this.authService.user.id).subscribe(
       data => {
         console.log(data);
         this.fileList = data;
