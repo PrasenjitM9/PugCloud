@@ -29,6 +29,7 @@ public class JSONParserDropbox implements JSONParser {
 		for (final JsonNode file : items) {
 			listFile.add(parserFile(file));
 		}
+
 		return listFile;
 	}
 
@@ -54,5 +55,23 @@ public class JSONParserDropbox implements JSONParser {
 		
 	
 	}
+
+	@Override
+	public List<File> parserFilesSearch(String output) throws JsonProcessingException, IOException, ParseException {
+		
+		ObjectMapper mapper = new ObjectMapper();
+		List<File> listFile = new ArrayList<File>();
+
+		JsonNode rootNode = mapper.readTree(output);
+		JsonNode items = (ArrayNode) rootNode.path("matches");
+
+		for (final JsonNode file : items) {
+			listFile.add(parserFile(file.path("metadata")));
+		}
+
+		return listFile;
+	}
+
+
 
 }

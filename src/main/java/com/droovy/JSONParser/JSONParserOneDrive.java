@@ -54,5 +54,19 @@ public class JSONParserOneDrive implements JSONParser {
 	
 	
 	}
+
+	@Override
+	public List<File> parserFilesSearch(String output) throws JsonProcessingException, IOException, ParseException {
+		ObjectMapper mapper = new ObjectMapper();
+		List<File> listFile = new ArrayList<File>();
+
+		JsonNode rootNode = mapper.readTree(output);
+		JsonNode items = (ArrayNode) rootNode.path("value");
+
+		for (final JsonNode file : items) {
+			listFile.add(parserFile(file));
+		}
+		return listFile;
+	}
 	
 }

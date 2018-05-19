@@ -21,6 +21,8 @@ public class JSONParserGoogledrive implements JSONParser {
 
 	@Override
 	public List<File> parserFiles(String result) throws JsonProcessingException, IOException {
+		System.out.println(result);
+
 		ObjectMapper mapper = new ObjectMapper();
 		List<File> listFile = new ArrayList<File>();
 
@@ -35,8 +37,8 @@ public class JSONParserGoogledrive implements JSONParser {
 
 	@Override
 	public File parserFile(JsonNode file) throws JsonProcessingException, IOException {
-		ObjectMapper mapper = new ObjectMapper();
 
+		
 		String name = file.path("title").asText();
 			
 		
@@ -60,4 +62,33 @@ public class JSONParserGoogledrive implements JSONParser {
 
 	}
 
+	@Override
+	public List<File> parserFilesSearch(String output) throws JsonProcessingException, IOException, ParseException {
+		ObjectMapper mapper = new ObjectMapper();
+		List<File> listFile = new ArrayList<File>();
+
+		JsonNode rootNode = mapper.readTree(output);
+		JsonNode items = (ArrayNode) rootNode.path("files");
+
+		for (final JsonNode file : items) {
+			listFile.add(parserFileSearch(file));
+		}
+		return listFile;
+	}
+
+	private File parserFileSearch(JsonNode file) {
+
+		String name = file.path("name").asText();
+			
+		
+		String id = file.path("id").asText();
+		String source = "GoogleDrive";
+
+		
+		if(file.path("mimeType").asText().equals("application/vnd.google-apps.folder")) {
+			return new File(name, FileType.FOLDER, id, "",source, null,null, 0, null);
+		}
+		return new File(name, FileType.FILE, id, "",source,null,null,0,"TO DO");
+	}
+	
 }

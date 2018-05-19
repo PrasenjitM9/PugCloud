@@ -16,7 +16,11 @@ public class File {
 	private FileType type; 
 	
 	private Map<String, PropertiesFile> sourceProperties = new HashMap<>();
-	
+	/*
+	private String path;
+	private sharedMembers
+	private String permission;
+	*/
 	public File(String name,  FileType type,  String id, String url,String source, Date creationDate, 
 			Date lastUpdateDate, long taille,String contentHash){
 		
@@ -26,6 +30,9 @@ public class File {
 		
 		sourceProperties.put(source, new PropertiesFile(id, url, contentHash, creationDate, lastUpdateDate));
 		
+	}
+
+	public File() {
 	}
 
 	public FileType getType() {
