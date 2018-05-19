@@ -29,7 +29,7 @@ export class FileManagerComponent implements OnInit {
 
   initRoot(){
 
-    this.request.getFiles("root", "root", this.userID, 1, 0, 1).subscribe(
+    this.request.getFiles("root", "root", this.userID, 1, 0, 1,false).subscribe(
       data => {
 
         this.fileList = data;

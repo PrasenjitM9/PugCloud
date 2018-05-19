@@ -1,4 +1,4 @@
-<div class="row" *ngIf="fileDroovy.type=='FOLDER'; else fileImg">
+<div class="row " *ngIf="fileDroovy.type=='FOLDER'; else fileImg">
 
   <div class="col s1">
     <img src="./../../assets/images/folder.svg" alt="" class="circle">
@@ -75,10 +75,10 @@
   </div>
   <div class="row">
     <div class="col s4">
-      <a class="waves-effect waves-light btn" href="{{url_download}}">Télécharger</a>
+      <a class="waves-effect waves-light btn" (click)="download()">Télécharger</a>
     </div>
     <div class="col s4">
-      <a class="waves-effect waves-light btn" (click)="move()">Déplacer </a>
+      <app-search-folder [drive]="choosenDrive" (choice)="move($event)"></app-search-folder>
     </div>
     <div class="col s4">
       <a class="waves-effect waves-light btn" (click)="delete()">Supprimer</a>
@@ -86,6 +86,4 @@
   </div>
 
 </div>
-
-
 

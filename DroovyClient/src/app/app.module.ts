@@ -23,6 +23,7 @@ import {UtilitaireService} from "./utilitaire.service";
 import { UploadComponent } from './upload/upload.component';
 import { CallbackdriveconnectionComponent } from './callbackdriveconnection/callbackdriveconnection.component';
 import {FileDisplayComponent} from './file-display/file-display.component';
+import { SearchFolderComponent } from './search-folder/search-folder.component';
 
 const appRoutes: Routes = [
   { path: 'manager', canActivate:[AuthGuard], component: FileManagerComponent },
@@ -48,11 +49,11 @@ const appRoutes: Routes = [
     FileDisplayComponent,
     UploadComponent,
     CallbackdriveconnectionComponent,
+    SearchFolderComponent,
   ],
   imports: [
     RouterModule.forRoot(
       appRoutes,
-      { enableTracing: true } // <-- debugging purposes only
     ),
     HttpClientModule,
     BrowserModule,

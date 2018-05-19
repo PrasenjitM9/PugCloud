@@ -28,7 +28,7 @@
 
 
   <li *ngFor="let file of fileList">
-    <app-file-display [fileDroovy]="file"></app-file-display>
+    <app-file-display [fileDroovy]="file" (action)="initRoot($event)"></app-file-display><!-- Faire une focntion de refresh selon le path courant pour l'action-->
     </li>
 
 
