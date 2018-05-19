@@ -30,8 +30,8 @@ import errors.UserApplicationError;
 public class UserRequestOneDrive implements UserRequest {
 
 	@Override
-	public List<File> getFilesList(String path,String id) {
-
+	public List<File> getFilesList(String path,String id,boolean folderOnly) {
+		
 		if(!path.equals("root")) {
 			path=":"+path+":";
 		}
@@ -39,6 +39,10 @@ public class UserRequestOneDrive implements UserRequest {
 			path="";
 		}
 		String url = "https://graph.microsoft.com/v1.0/me/drive/root"+path+"/children";
+
+		if(folderOnly) {
+			url+="?filter=folder%20ne%20null";
+		}
 		JSONParser parser = new JSONParserOneDrive();
 
 		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
@@ -49,6 +53,7 @@ public class UserRequestOneDrive implements UserRequest {
 
 		if (response.getStatus() != 200) {
 			if(response.getStatus()==401 || response.getStatus() == 400) {
+				System.out.println(response.readEntity(String.class));
 				throw new UserApplicationError("Set/Update your onedrive token,or your token is invalid",401);
 			}
 			else {

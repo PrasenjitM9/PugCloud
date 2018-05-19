@@ -44,8 +44,10 @@ public class UserApiRequest {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/list")
-	public Response getFilesList(@Context UriInfo uriInfo,@QueryParam("path") String path,@QueryParam("idUser") String idUser,@QueryParam("idFolder") String idFolder,@QueryParam("getDropbox") int getDropbox,@QueryParam("getGoogleDrive") int getGoogledrive,@QueryParam("getOnedrive") int getOnedrive) throws JsonProcessingException {
-				
+	public Response getFilesList(@Context UriInfo uriInfo,@QueryParam("path") String path,@QueryParam("idUser") String idUser,@QueryParam("idFolder") String idFolder,@QueryParam("getDropbox") int getDropbox,@QueryParam("getGoogleDrive") int getGoogledrive,@QueryParam("getOnedrive") int getOnedrive,@QueryParam("folderOnly") String onlyFolders) throws JsonProcessingException {
+		
+		boolean folderOnly = onlyFolders.equals("true");
+		
 		if(idUser == null || path==null || idFolder == null) {
 			throw new UserApplicationError("At least one argument is missing", 400);
 		}
@@ -53,13 +55,13 @@ public class UserApiRequest {
 		List<File> listDropbox = new LinkedList<>(), listGoogleDrive = new LinkedList<>(),listOneDrive = new LinkedList<>();
 		
 		if(getDropbox==1) {			
-			listDropbox = request_dropbox.getFilesList(path,idUser);
+			listDropbox = request_dropbox.getFilesList(path,idUser,folderOnly);
 		}
 		if(getGoogledrive==1) {
-			listGoogleDrive = request_googledrive.getFilesList(idFolder,idUser);
+			listGoogleDrive = request_googledrive.getFilesList(idFolder,idUser,folderOnly);
 		}
 		if(getOnedrive==1) {
-			listOneDrive = request_onedrive.getFilesList(path, idUser);
+			listOneDrive = request_onedrive.getFilesList(path, idUser,folderOnly);
 		}
 		
 		Merger merge = new Merger();
@@ -68,19 +70,36 @@ public class UserApiRequest {
 		ObjectMapper mapper = new ObjectMapper();
 		
 		String output = "[";
-
-		for (File file : mergedList) {
-			
-			output = output + mapper.writeValueAsString(file)+",";
-		}
-
-		if(mergedList.isEmpty()) {
-			output += "]";
+		boolean atleastOneFolder = false;
+		if(folderOnly){
+			for (File file : mergedList) {
+				if(file.getType()==FileType.FOLDER) {
+					atleastOneFolder=true;
+					output = output + mapper.writeValueAsString(file)+",";
+				}
+			}
+			if(!atleastOneFolder) {
+				output += "]";
+			}
+			else {
+				output = output.substring(0,output.length()-1);//Retire la virgule en trop
+				output += "]";
+			}
 		}
 		else {
-			output = output.substring(0,output.length()-1);//Retire la virgule en trop
-			output += "]";
+			for (File file : mergedList) {
+					output = output + mapper.writeValueAsString(file)+",";
+			}
+			if(mergedList.isEmpty()) {
+				output += "]";
+			}
+			else {
+				output = output.substring(0,output.length()-1);//Retire la virgule en trop
+				output += "]";
+			}
 		}
+		
+		
 		
 		return Response.status(Status.OK).entity(output).build();
 	}
@@ -127,7 +146,7 @@ public class UserApiRequest {
 		
 		
 		ObjectMapper mapper = new ObjectMapper();
-		String output = "{" + mapper.writeValueAsString(uploadedFile)+"}";
+		String output = mapper.writeValueAsString(uploadedFile);
 		
 		return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity(output).build();
 	}
@@ -155,7 +174,7 @@ public class UserApiRequest {
 			throw new UserApplicationError("Tell in which drive upload, example : drive=dropbox", 400);
 		}
 		
-		return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity("{}").build();
+		return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity("{\"success\" : \"ok\"}").build();
 	}
 	
 	@GET
@@ -183,7 +202,7 @@ public class UserApiRequest {
 			throw new UserApplicationError("Tell in which drive upload, example : drive=dropbox", 400);
 		}
 		ObjectMapper mapper = new ObjectMapper();
-		String output = "{" + mapper.writeValueAsString(renamedFile)+"}";
+		String output = mapper.writeValueAsString(renamedFile);
 			
 		return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity(output).build();
 	}
@@ -213,7 +232,7 @@ public class UserApiRequest {
 			throw new UserApplicationError("Tell in which drive upload, example : drive=dropbox", 400);
 		}
 		ObjectMapper mapper = new ObjectMapper();
-		String output = "{" + mapper.writeValueAsString(movedFile)+"}";
+		String output = mapper.writeValueAsString(movedFile);
 			
 		return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity(output).build();
 	}

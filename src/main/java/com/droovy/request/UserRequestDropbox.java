@@ -27,7 +27,7 @@ import errors.UserApplicationError;
 
 public class UserRequestDropbox implements UserRequest{
 	@Override
-	public List<File> getFilesList(String path,String id)  {
+	public List<File> getFilesList(String path,String id,boolean folderOnly)  {
 
 		String url = "https://api.dropboxapi.com/2/files/list_folder";
 		JSONParser parser = new JSONParserDropbox();
@@ -315,6 +315,9 @@ public class UserRequestDropbox implements UserRequest{
 		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserDropBoxToken(idUser)).header("Content-Type", "application/json").accept(MediaType.APPLICATION_JSON).post(Entity.json(jsonData));
 
 		if (response.getStatus() != 200) {
+			
+			System.out.println(response.readEntity(String.class));
+			
 			if(response.getStatus()==401 || response.getStatus() == 400) {
 				throw new UserApplicationError("Set/Update your dropbox token,or your token is invalid",401);
 			}

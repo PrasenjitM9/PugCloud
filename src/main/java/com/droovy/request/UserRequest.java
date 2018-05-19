@@ -8,7 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 public interface UserRequest {
 	
 	
-	public List<File> getFilesList(String path,String id);
+	public List<File> getFilesList(String path,String id,boolean folderOnly);
 		
 	public boolean removeFile(String idFile,String path,String idUser);
 	

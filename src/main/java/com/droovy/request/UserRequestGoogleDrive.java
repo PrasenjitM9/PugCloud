@@ -29,12 +29,16 @@ public class UserRequestGoogleDrive implements UserRequest{
 	JSONParser parser = new JSONParserGoogledrive();
 
 	@Override
-	public List<File> getFilesList(String path,String id) {
+	public List<File> getFilesList(String path,String id,boolean folderOnly) {
 
 		path = "q=%27"+path+"%27%20in%20parents";
 
 		String url = "https://www.googleapis.com/drive/v2/files?"+path;
 
+		if(folderOnly) {
+			url+="%20and+%20mimeType+%20+%3d+%20%27application%2Fvnd.google-apps.folder%27";
+		}
+		
 		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
 		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
 
@@ -42,6 +46,7 @@ public class UserRequestGoogleDrive implements UserRequest{
 		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserGoogleDriveToken(id)).accept(MediaType.APPLICATION_JSON).get();
 
 		if (response.getStatus() != 200) {
+			System.out.println(response.readEntity(String.class)+ " ");
 			if(response.getStatus()==401 ) {
 				throw new UserApplicationError("Set/Update your googledrive token", 401);
 			}
@@ -237,6 +242,9 @@ public class UserRequestGoogleDrive implements UserRequest{
 		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserGoogleDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).put(Entity.json(json));
 
 		if (response.getStatus() != 200) {
+			
+			System.out.println(response.readEntity(String.class));
+			
 			if(response.getStatus()==401 || response.getStatus() == 400) {
 				throw new UserApplicationError("Set/Update your google drive token,or your token is invalid",401);
 			}
@@ -371,6 +379,8 @@ public class UserRequestGoogleDrive implements UserRequest{
 	@Override
 	public java.io.File downloadFile(String idUser, String idFile) {
 		
+		System.out.println("d");
+
 		String url = "https://www.googleapis.com/drive/v3/files/"+idFile+"?alt=media";
 
 		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
@@ -380,8 +390,7 @@ public class UserRequestGoogleDrive implements UserRequest{
 		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserGoogleDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).get();
 
 		if (response.getStatus() != 200) {
-			String output =  response.readEntity(String.class);
-			System.out.println(output);
+			System.out.println(response.readEntity(String.class));
 			if(response.getStatus()==401 || response.getStatus() == 400) {
 				throw new UserApplicationError("Set/Update your google drive token,or your token is invalid",401);
 			}
