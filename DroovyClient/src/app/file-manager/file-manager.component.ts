@@ -18,24 +18,51 @@ export class FileManagerComponent implements OnInit {
   private currentPath : string;
   private currentFolderId : string;
 
+  tab_previous_folder: PreviousInfo[] = [];
+  private previousPath = "root";
+  private previousFolderId = "root";
+
   ngOnInit() {
-     this.initUserId();
-     this.initRoot();
+    this.initUserId();
+
+    //A MODIFIER
+    //TO DO
+    this.updateFileList("root", "root", 1, 0, 1);
+    this.tab_previous_folder.push(new PreviousInfo("root", "root", 1, 0, 1))
   }
 
   initUserId(){
     this.userID = this.utilitaire.readCookie("id");
   }
 
-  initRoot(){
+  public navigate(path: string, idFolder: string, getGoogleDrive: number, getOneDrive: number, getDropbox: number) {
+    this.tab_previous_folder.push(new PreviousInfo(path, idFolder, getGoogleDrive, getOneDrive, getDropbox));
+    this.updateFileList(path, idFolder, getGoogleDrive, getOneDrive, getDropbox)
+  }
 
-    this.request.getFiles("root", "root", this.userID, 1, 0, 1).subscribe(
+  public navigatePrevious() {
+    if (this.tab_previous_folder.length == 1) {
+      return
+    }
+    this.tab_previous_folder.pop();
+    var previous_info = this.tab_previous_folder[this.tab_previous_folder.length - 1];
+
+    if (previous_info) {
+      this.updateFileList(previous_info.path, previous_info.folder_id, previous_info.getGoogledrive, previous_info.getOnedrive, previous_info.getDropbox)
+    }
+  }
+
+  public updateFileList(path: string, idFolder: string, getGoogleDrive: number, getOneDrive: number, getDropbox: number) {
+
+    this.request.getFiles(path, idFolder, this.userID, getGoogleDrive, getOneDrive, getDropbox).subscribe(
       data => {
 
         this.fileList = data;
 
-        this.currentFolderId="root";
-        this.currentPath="";
+        this.previousPath = this.currentPath;
+        this.previousFolderId = this.currentFolderId;
+        this.currentFolderId = idFolder;
+        this.currentPath = path;
 
       });
 
@@ -63,6 +90,14 @@ export class FileManagerComponent implements OnInit {
 
   onSignOut(){
     this.authService.signOut();
+  }
+
+}
+
+class PreviousInfo {
+
+  constructor(public path: string, public folder_id: string, public getGoogledrive: number, public getOnedrive: number,
+              public getDropbox: number) {
   }
 
 }

@@ -30,7 +30,7 @@ export class UtilitaireService {
   }
 
   eraseCookie(name) {
-    this.createCookie(name,"",-1);
+    this.createCookie(name, "", -1);
   }
 
 }

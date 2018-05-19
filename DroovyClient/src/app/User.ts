@@ -1,12 +1,12 @@
-export class User{
+export class User {
+
+  isAuth: boolean;
+  id: string;
+  connectedToGoogleDrive: boolean;
+  connectedToOneDrive: boolean;
+  connectedToDropbox: boolean;
 
   constructor() {
   }
-
-  isAuth : boolean;
-  id : string;
-  connectedToGoogleDrive : boolean;
-  connectedToOneDrive : boolean;
-  connectedToDropbox : boolean;
 
 }

@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FileDroovy, PropertiesFileDroovy} from "../request.service";
+import {FileManagerComponent} from "../file-manager/file-manager.component";
 
 @Component({
   selector: 'app-file-display',
@@ -9,6 +10,7 @@ import {FileDroovy, PropertiesFileDroovy} from "../request.service";
 export class FileDisplayComponent implements OnInit {
 
   @Input() fileDroovy: FileDroovy;
+  @Input() file_manager: FileManagerComponent;
 
   display_properties = false;
 
@@ -74,5 +76,27 @@ export class FileDisplayComponent implements OnInit {
 
   }
 
+  openFolder() {
+    var path: string;
 
+    var getGoogleDrive = 0;
+    var getOneDrive = 0;
+    var getDropbox = 0;
+
+    if (this.fileDroovy.sourceProperties["Dropbox"]) {
+      path = this.fileDroovy.sourceProperties["Dropbox"].path;
+      getDropbox = 1
+    }
+    if (this.fileDroovy.sourceProperties["Onecloud"]) {
+      path = this.fileDroovy.sourceProperties["Onecloud"].path;
+      getOneDrive = 1
+    }
+
+    if (this.fileDroovy.sourceProperties["GoogleDrive"]) {
+      getGoogleDrive = 1
+    }
+
+    this.file_manager.navigate(path, this.fileDroovy.sourceProperties["GoogleDrive"].id, getGoogleDrive, getOneDrive, getDropbox)
+  }
 }
+

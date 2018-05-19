@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FileDroovy} from "../request.service";
 
 @Component({
@@ -8,11 +8,12 @@ import {FileDroovy} from "../request.service";
 })
 export class UploadComponent implements OnInit {
 
-  private currentFolder : FileDroovy;
+  private currentFolder: FileDroovy;
 
   private currentPath = "";
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit() {
   }
