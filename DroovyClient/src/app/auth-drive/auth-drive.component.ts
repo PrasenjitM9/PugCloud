@@ -36,7 +36,7 @@ export class AuthDriveComponent implements OnInit {
       +scope6
       +scope7
       +scope8
-      +"&redirect_uri=http://localhost:8080/droovy/googledriveauth/callback&client_id=783584831345-rpngg6uic1i0iorvp2l5agc9ajmdm64v.apps.googleusercontent.com&&access_type=offline&prompt=consent&state="+this.userID;
+      + "&redirect_uri=http://localhost:8080/droovy/googledriveauth/callback&client_id=783584831345-rpngg6uic1i0iorvp2l5agc9ajmdm64v.apps.googleusercontent.com&&access_type=offline&prompt=consent&state=" + this.userID;
 
   }
 

@@ -1,8 +1,7 @@
-import {Component, EventEmitter, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {AuthService} from '../auth.service';
 import {Router} from "@angular/router";
 import {UtilitaireService} from "../utilitaire.service";
-import {User} from "../User";
 
 @Component({
   selector: 'app-auth',
@@ -26,7 +25,7 @@ export class AuthComponent implements OnInit {
 
         if(data.success == "true") {
 
-	        this.utilitaire.createCookie("id", data['id'], 1);
+          this.utilitaire.createCookie("id", data['id'], 1);
           this.utilitaire.createCookie("isAuth", true, 1);
           this.auth.setUser();
           this.router.navigateByUrl("/manager");
@@ -58,7 +57,6 @@ export class AuthComponent implements OnInit {
       }
     );
   }
-
 
 
   @Input() name: string;
