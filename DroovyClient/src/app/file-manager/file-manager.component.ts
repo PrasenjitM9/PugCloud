@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FileDroovy, RequestService} from "../request.service";
 import {AuthService} from '../auth.service';
 import {UtilitaireService} from "../utilitaire.service";
+import {User} from "../User";
 
 @Component({
   selector: 'app-file-manager',
@@ -10,29 +11,27 @@ import {UtilitaireService} from "../utilitaire.service";
 })
 export class FileManagerComponent implements OnInit {
 
-  authStatus : boolean;
 
   constructor(private request: RequestService, private authService: AuthService, private utilitaire: UtilitaireService) {
+
   }
 
   protected fileList : FileDroovy[];
-  private userID : string;
   private currentPath : string;
   private currentFolderId : string;
 
+  private user:User;
+
   ngOnInit() {
-     this.initUserId();
+     this.user = this.authService.user;
      this.initRoot();
-     this.authStatus=this.authService.isAuth;
+     console.log(this.user);
   }
 
-  initUserId(){
-    this.userID = this.utilitaire.readCookie("id");
-  }
 
   initRoot(){
 
-    this.request.getFiles("root","root",this.userID).subscribe(
+    this.request.getFiles("root","root",this.user.id).subscribe(
       data => {
         console.log(data);
         this.fileList = data;
@@ -47,7 +46,7 @@ export class FileManagerComponent implements OnInit {
     this.currentPath+="/"+f.name;
     this.currentFolderId=f.id;
 
-    this.request.getFiles(this.currentPath,this.currentFolderId,this.userID).subscribe(
+    this.request.getFiles(this.currentPath,this.currentFolderId,this.user.id).subscribe(
       data => {
         console.log(data);
         this.fileList = data;
@@ -59,7 +58,6 @@ export class FileManagerComponent implements OnInit {
 
   onSignOut(){
     this.authService.signOut();
-    this.authStatus = this.authService.isAuth;
   }
 
 }

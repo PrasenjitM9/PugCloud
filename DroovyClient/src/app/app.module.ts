@@ -20,6 +20,7 @@ import {RequestService} from './request.service';
 import {FileSizePipe} from './file-size.pipe';
 import {AuthGuard} from './auth-guard.service';
 import {UtilitaireService} from "./utilitaire.service";
+import { UploadComponent } from './upload/upload.component';
 
 const appRoutes: Routes = [
   { path: 'manager', canActivate:[AuthGuard], component: FileManagerComponent },
@@ -38,6 +39,7 @@ const appRoutes: Routes = [
     AuthDriveComponent,
     PageNotFoundComponent,
     FileSizePipe,
+    UploadComponent,
   ],
   imports: [
     RouterModule.forRoot(
