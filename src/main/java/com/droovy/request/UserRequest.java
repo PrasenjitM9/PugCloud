@@ -24,4 +24,5 @@ public interface UserRequest {
 	
 	public List<File> searchFile(String idUser,String query);
 	
+	public java.io.File downloadFile(String idUser,String idFile);
 }

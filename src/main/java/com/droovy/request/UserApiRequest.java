@@ -4,6 +4,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -13,9 +16,11 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
 import org.glassfish.jersey.media.multipart.FormDataParam;
@@ -301,5 +306,47 @@ public class UserApiRequest {
 		
 		return Response.status(Status.OK).entity(output).build();
 	}
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/download")
+	public Response searchFile(@QueryParam("fileName") String fileName,@QueryParam("idUser") String idUser,@QueryParam("idFile") String idFile, @QueryParam("drive") String drive) {
 	
+		final java.io.File fileToSend;
+		if(drive.equals("dropbox")) {
+			fileToSend = request_dropbox.downloadFile(idUser, idFile);
+		}
+		else if(drive.equals("onedrive")) {
+			fileToSend = request_onedrive.downloadFile(idUser, idFile);
+		}
+		else if(drive.equals("googledrive")) {
+			fileToSend = request_googledrive.downloadFile(idUser, idFile);
+		}
+		else {
+			throw new UserApplicationError("Tell in which drive upload, example : drive=dropbox", 400);
+		}
+		
+		 StreamingOutput fileStream =  new StreamingOutput()
+	        {
+	            @Override
+	            public void write(java.io.OutputStream output) throws IOException, WebApplicationException
+	            {
+	                try
+	                {
+	                    java.nio.file.Path path = Paths.get(fileToSend.getAbsolutePath());
+	                    byte[] data = Files.readAllBytes(path);
+	                    output.write(data);
+	                    output.flush();
+	                }
+	                catch (Exception e)
+	                {
+	                    throw new WebApplicationException("File Not Found");
+	                }
+	            }
+	        };
+	        return Response
+	                .ok(fileStream, MediaType.APPLICATION_OCTET_STREAM)
+	                .header("content-disposition","attachment; filename = "+fileName)
+	                .build();
+
+	}
 }

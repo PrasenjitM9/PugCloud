@@ -366,4 +366,34 @@ public class UserRequestGoogleDrive implements UserRequest{
 
 	}
 
+
+
+	@Override
+	public java.io.File downloadFile(String idUser, String idFile) {
+		
+		String url = "https://www.googleapis.com/drive/v3/files/"+idFile+"?alt=media";
+
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+
+		DatabaseOp db = new DatabaseOp();
+		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserGoogleDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).get();
+
+		if (response.getStatus() != 200) {
+			String output =  response.readEntity(String.class);
+			System.out.println(output);
+			if(response.getStatus()==401 || response.getStatus() == 400) {
+				throw new UserApplicationError("Set/Update your google drive token,or your token is invalid",401);
+			}
+			else {
+				throw new InternalServerError();
+			}
+		}		
+		java.io.File output =  response.readEntity(java.io.File.class);
+		return output;
+
+		
+		
+	}
+
 }

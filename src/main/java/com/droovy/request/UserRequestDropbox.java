@@ -1,6 +1,7 @@
 package com.droovy.request;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -486,6 +487,40 @@ public class UserRequestDropbox implements UserRequest{
 			throw new InternalServerError();
 		}
 		return list;
+	}
+
+
+	
+	@Override
+	public java.io.File downloadFile(String idUser, String idFile) {
+
+		String url = "https://content.dropboxapi.com/2/files/download";
+		JSONParser parser = new JSONParserDropbox();
+
+
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+
+		String jsonData = "{" + 
+				"    \"path\": \""+idFile+"\"" + 
+				"}";
+		DatabaseOp db = new DatabaseOp();
+
+		Response response = jerseyTarget.request().header("Dropbox-API-Arg", jsonData).header("Authorization", "Bearer "+db.getUserDropBoxToken(idUser)).accept(MediaType.APPLICATION_OCTET_STREAM).post(null);
+
+		if (response.getStatus() != 200) {
+			if(response.getStatus()==401 || response.getStatus() == 400) {
+				String output = response.readEntity(String.class);
+				System.out.println(output);
+				throw new UserApplicationError("Set/Update your dropbox token,or your token is invalid",401);
+			}
+			else {
+				throw new InternalServerError();
+			}
+		}		
+
+		java.io.File output =  response.readEntity(java.io.File.class);
+		return output;
 	}
 
 

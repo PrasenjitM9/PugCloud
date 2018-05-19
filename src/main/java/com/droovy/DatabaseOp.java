@@ -43,8 +43,7 @@ public class DatabaseOp {
 
 
 	private static Connection connectDb() throws SQLException, ClassNotFoundException{
-
-
+		
 		if(c == null){
 			Class.forName("org.sqlite.JDBC");
 

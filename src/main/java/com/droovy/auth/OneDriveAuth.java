@@ -26,6 +26,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.representation.Form;
 
+import errors.UserApplicationError;
+
 @Path("onedriveauth")
 public class OneDriveAuth implements Auth{
 	
@@ -106,8 +108,7 @@ public class OneDriveAuth implements Auth{
 
 		if (response.getStatus() != 200) {
 			
-			throw new RuntimeException("Failed : HTTP error code : "
-					+ response.getStatus()+ " "+ response.toString());
+			throw new UserApplicationError(401);
 
 		}
 		else {

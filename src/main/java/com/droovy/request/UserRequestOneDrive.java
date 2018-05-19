@@ -333,7 +333,7 @@ public class UserRequestOneDrive implements UserRequest {
 
 		DatabaseOp db = new DatabaseOp();
 
-		Response response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization", "Bearer "+db.getUserOneDriveToken("2"))
+		Response response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization", "Bearer "+db.getUserOneDriveToken(idUser))
 				.get();
 
 
@@ -353,6 +353,33 @@ public class UserRequestOneDrive implements UserRequest {
 		} catch (Exception e) {
 			throw new InternalServerError();
 		}
+
+	}
+
+	@Override
+	public java.io.File downloadFile(String idUser, String idFile) {
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		JerseyWebTarget jerseyTarget = jerseyClient.target("https://graph.microsoft.com/v1.0/me/drive/items/"+idFile+"/content");
+
+		DatabaseOp db = new DatabaseOp();
+
+		Response response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Authorization", "Bearer "+db.getUserOneDriveToken(idUser))
+				.get();
+
+
+		if (response.getStatus() != 200) {
+			String output =  response.readEntity(String.class);
+			System.out.println(output);
+			if(response.getStatus()==401 || response.getStatus() == 400) {
+				throw new UserApplicationError("Set/Update your onedrive token,or your token is invalid",401);
+			}
+			else {
+				throw new InternalServerError();
+			}	
+		}		
+
+		java.io.File output =  response.readEntity(java.io.File.class);
+		return output;
 
 	}
 
