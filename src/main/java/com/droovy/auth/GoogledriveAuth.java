@@ -75,13 +75,10 @@ public class GoogledriveAuth implements Auth{
 
 		Response response = jerseyTarget.request().accept(MediaType.APPLICATION_JSON).post(Entity.form(formData));
 
-		if (response.getStatus() != 200) {/*
-			throw new RuntimeException("Failed : HTTP error code : "
-					+ response.getStatus()+ " "+ response.toString());*/
-			return Response.temporaryRedirect(new URI("http://localhost:4200?success=false")).build();
+		if (response.getStatus() != 200) {
+			return Response.temporaryRedirect(new URI("http://localhost:4200/connectedToDrive/googledrive/false")).build();
 		}
 		String output =  response.readEntity(String.class);
-		
 		
 		JsonNode rootNode = objectMapper.readTree(output);
 		JsonNode token = rootNode.path("access_token");
@@ -91,11 +88,10 @@ public class GoogledriveAuth implements Auth{
 		DatabaseOp db = new DatabaseOp();
 		
 		if(db.updateUserGoogleDriveToken(token.asText(),tokenRefresh.asText(),state)) {
-			return Response.temporaryRedirect(new URI("http://localhost:4200/manager?success=true")).build();
+			return Response.temporaryRedirect(new URI("http://localhost:4200/connectedToDrive/googledrive/true")).build();
 		}
 		else {
-			/*Peut être retourner un erreur 400 à la place*/
-			return Response.temporaryRedirect(new URI("http://localhost:4200/manager?success=false")).build();
+			return Response.temporaryRedirect(new URI("http://localhost:4200/connectedToDrive/googledrive/false")).build();
 		}
 		
     }

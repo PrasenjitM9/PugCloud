@@ -59,10 +59,8 @@ public class OneDriveAuth implements Auth{
 		Response response = jerseyTarget.request().accept(MediaType.APPLICATION_JSON).post(Entity.form(formData));
 
 		if (response.getStatus() != 200) {
-			/*
-			throw new RuntimeException("Failed : HTTP error code : "
-					+ response.getStatus()+ " "+ response.toString());*/
-			return Response.temporaryRedirect(new URI("http://localhost:4200?success=false")).build();
+			
+			return Response.temporaryRedirect(new URI("http://localhost:4200/connectedToDrive/onedrive/false")).build();
 
 		}
 		else {
@@ -72,17 +70,15 @@ public class OneDriveAuth implements Auth{
 			JsonNode rootNode = objectMapper.readTree(output);
 			JsonNode tokenNode = rootNode.path("access_token");
 			JsonNode tokenRefreshNode = rootNode.path("refresh_token");
-
-			
 			
 			DatabaseOp db = new DatabaseOp();
 			
 			if(db.updateUserOneDriveToken(tokenNode.asText(),tokenRefreshNode.asText(),state)) {
 				
-				return Response.temporaryRedirect(new URI("http://localhost:4200/manager?success=true")).build();
+				return Response.temporaryRedirect(new URI("http://localhost:4200/connectedToDrive/onedrive/true")).build();
 			}
 			else {
-				return Response.temporaryRedirect(new URI("http://localhost:4200/manager?success=false")).build();
+				return Response.temporaryRedirect(new URI("http://localhost:4200/connectedToDrive/onedrive/false")).build();
 			}
 			
 			
