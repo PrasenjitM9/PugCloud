@@ -12,11 +12,6 @@ export class AuthService {
 
   constructor(private http: HttpClient, private utilitaire: UtilitaireService) {
     this.user = new User();
-    this.user.isAuth = false;
-    this.user.connectedToDropbox = false;
-    this.user.connectedToGoogleDrive = false;
-    this.user.connectedToOneDrive = false;
-
     this.setUser();
   }
 

@@ -32,7 +32,7 @@ export class CallbackdriveconnectionComponent implements OnInit {
       }
 
     }
-    else if(this.drive == "onedrive"){
+    else if(this.drive == "googledrive"){
 
       if(this.success=="false"){
         this.util.eraseCookie("connectedToGoogleDrive");
@@ -44,15 +44,15 @@ export class CallbackdriveconnectionComponent implements OnInit {
       }
 
     }
-    else if(this.drive == "googledrive"){
+    else if(this.drive == "onedrive"){
 
 
       if(this.success=="false"){
-        this.util.eraseCookie("connectedToOnedrive");
+        this.util.eraseCookie("connectedToOneDrive");
         auth.user.connectedToOneDrive = false;
       }
       else{
-        this.util.createCookie("connectedToOnedrive",true,1);
+        this.util.createCookie("connectedToOneDrive",true,1);
         auth.user.connectedToOneDrive = true;
       }
 

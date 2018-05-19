@@ -26,13 +26,10 @@ export class AuthComponent implements OnInit {
 
         if(data.success == "true") {
 
-          this.auth.user.isAuth = true;
-          this.auth.user.id = data.id;
-          this.utilitaire.createCookie("id", data['id'], 1);
+	        this.utilitaire.createCookie("id", data['id'], 1);
           this.utilitaire.createCookie("isAuth", true, 1);
+          this.auth.setUser();
           this.router.navigateByUrl("/manager");
-
-
 
         }
         else{
@@ -49,12 +46,11 @@ export class AuthComponent implements OnInit {
       data => {
         if(data.success == "true") {
 
-          this.auth.user.isAuth = true;
-          this.auth.user.id = data.id;
           this.utilitaire.createCookie("id", data['id'], 1);
           this.utilitaire.createCookie("isAuth", true, 1);
+          this.auth.setUser();
           this.router.navigateByUrl("/manager");
-          
+
         }
         else{
           this.auth.user.isAuth = false;
