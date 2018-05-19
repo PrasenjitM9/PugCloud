@@ -2,38 +2,67 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs/Rx';
 import {UtilitaireService} from "./utilitaire.service";
+import {User} from "./User";
 
 @Injectable()
 export class AuthService {
-  isAuth = false;
 
   private apiUrl = "http://localhost:8080/droovy/";
-
+  public user : User;
 
   constructor(private http: HttpClient, private utilitaire: UtilitaireService) {
+    this.user = new User();
+    this.setUser();
+  }
 
-    if (utilitaire.readCookie("isAuth") == "true") {
-      this.isAuth = true;
+  setUser(){
+
+    if (this.utilitaire.readCookie("isAuth") == "true") {
+      this.user.isAuth = true;
+      this.user.id = this.utilitaire.readCookie("id");
+      this.user.connectedToDropbox = (this.utilitaire.readCookie("connectedToDropbox")== 'true');
+      this.user.connectedToGoogleDrive = (this.utilitaire.readCookie("connectedToGoogleDrive")== 'true');
+      this.user.connectedToOneDrive = (this.utilitaire.readCookie("connectedToOneDrive")== 'true');
     }
+
   }
 
   createAccount(password :string,name : string) :Observable<AuthResult> {
+
+    if(name != this.utilitaire.readCookie("name") ){
+      this.eraseUser();
+    }
+
+    this.utilitaire.createCookie("name", name, 1);
     var url = this.apiUrl+"user/create?password="+password+"&name="+name;
-    this.isAuth=true;
     return this.http.get<AuthResult>(url, {responseType: 'json'});
   }
 
   connect(password :string,name : string) :Observable<AuthResult> {
+
+    if(name != this.utilitaire.readCookie("name") ){
+      this.eraseUser();
+    }
+
+
+    this.utilitaire.createCookie("name", name, 1);
     var url = this.apiUrl+"user/auth?password="+password+"&name="+name;
-    this.isAuth=true;
     return this.http.get<AuthResult>(url, {responseType: 'json'});
   }
 
   signOut(){
-    this.utilitaire.createCookie("isAuth", false, 1)
-    this.isAuth=false;
+    this.eraseUser();
   }
 
+  eraseUser(){
+    this.utilitaire.createCookie("isAuth", false, 1)
+    this.utilitaire.eraseCookie("connectedToDropbox");
+    this.utilitaire.eraseCookie("connectedToOneDrive");
+    this.utilitaire.eraseCookie("connectedToGoogleDrive");
+    this.utilitaire.eraseCookie("isAuth");
+    this.utilitaire.eraseCookie("id");
+    this.user = new User();
+  }
 
 }
 export interface AuthResult{
@@ -41,3 +70,4 @@ export interface AuthResult{
   success : string;
   reason : string;
 }
+

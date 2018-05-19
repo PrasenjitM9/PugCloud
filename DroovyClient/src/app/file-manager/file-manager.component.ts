@@ -10,8 +10,6 @@ import {UtilitaireService} from "../utilitaire.service";
 })
 export class FileManagerComponent implements OnInit {
 
-  authStatus : boolean;
-
   constructor(private request: RequestService, private authService: AuthService, private utilitaire: UtilitaireService) {
   }
 
@@ -23,7 +21,6 @@ export class FileManagerComponent implements OnInit {
   ngOnInit() {
      this.initUserId();
      this.initRoot();
-     this.authStatus=this.authService.isAuth;
   }
 
   initUserId(){
@@ -66,7 +63,6 @@ export class FileManagerComponent implements OnInit {
 
   onSignOut(){
     this.authService.signOut();
-    this.authStatus = this.authService.isAuth;
   }
 
 }

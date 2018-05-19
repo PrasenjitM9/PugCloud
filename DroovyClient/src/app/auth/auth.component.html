@@ -15,9 +15,9 @@
     <div id="connexion">
       <form (ngSubmit)="connect()">
       Nom :
-      <input [(ngModel)]="name" type="text" name="username" required="required" pattern="[A-Za-z]{3}" ><br>
+      <input [(ngModel)]="name" type="text" name="username" required="required" ><br>
       Mot de passe :
-      <input [(ngModel)]="password" type="password" name="password" required="required" pattern="[A-Za-z]{3}" ><br>
+      <input [(ngModel)]="password" type="password" name="password" required="required"><br>
 
         <input  class="btn waves-effect waves-light" type="submit" value="Connexion">
 
@@ -26,9 +26,9 @@
     <div id="create">
       <form (ngSubmit)="createAccount()">
         Nom :
-        <input [(ngModel)]="name" type="text" name="username" required="required" pattern="[A-Za-z]{3}" ><br>
+        <input [(ngModel)]="name" type="text" name="username" required="required"  ><br>
         Mot de passe :
-        <input [(ngModel)]="password" type="password" name="password" required="required" pattern="[A-Za-z]{3}" ><br>
+        <input [(ngModel)]="password" type="password" name="password" required="required"  ><br>
         <input  class="btn waves-effect waves-light" type="submit" value="Créer">
       </form>
     </div>

@@ -20,15 +20,19 @@ import {RequestService} from './request.service';
 import {FileSizePipe} from './file-size.pipe';
 import {AuthGuard} from './auth-guard.service';
 import {UtilitaireService} from "./utilitaire.service";
+import { UploadComponent } from './upload/upload.component';
+import { CallbackdriveconnectionComponent } from './callbackdriveconnection/callbackdriveconnection.component';
 import {FileDisplayComponent} from './file-display/file-display.component';
-import {MatDialogModule} from "@angular/material";
-import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
 const appRoutes: Routes = [
   { path: 'manager', canActivate:[AuthGuard], component: FileManagerComponent },
   { path: 'auth', component: AuthComponent },
   { path: '', component: AuthComponent },
-  { path: '**', component: PageNotFoundComponent }
+  { path: 'connectedToDrive/:drive/:success', component: CallbackdriveconnectionComponent },
+  { path: '**', component: PageNotFoundComponent },
+
+
+
 ];
 
 
@@ -41,7 +45,9 @@ const appRoutes: Routes = [
     AuthDriveComponent,
     PageNotFoundComponent,
     FileSizePipe,
-    FileDisplayComponent
+    FileDisplayComponent,
+    UploadComponent,
+    CallbackdriveconnectionComponent,
   ],
   imports: [
     RouterModule.forRoot(
@@ -52,9 +58,7 @@ const appRoutes: Routes = [
     BrowserModule,
     MaterializeModule,
     FormsModule,
-    AppRoutingModule,
-    MatDialogModule,
-    BrowserAnimationsModule
+    AppRoutingModule
   ],
   providers: [AuthService, RequestService, HttpClient, AuthGuard, UtilitaireService],
   bootstrap: [AppComponent]
