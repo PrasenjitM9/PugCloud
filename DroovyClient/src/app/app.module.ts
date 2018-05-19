@@ -20,6 +20,9 @@ import {RequestService} from './request.service';
 import {FileSizePipe} from './file-size.pipe';
 import {AuthGuard} from './auth-guard.service';
 import {UtilitaireService} from "./utilitaire.service";
+import {FileDisplayComponent} from './file-display/file-display.component';
+import {MatDialogModule} from "@angular/material";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
 const appRoutes: Routes = [
   { path: 'manager', canActivate:[AuthGuard], component: FileManagerComponent },
@@ -38,6 +41,7 @@ const appRoutes: Routes = [
     AuthDriveComponent,
     PageNotFoundComponent,
     FileSizePipe,
+    FileDisplayComponent
   ],
   imports: [
     RouterModule.forRoot(
@@ -48,7 +52,9 @@ const appRoutes: Routes = [
     BrowserModule,
     MaterializeModule,
     FormsModule,
-    AppRoutingModule
+    AppRoutingModule,
+    MatDialogModule,
+    BrowserAnimationsModule
   ],
   providers: [AuthService, RequestService, HttpClient, AuthGuard, UtilitaireService],
   bootstrap: [AppComponent]

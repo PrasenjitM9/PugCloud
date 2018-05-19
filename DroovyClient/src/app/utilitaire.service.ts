@@ -28,6 +28,4 @@ export class UtilitaireService {
     }
     return null;
   }
-
-
 }

@@ -32,30 +32,37 @@ export class FileManagerComponent implements OnInit {
 
   initRoot(){
 
-    this.request.getFiles("root","root",this.userID).subscribe(
+    this.request.getFiles("root", "root", this.userID, 1, 0, 1).subscribe(
       data => {
-        console.log(data);
+
         this.fileList = data;
+
         this.currentFolderId="root";
         this.currentPath="";
+
       });
-  }
-
-  onSelect(f :FileDroovy){
-
-  if(f.type == "FOLDER"){
-    this.currentPath+="/"+f.name;
-    this.currentFolderId=f.id;
-
-    this.request.getFiles(this.currentPath,this.currentFolderId,this.userID).subscribe(
-      data => {
-        console.log(data);
-        this.fileList = data;
-      });
-  }
-
 
   }
+
+  /*
+    onSelect(f :FileDroovy){
+
+    if(f.type == "FOLDER"){
+      this.currentPath+="/"+f.name;
+      this.currentFolderId=f.id;
+
+      this.request.getFiles(this.currentPath,this.currentFolderId,this.userID,1, 0, 1).subscribe(
+        data => {
+          console.log(data);
+          this.fileList = data;
+        });
+    }
+
+
+
+    }
+  */
+
 
   onSignOut(){
     this.authService.signOut();

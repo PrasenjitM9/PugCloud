@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs/Rx';
 
 
@@ -10,22 +10,29 @@ export class RequestService {
 
   constructor(private http: HttpClient) { }
 
-  getFiles(path : string,fileId :string,userId : string) : Observable<FileDroovy[]>{
-    var url = this.apiUrl+"request/list?idUser="+userId+"&path="+path+"&idFolder="+fileId;
-    return this.http.get<FileDroovy[]>(url, {responseType: 'json'});
+  getFiles(path: string, fileId: string, userId: string, getGoogleDrive: number, getOneDrive: number, getDropbox: number): Observable<FileDroovy[]> {
+    var url = this.apiUrl + "request/list?idUser=" + userId + "&path=" + path + "&idFolder=" + fileId + "&getGoogleDrive=" + getGoogleDrive + "&getOnedrive=" + getOneDrive + "&getDropbox=" + getDropbox;
+
+    return this.http.get<FileDroovy[]>(url, {responseType: 'json'})
   }
+
+
 
 }
 
 export interface FileDroovy {
 
-  name : string,
-  id : string,
-  url : string,
-  source : string[],
-  creationDate : string,
-  lastUpdateDate : string,
-  taille : string,
-  type : string,
-  contentHash : string
+  name: string
+  taille: string
+  type: string
+  sourceProperties: PropertiesFileDroovy[]
+
+}
+
+export interface PropertiesFileDroovy {
+  id: string,
+  url: string,
+  creationDate: string,
+  lastUpdateDate: string,
+  contentHash: string
 }
