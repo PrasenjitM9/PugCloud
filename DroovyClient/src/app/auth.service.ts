@@ -21,6 +21,10 @@ export class AuthService {
     if (this.utilitaire.readCookie("isAuth") == "true") {
       this.user.isAuth = true;
       this.user.id = this.utilitaire.readCookie("id");
+      this.user.connectedToDropbox = (this.utilitaire.readCookie("connectedToDropbox")== 'true');
+      this.user.connectedToGoogleDrive = (this.utilitaire.readCookie("connectedToGoogleDrive")== 'true');
+      this.user.connectedToOneDrive = (this.utilitaire.readCookie("connectedToOneDrive")== 'true');
+
     }
   }
 

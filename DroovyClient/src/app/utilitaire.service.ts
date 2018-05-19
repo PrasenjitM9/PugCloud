@@ -29,5 +29,8 @@ export class UtilitaireService {
     return null;
   }
 
+  eraseCookie(name) {
+    this.createCookie(name,"",-1);
+  }
 
 }

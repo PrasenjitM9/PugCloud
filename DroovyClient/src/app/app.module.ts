@@ -21,12 +21,17 @@ import {FileSizePipe} from './file-size.pipe';
 import {AuthGuard} from './auth-guard.service';
 import {UtilitaireService} from "./utilitaire.service";
 import { UploadComponent } from './upload/upload.component';
+import { CallbackdriveconnectionComponent } from './callbackdriveconnection/callbackdriveconnection.component';
 
 const appRoutes: Routes = [
   { path: 'manager', canActivate:[AuthGuard], component: FileManagerComponent },
   { path: 'auth', component: AuthComponent },
   { path: '', component: AuthComponent },
-  { path: '**', component: PageNotFoundComponent }
+  { path: 'connectedToDrive/:drive/:success', component: CallbackdriveconnectionComponent },
+  { path: '**', component: PageNotFoundComponent },
+
+
+
 ];
 
 
@@ -40,6 +45,7 @@ const appRoutes: Routes = [
     PageNotFoundComponent,
     FileSizePipe,
     UploadComponent,
+    CallbackdriveconnectionComponent,
   ],
   imports: [
     RouterModule.forRoot(
