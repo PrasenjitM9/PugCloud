@@ -1,6 +1,7 @@
-import {Component, OnInit,Input} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {AuthService} from '../auth.service';
 import {Router} from "@angular/router";
+import {UtilitaireService} from "../utilitaire.service";
 
 @Component({
   selector: 'app-auth',
@@ -9,7 +10,7 @@ import {Router} from "@angular/router";
 })
 export class AuthComponent implements OnInit {
 
-  constructor(private auth: AuthService,private router: Router) {
+  constructor(private auth: AuthService, private router: Router, private utilitaire: UtilitaireService) {
   }
 
   ngOnInit() {
@@ -24,7 +25,8 @@ export class AuthComponent implements OnInit {
 
         if(data.success == "true") {
 
-          this.createCookie("id",data['id'],1);
+          this.utilitaire.createCookie("id", data['id'], 1);
+          this.utilitaire.createCookie("isAuth", true, 1);
          // this.router.navigate(['/manager']);
           this.router.navigateByUrl("/manager");
         }
@@ -37,12 +39,16 @@ export class AuthComponent implements OnInit {
   }
 
   createAccount(){
+
+    alert("create")
+
      this.auth.createAccount(this.password,this.name).subscribe(
       data => {
         console.log(data);
 
         if(data.success == "true") {
-          this.createCookie("id",data['id'],1);
+          this.utilitaire.createCookie("id", data['id'], 1);
+          this.utilitaire.createCookie("isAuth", true, 1);
           this.router.navigate(['/manager']);
 
         }
@@ -51,19 +57,6 @@ export class AuthComponent implements OnInit {
         }
       }
     );
-  }
-
-
-
-
-  createCookie(name,value,days) {
-    if (days) {
-      var date = new Date();
-      date.setTime(date.getTime()+(days*24*60*60*1000));
-      var expires = "; expires="+date.toUTCString();
-    }
-    else var expires = "";
-    document.cookie = name+"="+value+expires+"; path=/";
   }
 
 

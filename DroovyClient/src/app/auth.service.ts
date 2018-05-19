@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs/Rx';
+import {UtilitaireService} from "./utilitaire.service";
 
 @Injectable()
 export class AuthService {
@@ -9,7 +10,12 @@ export class AuthService {
   private apiUrl = "http://localhost:8080/droovy/";
 
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private utilitaire: UtilitaireService) {
+
+    if (utilitaire.readCookie("isAuth") == "true") {
+      this.isAuth = true;
+    }
+  }
 
   createAccount(password :string,name : string) :Observable<AuthResult> {
     var url = this.apiUrl+"user/create?password="+password+"&name="+name;
@@ -24,6 +30,7 @@ export class AuthService {
   }
 
   signOut(){
+    this.utilitaire.createCookie("isAuth", false, 1)
     this.isAuth=false;
   }
 

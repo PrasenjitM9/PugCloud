@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FileDroovy, RequestService} from "../request.service";
-import { AuthService} from '../auth.service';
+import {AuthService} from '../auth.service';
+import {UtilitaireService} from "../utilitaire.service";
 
 @Component({
   selector: 'app-file-manager',
@@ -11,7 +12,8 @@ export class FileManagerComponent implements OnInit {
 
   authStatus : boolean;
 
-  constructor(private request: RequestService, private authService:AuthService) { }
+  constructor(private request: RequestService, private authService: AuthService, private utilitaire: UtilitaireService) {
+  }
 
   protected fileList : FileDroovy[];
   private userID : string;
@@ -25,7 +27,7 @@ export class FileManagerComponent implements OnInit {
   }
 
   initUserId(){
-    this.userID = this.readCookie("id");
+    this.userID = this.utilitaire.readCookie("id");
   }
 
   initRoot(){
@@ -37,18 +39,6 @@ export class FileManagerComponent implements OnInit {
         this.currentFolderId="root";
         this.currentPath="";
       });
-  }
-
-
-  readCookie(name) {
-    var nameEQ = name + "=";
-    var ca = document.cookie.split(';');
-    for(var i=0;i < ca.length;i++) {
-      var c = ca[i];
-      while (c.charAt(0)==' ') c = c.substring(1,c.length);
-      if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-    }
-    return null;
   }
 
   onSelect(f :FileDroovy){
