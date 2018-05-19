@@ -43,6 +43,7 @@ import com.sun.jersey.api.client.WebResource;
 @Path("dropboxauth")
 public class DropBoxAuth implements Auth{
 
+
 	private String client_id = "i90y72ofs47u9b8";
 	private String client_secret = "7tvoiqp2ivspl7y";
 
@@ -69,16 +70,8 @@ public class DropBoxAuth implements Auth{
 
 		Response response = jerseyTarget.request().accept(MediaType.APPLICATION_JSON).post(Entity.form(formData));
 
-
-
-		System.out.println(response.toString());
-
-
 		if (response.getStatus() != 200) {
-			return Response.temporaryRedirect(new URI("http://localhost:4200?success=false")).build();
-			/*
-			throw new RuntimeException("Failed : HTTP error code : "
-					+ response.getStatus()+ " "+ response.toString());*/
+			return Response.temporaryRedirect(new URI("http://localhost:4200/connectedToDrive/dropbox/false")).build();	
 		}
 		else {
 			String output =  response.readEntity(String.class);
@@ -90,10 +83,10 @@ public class DropBoxAuth implements Auth{
 			
 			if(db.updateUserDropBoxToken(tokenNode.asText(),state)) {
 				
-				return Response.temporaryRedirect(new URI("http://localhost:4200/manager?success=true")).build();
+				return Response.temporaryRedirect(new URI("http://localhost:4200/connectedToDrive/dropbox/true")).build();
 			}
 			else {
-				return Response.temporaryRedirect(new URI("http://localhost:4200/manager?success=false")).build();
+				return Response.temporaryRedirect(new URI("http://localhost:4200/connectedToDrive/dropbox/false")).build();
 			}
 		}
 		
