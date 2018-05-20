@@ -38,6 +38,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 
+import errors.InternalServerError;
+import errors.UserApplicationError;
 import javassist.compiler.SyntaxError;
 
 /**
@@ -79,7 +81,7 @@ public class GoogledriveAuth implements Auth{
 			return Response.temporaryRedirect(new URI("http://localhost:4200/connectedToDrive/googledrive/false")).build();
 		}
 		String output =  response.readEntity(String.class);
-		
+
 		JsonNode rootNode = objectMapper.readTree(output);
 		JsonNode token = rootNode.path("access_token");
 		JsonNode tokenRefresh = rootNode.path("refresh_token");
@@ -114,11 +116,11 @@ public class GoogledriveAuth implements Auth{
 		Response response = jerseyTarget.request().accept(MediaType.APPLICATION_JSON).post(Entity.form(formData));
 
 		if (response.getStatus() != 200) {
-			throw new RuntimeException("Failed : HTTP error code : "
-					+ response.getStatus()+ " "+ response.toString());
+			throw new UserApplicationError(401);
 		}
+
 		String output =  response.readEntity(String.class);
-		
+
 		
 		JsonNode rootNode = objectMapper.readTree(output);
 		JsonNode token = rootNode.path("access_token");

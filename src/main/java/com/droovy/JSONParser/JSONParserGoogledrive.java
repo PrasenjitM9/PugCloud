@@ -42,7 +42,7 @@ public class JSONParserGoogledrive implements JSONParser {
 			
 		
 		String id = file.path("id").asText();
-		String url = file.path("webContentLink").asText();
+		String url = file.path("alternateLink").asText();//download : webContentLink
 		String source = "GoogleDrive";
 		Date creationDate = null;
 		Date lastUpdateDate = null;

@@ -17,7 +17,6 @@ public class File {
 	
 	private Map<String, PropertiesFile> sourceProperties = new HashMap<>();
 	/*
-	private String path;
 	private sharedMembers
 	private String permission;
 	*/

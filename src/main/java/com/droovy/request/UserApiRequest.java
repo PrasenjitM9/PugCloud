@@ -4,6 +4,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -13,9 +16,11 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
 import org.glassfish.jersey.media.multipart.FormDataParam;
@@ -39,8 +44,10 @@ public class UserApiRequest {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/list")
-	public Response getFilesList(@Context UriInfo uriInfo,@QueryParam("path") String path,@QueryParam("idUser") String idUser,@QueryParam("idFolder") String idFolder,@QueryParam("getDropbox") int getDropbox,@QueryParam("getGoogleDrive") int getGoogledrive,@QueryParam("getOnedrive") int getOnedrive) throws JsonProcessingException {
-				
+	public Response getFilesList(@Context UriInfo uriInfo,@QueryParam("path") String path,@QueryParam("idUser") String idUser,@QueryParam("idFolder") String idFolder,@QueryParam("getDropbox") int getDropbox,@QueryParam("getGoogleDrive") int getGoogledrive,@QueryParam("getOnedrive") int getOnedrive,@QueryParam("folderOnly") String onlyFolders) throws JsonProcessingException {
+		
+		boolean folderOnly = onlyFolders.equals("true");
+		
 		if(idUser == null || path==null || idFolder == null) {
 			throw new UserApplicationError("At least one argument is missing", 400);
 		}
@@ -48,13 +55,13 @@ public class UserApiRequest {
 		List<File> listDropbox = new LinkedList<>(), listGoogleDrive = new LinkedList<>(),listOneDrive = new LinkedList<>();
 		
 		if(getDropbox==1) {			
-			listDropbox = request_dropbox.getFilesList(path,idUser);
+			listDropbox = request_dropbox.getFilesList(path,idUser,folderOnly);
 		}
 		if(getGoogledrive==1) {
-			listGoogleDrive = request_googledrive.getFilesList(idFolder,idUser);
+			listGoogleDrive = request_googledrive.getFilesList(idFolder,idUser,folderOnly);
 		}
 		if(getOnedrive==1) {
-			listOneDrive = request_onedrive.getFilesList(path, idUser);
+			listOneDrive = request_onedrive.getFilesList(path, idUser,folderOnly);
 		}
 		
 		Merger merge = new Merger();
@@ -63,19 +70,36 @@ public class UserApiRequest {
 		ObjectMapper mapper = new ObjectMapper();
 		
 		String output = "[";
-
-		for (File file : mergedList) {
-			
-			output = output + mapper.writeValueAsString(file)+",";
-		}
-
-		if(mergedList.isEmpty()) {
-			output += "]";
+		boolean atleastOneFolder = false;
+		if(folderOnly){
+			for (File file : mergedList) {
+				if(file.getType()==FileType.FOLDER) {
+					atleastOneFolder=true;
+					output = output + mapper.writeValueAsString(file)+",";
+				}
+			}
+			if(!atleastOneFolder) {
+				output += "]";
+			}
+			else {
+				output = output.substring(0,output.length()-1);//Retire la virgule en trop
+				output += "]";
+			}
 		}
 		else {
-			output = output.substring(0,output.length()-1);//Retire la virgule en trop
-			output += "]";
+			for (File file : mergedList) {
+					output = output + mapper.writeValueAsString(file)+",";
+			}
+			if(mergedList.isEmpty()) {
+				output += "]";
+			}
+			else {
+				output = output.substring(0,output.length()-1);//Retire la virgule en trop
+				output += "]";
+			}
 		}
+		
+		
 		
 		System.out.println(output);
 		
@@ -124,7 +148,7 @@ public class UserApiRequest {
 		
 		
 		ObjectMapper mapper = new ObjectMapper();
-		String output = "{" + mapper.writeValueAsString(uploadedFile)+"}";
+		String output = mapper.writeValueAsString(uploadedFile);
 		
 		return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity(output).build();
 	}
@@ -152,7 +176,7 @@ public class UserApiRequest {
 			throw new UserApplicationError("Tell in which drive upload, example : drive=dropbox", 400);
 		}
 		
-		return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity("{}").build();
+		return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity("{\"success\" : \"ok\"}").build();
 	}
 	
 	@GET
@@ -180,7 +204,7 @@ public class UserApiRequest {
 			throw new UserApplicationError("Tell in which drive upload, example : drive=dropbox", 400);
 		}
 		ObjectMapper mapper = new ObjectMapper();
-		String output = "{" + mapper.writeValueAsString(renamedFile)+"}";
+		String output = mapper.writeValueAsString(renamedFile);
 			
 		return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity(output).build();
 	}
@@ -210,7 +234,7 @@ public class UserApiRequest {
 			throw new UserApplicationError("Tell in which drive upload, example : drive=dropbox", 400);
 		}
 		ObjectMapper mapper = new ObjectMapper();
-		String output = "{" + mapper.writeValueAsString(movedFile)+"}";
+		String output = mapper.writeValueAsString(movedFile);
 			
 		return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity(output).build();
 	}
@@ -237,7 +261,7 @@ public class UserApiRequest {
 		else {
 			throw new UserApplicationError("Tell in which drive upload, example : drive=dropbox", 400);
 		}
-		
+				
 		return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity(output).build();
 			
 	}
@@ -303,5 +327,47 @@ public class UserApiRequest {
 		
 		return Response.status(Status.OK).entity(output).build();
 	}
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/download")
+	public Response searchFile(@QueryParam("fileName") String fileName,@QueryParam("idUser") String idUser,@QueryParam("idFile") String idFile, @QueryParam("drive") String drive) {
 	
+		final java.io.File fileToSend;
+		if(drive.equals("dropbox")) {
+			fileToSend = request_dropbox.downloadFile(idUser, idFile);
+		}
+		else if(drive.equals("onedrive")) {
+			fileToSend = request_onedrive.downloadFile(idUser, idFile);
+		}
+		else if(drive.equals("googledrive")) {
+			fileToSend = request_googledrive.downloadFile(idUser, idFile);
+		}
+		else {
+			throw new UserApplicationError("Tell in which drive upload, example : drive=dropbox", 400);
+		}
+		
+		 StreamingOutput fileStream =  new StreamingOutput()
+	        {
+	            @Override
+	            public void write(java.io.OutputStream output) throws IOException, WebApplicationException
+	            {
+	                try
+	                {
+	                    java.nio.file.Path path = Paths.get(fileToSend.getAbsolutePath());
+	                    byte[] data = Files.readAllBytes(path);
+	                    output.write(data);
+	                    output.flush();
+	                }
+	                catch (Exception e)
+	                {
+	                    throw new WebApplicationException("File Not Found");
+	                }
+	            }
+	        };
+	        return Response
+	                .ok(fileStream, MediaType.APPLICATION_OCTET_STREAM)
+	                .header("content-disposition","attachment; filename = "+fileName)
+	                .build();
+
+	}
 }
