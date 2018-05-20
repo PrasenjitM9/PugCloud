@@ -20,7 +20,7 @@ export class FileManagerComponent implements OnInit {
   protected fileList : FileDroovy[];
   private userID : string;
 
-  private space_info: SpaceInfo[] = [];
+  public space_info: SpaceInfo[] = [];
 
   tab_previous_folder: PreviousInfo[] = [];
 

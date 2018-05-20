@@ -9,12 +9,17 @@
         Choisir un dossier de destination
       </mat-panel-description>
     </mat-expansion-panel-header>
-    <mat-list role="list">
-      <mat-list-item *ngFor="let folder of listFolder" (click)="goInFolder(folder)">{{folder.name}}</mat-list-item>
-    </mat-list>
 
-    <button mat-button  (click)="back()" >Précédent</button>
-    <button mat-button (click)="chooseFolder()" >Déplacer</button>
+    Choix : {{this.currentFolderName}}
+    <mat-nav-list role="list">
+      <p class="itemList" *ngFor="let folder of listFolder" (dblclick)="goInFolder(folder)">{{folder.name}}
+      </p>
+
+
+    </mat-nav-list>
+
+    <button mat-button color="primary" (click)="back()" >Précédent</button>
+    <button mat-button color="primary" (click)="chooseFolder()" >Déplacer</button>
 
   </mat-expansion-panel>
 </mat-accordion>

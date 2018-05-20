@@ -3,8 +3,9 @@ import {FileDroovy, PropertiesFileDroovy, RequestService} from "../request.servi
 import {AuthService} from "../auth.service";
 import {FileManagerComponent} from "../file-manager/file-manager.component";
 import {LoadingComponentComponent} from "../loading-component/loading-component.component";
-import {MatDialog} from "@angular/material";
+import {MatDialog, MatDialogRef} from "@angular/material";
 import {ErrorDialogComponent} from "../error-dialog/error-dialog.component";
+import {FileModificationComponent} from "../file-modification/file-modification.component";
 
 @Component({
   selector: 'app-file-display',
@@ -24,6 +25,7 @@ export class FileDisplayComponent implements OnInit {
   creation_date: string;
   last_update_date: string;
 
+  private dialogRef : MatDialogRef<FileModificationComponent>;
 
   new_name: string;
   properties: PropertiesFileDroovy;
@@ -48,6 +50,7 @@ export class FileDisplayComponent implements OnInit {
 
       this.display_properties = true;
       this.choosenDrive = "onedrive";
+      this.loadDialog();
 
     } else {
       this.display_properties = false;
@@ -65,6 +68,7 @@ export class FileDisplayComponent implements OnInit {
 
       this.display_properties = true;
       this.choosenDrive = "googledrive";
+      this.loadDialog();
 
     } else {
       this.display_properties = false;
@@ -81,10 +85,19 @@ export class FileDisplayComponent implements OnInit {
 
       this.display_properties = true;
       this.choosenDrive = "dropbox";
+      this.loadDialog();
 
     } else {
       this.display_properties = false;
     }
+  }
+
+  loadDialog(){
+    this.dialogRef = this.dialog.open(FileModificationComponent, {
+      data: {
+        fileDisplay : this
+      }
+    });
   }
 
   move(choice : any ) {
@@ -126,6 +139,7 @@ export class FileDisplayComponent implements OnInit {
   }
 
   refreshList(){
+    this.dialogRef.close();
     this.file_manager.refreshList()
   }
 

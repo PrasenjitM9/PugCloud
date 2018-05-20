@@ -18,7 +18,7 @@ export class SearchFolderComponent implements OnInit {
   private upId : string[] = [];
   private upPath : string[] = [];
 
-  private currentFolder : FileDroovy;
+  public currentFolderName : string;
 
 
   public listFolder : FileDroovy[];
@@ -56,7 +56,7 @@ export class SearchFolderComponent implements OnInit {
     this.upId[this.index]=this.currentId;
     this.upPath[this.index]=this.currentPath;
 
-    this.currentFolder = folder;
+    this.currentFolderName = folder.name;
     this.currentPath += "/"+folder.name;
 
     if(this.google){
