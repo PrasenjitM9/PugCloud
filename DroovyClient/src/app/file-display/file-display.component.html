@@ -1,88 +1,71 @@
-<div class="row" (dblclick)="openFolder()" *ngIf="fileDroovy.type=='FOLDER'; else fileImg">
-  <div class="col s1">
-    <img src="./../../assets/images/folder.svg" alt="" class="circle">
-  </div>
+<div (dblclick)="openFolder()" *ngIf="fileDroovy.type=='FOLDER'; else fileImg">
 
-  <div class="col s11">
-    <div class="col s11">
-      <h3>{{ fileDroovy.name}}</h3>
-      <h5>{{fileDroovy.taille | fileSize}}</h5>
+  <mat-card class="example-card">
+    <mat-card-header>
+      <img mat-card-avatar src="./../../assets/images/folder.svg" alt="" >
+      <mat-card-title>{{ fileDroovy.name}}</mat-card-title>
+      <mat-card-subtitle>{{fileDroovy.taille | fileSize}}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <img mat-card-avatar src="./../../assets/images/googledrive.png" *ngIf='fileDroovy.sourceProperties["GoogleDrive"]' alt=""
+           (click)="propertiesGoogledrive()">
+      <img mat-card-avatar src="./../../assets/images/onedrive.png" *ngIf='fileDroovy.sourceProperties["Onedrive"]' alt=""
+           (click)="propertiesOnedrive()">
+      <img mat-card-avatar src="./../../assets/images/dropbox.png" *ngIf='fileDroovy.sourceProperties["Dropbox"]' alt=""
+           (click)="propertiesDropbox()">
+    </mat-card-content>
+  </mat-card>
 
-    </div>
-    <div class="col s1">
-      <img src="./../../assets/images/googledrive.png" *ngIf='fileDroovy.sourceProperties["GoogleDrive"]' alt=""
-           class="responsive-img" (click)="propertiesGoogledrive()">
-      <img src="./../../assets/images/onedrive.png" *ngIf='fileDroovy.sourceProperties["Onedrive"]' alt=""
-           class="responsive-img" (click)="propertiesOnedrive()">
-      <img src="./../../assets/images/dropbox.png" *ngIf='fileDroovy.sourceProperties["Dropbox"]' alt=""
-           class="responsive-img" (click)="propertiesDropbox()">
-    </div>
-  </div>
-  <!--
-    <p> {{ file.lastUpdateDate }} <br>
-      {{ file.source }}
-    </p>
-    <a href="{{ file.url }}" class="secondary-content">Voir</a>
-  -->
 </div>
 
-<ng-template #fileImg>
-  <div class="row">
-    <div class="col s1">
-      <img src="./../../assets/images/file.svg" alt="" class="circle">
-    </div>
 
-    <div class="col s11">
-      <div class="col s11">
-        <h3>{{ fileDroovy.name }}</h3>
-      </div>
-      <div class="col s1">
-        <img src="./../../assets/images/googledrive.png" *ngIf='fileDroovy.sourceProperties["GoogleDrive"]' alt=""
-             class="responsive-img" (click)="propertiesGoogledrive()">
-        <img src="./../../assets/images/onedrive.png" *ngIf='fileDroovy.sourceProperties["Onedrive"]' alt=""
-             class="responsive-img" (click)="propertiesOnedrive()">
-        <img src="./../../assets/images/dropbox.png" *ngIf='fileDroovy.sourceProperties["Dropbox"]' alt=""
-             class="responsive-img" (click)="propertiesDropbox()">
-      </div>
-    </div>
-    <!--
-      <p> {{ file.lastUpdateDate }} <br>
-        {{ file.source }}
-      </p>
-      <a href="{{ file.url }}" class="secondary-content">Voir</a>
-    -->
-  </div>
+<ng-template #fileImg>
+
+  <mat-card>
+    <mat-card-header>
+      <img mat-card-avatar src="./../../assets/images/file.svg" alt="" >
+       <mat-card-title>{{ fileDroovy.name}}</mat-card-title>
+      <mat-card-subtitle>{{fileDroovy.taille | fileSize}}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <img mat-card-avatar src="./../../assets/images/googledrive.png" *ngIf='fileDroovy.sourceProperties["GoogleDrive"]' alt=""
+           (click)="propertiesGoogledrive()">
+      <img mat-card-avatar src="./../../assets/images/onedrive.png" *ngIf='fileDroovy.sourceProperties["Onedrive"]' alt=""
+           (click)="propertiesOnedrive()">
+      <img mat-card-avatar src="./../../assets/images/dropbox.png" *ngIf='fileDroovy.sourceProperties["Dropbox"]' alt=""
+           (click)="propertiesDropbox()">
+    </mat-card-content>
+  </mat-card>
+
 </ng-template>
+
 
 
 <div *ngIf="display_properties">
 
-  <h5>{{name_drive}}</h5>
-  <div class="row">
-    <div class="col s4">
-      <input [(ngModel)]="new_name">
-    </div>
-    <div class="col s2">
-      <a class="waves-effect waves-light btn" (click)="rename()">Renommer</a>
-    </div>
-    <div class="col s3">
-      <a>Création : {{creation_date | date:'dd-MM-yyyy HH:mm:ss ' }}</a>
-    </div>
-    <div class="col s3">
-      <a>Dernière modification : {{last_update_date | date:'dd-MM-yyyy HH:mm:ss ' }}</a>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col s4">
-      <a class="waves-effect waves-light btn" (click)="download()">Télécharger</a>
-    </div>
-    <div class="col s4">
-      <app-search-folder [drive]="choosenDrive" (choice)="move($event)"></app-search-folder>
-    </div>
-    <div class="col s4">
-      <a class="waves-effect waves-light btn" (click)="delete()">Supprimer</a>
-    </div>
-  </div>
 
+  <mat-card>
+    <mat-card-header>
+      <h4>{{name_drive}}</h4>
+    </mat-card-header>
+    <mat-card-content>
+      <br>
+
+      <mat-chip-list>
+        <mat-chip>Dernière modification : {{last_update_date | date:'dd-MM-yyyy HH:mm:ss ' }}</mat-chip>
+        <mat-chip>Création : {{creation_date | date:'dd-MM-yyyy HH:mm:ss ' }}</mat-chip>
+      </mat-chip-list>
+      <mat-form-field>
+        <input matInput [(ngModel)]="new_name">
+      </mat-form-field>
+      <br>
+      <button  color="primary"  mat-button (click)="rename()" >Renommer</button>
+      <button color="primary"  mat-button (click)="delete()">Supprimer</button>
+      <button  color="primary" mat-button (click)="download()">Télécharger</button>
+      <br>
+      <app-search-folder [drive]="choosenDrive" (choice)="move($event)"></app-search-folder>
+      <br>
+    </mat-card-content>
+  </mat-card>
 </div>
 
