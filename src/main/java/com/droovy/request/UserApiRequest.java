@@ -77,6 +77,8 @@ public class UserApiRequest {
 			output += "]";
 		}
 		
+		System.out.println(output);
+		
 		return Response.status(Status.OK).entity(output).build();
 	}
 	

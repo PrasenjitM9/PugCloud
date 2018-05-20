@@ -57,8 +57,6 @@ public class DatabaseOp {
 
 	public int createUser(String name, String password){
 		
-		System.out.println("Create user:"+name);
-
 		String sql_create_user = "INSERT INTO users (name,password) values (?,?);";
 
 		String sql_get_user_id = "SELECT MAX(id) as id FROM users";

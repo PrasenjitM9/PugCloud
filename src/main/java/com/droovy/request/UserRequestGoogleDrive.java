@@ -51,8 +51,6 @@ public class UserRequestGoogleDrive implements UserRequest{
 		}		
 		String output =  response.readEntity(String.class);
 		
-		System.out.println("res:"+output);
-
 		try {
 			return parser.parserFiles((output));
 		} catch (Exception e) {
