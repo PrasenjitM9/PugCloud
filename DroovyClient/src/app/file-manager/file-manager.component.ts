@@ -7,6 +7,7 @@ import {MatDialog} from "@angular/material";
 import {LoadingComponentComponent} from "../loading-component/loading-component.component";
 import {ErrorDialogComponent} from "../error-dialog/error-dialog.component";
 import {CreateFolderComponent} from "../create-folder/create-folder.component";
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-file-manager',
@@ -15,7 +16,7 @@ import {CreateFolderComponent} from "../create-folder/create-folder.component";
 })
 export class FileManagerComponent implements OnInit {
 
-  constructor(public dialog: MatDialog,private request: RequestService, private authService: AuthService, private utilitaire: UtilitaireService) {
+  constructor(public dialog: MatDialog,private request: RequestService, private authService: AuthService, private utilitaire: UtilitaireService, private router : Router) {
   }
 
   public fileList : FileDroovy[];
@@ -154,6 +155,7 @@ export class FileManagerComponent implements OnInit {
 
   onSignOut(){
     this.authService.signOut();
+    this.router.navigate(['/auth']);
   }
 
 }

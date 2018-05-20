@@ -51,7 +51,8 @@ export class AuthService {
   }
 
   signOut(){
-    this.eraseUser();
+    this.signOutUser();
+
   }
 
   eraseUser() {
@@ -62,6 +63,11 @@ export class AuthService {
     this.utilitaire.eraseCookie("isAuth");
     this.utilitaire.eraseCookie("id");
     this.user = new User();
+  }
+
+  signOutUser() {
+    this.utilitaire.eraseCookie("isAuth");
+    this.utilitaire.createCookie("isAuth", false, 1);
   }
 
 }
