@@ -44,9 +44,9 @@ import { FileModificationComponent } from './file-modification/file-modification
 const appRoutes: Routes = [
   { path: 'manager', canActivate:[AuthGuard], component: FileManagerComponent },
   { path: 'auth', component: AuthComponent },
-  { path: '', component: AuthComponent },
-  {path: 'connectedToDrive/:drive/:success', component: CallbackdriveconnectionComponent},
-  {path: '**', component: PageNotFoundComponent},
+  { path: '',   redirectTo: '/auth', pathMatch: 'full' },
+  { path: 'connectedToDrive/:drive/:success', component: CallbackdriveconnectionComponent},
+  { path: '**', component: PageNotFoundComponent},
 
 
 
@@ -100,7 +100,7 @@ const appRoutes: Routes = [
     ErrorDialogComponent,
     FileModificationComponent
   ],
-    providers: [AuthService, RequestService, HttpClient, AuthGuard, UtilitaireService],
+  providers: [AuthService, RequestService, HttpClient, AuthGuard, UtilitaireService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
