@@ -2,7 +2,7 @@ import {Component, Inject, Input, OnInit} from '@angular/core';
 import { RequestService} from "../request.service";
 import {AuthService} from "../auth.service";
 import {FileManagerComponent} from "../file-manager/file-manager.component";
-import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
+import {MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatSnackBar} from '@angular/material';
 import {Observable} from "rxjs/Observable";
 
 @Component({
@@ -58,7 +58,7 @@ export class UploadDialog {
   public file : File;
   @Input() selectedDrive: string;
 
-  constructor(private dialogRef: MatDialogRef<UploadDialog>,@Inject(MAT_DIALOG_DATA) public data: any,private request : RequestService) {}
+  constructor(private snackBar: MatSnackBar,private dialogRef: MatDialogRef<UploadDialog>,@Inject(MAT_DIALOG_DATA) public data: any,private request : RequestService) {}
 
   fileChange(event) {
     let fileList: FileList = event.target.files;
@@ -67,7 +67,6 @@ export class UploadDialog {
   }
 
   private createFormData(file) {
-
 
     let path = this.data.folder.path;
     if (path == "root"){
@@ -87,11 +86,19 @@ export class UploadDialog {
 
   public submit(file) {
 
-    let formData = this.createFormData(file);
-    this.request.upload(formData).subscribe(
-      data => {
-        console.log(data);
-        this.dialogRef.close("");
+    if(this.selectedDrive ==undefined || this.selectedDrive == ""){
+      this.snackBar.open('Choisissez un drive', 'Ok', {
+        duration: 3000
       });
+    }
+    else{
+      let formData = this.createFormData(file);
+      this.request.upload(formData).subscribe(
+        data => {
+          console.log(data);
+          this.dialogRef.close("");
+        });
+    }
+
   }
 }

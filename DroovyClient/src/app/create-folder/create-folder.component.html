@@ -1,0 +1,9 @@
+<input [(ngModel)]="folderName" name="folderName" >
+<mat-form-field>
+  <mat-select name="selectDrive" [(ngModel)]="selectedDrive" required placeholder="Choisir un drive">
+    <mat-option *ngIf='this.data.folder.getDropbox==1' value="dropbox">Dropbox</mat-option>
+    <mat-option *ngIf='this.data.folder.getOnedrive==1' value="onedrive">OneDrive</mat-option>
+    <mat-option *ngIf='this.data.folder.getGoogledrive==1' value="googledrive">GoogleDrive</mat-option>
+  </mat-select>
+</mat-form-field>
+<button mat-button (click)="create()">Créer</button>

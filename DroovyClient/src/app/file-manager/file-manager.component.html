@@ -3,7 +3,6 @@
 <mat-toolbar color="primary">
   <mat-toolbar-row >
     <span >Droovy
-
     </span>
   </mat-toolbar-row>
   <mat-toolbar-row>
@@ -38,7 +37,8 @@
 <mat-tab-group color="primary">
   <mat-tab label="Fichiers">
 
-    <app-upload [file_manager]="this"></app-upload>
+    <app-upload [file_manager]="this"></app-upload><button mat-button color="primary" (click)="createFolder()">Créer un dossier</button>
+    <!--<app-search-bar [file_manager]="this"></app-search-bar>-->
 
     <mat-grid-list cols="5" rowHeight="1:1">
       <mat-grid-tile *ngFor="let file of fileList" > <app-file-display  [fileDroovy]="file"  [file_manager]="this"></app-file-display></mat-grid-tile>

@@ -48,10 +48,19 @@ export class RequestService {
     return this.http.post(url,formData);
   }
 
-
-
   freespace(idUser: string, drive: string) {
     var url = this.apiUrl + "freespace?idUser=" + idUser + "&drive=" + drive;
+    return this.http.get(url, {responseType: 'json'});
+  }
+
+
+  search(idUser : string,query : string, getDropbox : number, getOnedrive : number,getGoogledrive : number){
+    var url = this.apiUrl + "search?idUser=" + idUser + "&query=" + query+"&getDropbox="+getDropbox+"&getOnedrive="+getOnedrive+"&getGoogleDrive="+getGoogledrive;
+    return this.http.get<FileDroovy[]>(url, {responseType: 'json'})
+  }
+
+  createFolder(idUser :string,drive : string, folderName :string, idParent :string, path :string){
+    var url = this.apiUrl + "createFolder?idUser=" + idUser + "&drive=" + drive+"&folderName="+folderName+"&path="+path+"&idParent="+idParent;
     return this.http.get(url, {responseType: 'json'});
   }
 

@@ -40,6 +40,9 @@ import { LoadingComponentComponent } from './loading-component/loading-component
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatGridListModule} from '@angular/material/grid-list';
 import { FileModificationComponent } from './file-modification/file-modification.component';
+import { SearchBarComponent } from './search-bar/search-bar.component';
+import { CreateFolderComponent } from './create-folder/create-folder.component';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 
 const appRoutes: Routes = [
   { path: 'manager', canActivate:[AuthGuard], component: FileManagerComponent },
@@ -69,7 +72,9 @@ const appRoutes: Routes = [
     UploadDialog,
     ErrorDialogComponent,
     LoadingComponentComponent,
-    FileModificationComponent
+    FileModificationComponent,
+    SearchBarComponent,
+    CreateFolderComponent,
   ],
   imports: [
     RouterModule.forRoot(
@@ -88,6 +93,7 @@ const appRoutes: Routes = [
     MatSelectModule,
     MatDialogModule,
     MatChipsModule,
+    MatSnackBarModule,
     MatInputModule,
     MatCardModule,
     MatTabsModule,
@@ -98,7 +104,8 @@ const appRoutes: Routes = [
     UploadDialog,
     LoadingComponentComponent,
     ErrorDialogComponent,
-    FileModificationComponent
+    FileModificationComponent,
+    CreateFolderComponent
   ],
     providers: [AuthService, RequestService, HttpClient, AuthGuard, UtilitaireService],
   bootstrap: [AppComponent]

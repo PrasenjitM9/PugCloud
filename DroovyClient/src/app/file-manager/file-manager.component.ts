@@ -6,6 +6,7 @@ import {UploadDialog} from "../upload/upload.component";
 import {MatDialog} from "@angular/material";
 import {LoadingComponentComponent} from "../loading-component/loading-component.component";
 import {ErrorDialogComponent} from "../error-dialog/error-dialog.component";
+import {CreateFolderComponent} from "../create-folder/create-folder.component";
 
 @Component({
   selector: 'app-file-manager',
@@ -17,7 +18,7 @@ export class FileManagerComponent implements OnInit {
   constructor(public dialog: MatDialog,private request: RequestService, private authService: AuthService, private utilitaire: UtilitaireService) {
   }
 
-  protected fileList : FileDroovy[];
+  public fileList : FileDroovy[];
   private userID : string;
 
   public space_info: SpaceInfo[] = [];
@@ -87,6 +88,18 @@ export class FileManagerComponent implements OnInit {
         });
 
   }
+
+  public createFolder(){
+    let dialogRef = this.dialog.open(CreateFolderComponent, {
+      data: {
+        folder :  this.tab_previous_folder[this.tab_previous_folder.length-1]
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      this.refreshList();
+    });
+  }
+
   handleError(error : any){
     console.log("Erreur : "+error);
     let dialogRef = this.dialog.open(ErrorDialogComponent, {
