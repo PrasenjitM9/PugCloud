@@ -83,6 +83,7 @@ export class FileDisplayComponent implements OnInit {
         console.log(data);
       });
     this.refreshList();
+    this.file_manager.updateFreespace()
   }
   rename() {
     this.request.rename(this.auth.user.id,"/"+this.fileDroovy.name,this.properties.id,this.choosenDrive,this.new_name).subscribe(

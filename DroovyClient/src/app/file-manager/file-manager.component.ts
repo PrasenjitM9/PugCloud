@@ -73,7 +73,7 @@ export class FileManagerComponent implements OnInit {
 
   }
 
-  private updateFreespace() {
+  public updateFreespace() {
 
     if (this.authService.user.connectedToDropbox) {
       this.space_info["dropbox"] = this.freespace("dropbox")
