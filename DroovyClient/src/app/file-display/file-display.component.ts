@@ -35,7 +35,7 @@ export class FileDisplayComponent implements OnInit {
 
 
   propertiesOnedrive() {
-    this.properties = this.fileDroovy.sourceProperties["Onedrive"];
+    this.properties = this.fileDroovy.sourceProperties["OneDrive"];
     this.name_drive = "Onedrive";
     this.url_download = this.properties.url;
     this.creation_date = this.properties.creationDate;
@@ -121,7 +121,7 @@ export class FileDisplayComponent implements OnInit {
     if (this.fileDroovy.sourceProperties["Dropbox"]) {
       getDropbox = 1
     }
-    if (this.fileDroovy.sourceProperties["Onecloud"]) {
+    if (this.fileDroovy.sourceProperties["OneDrive"]) {
       getOneDrive = 1
     }
 
