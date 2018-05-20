@@ -16,6 +16,8 @@ export class FileManagerComponent implements OnInit {
   protected fileList : FileDroovy[];
   private userID : string;
 
+  private space_info: SpaceInfo[] = [];
+
   tab_previous_folder: PreviousInfo[] = [];
 
 
@@ -26,6 +28,8 @@ export class FileManagerComponent implements OnInit {
     //TO DO
     this.navigate("root", "root", this.authService.user.connectedToGoogleDrive ? 1 : 0,
       this.authService.user.connectedToOneDrive ? 1 : 0, this.authService.user.connectedToDropbox ? 1 : 0);
+
+    this.updateFreespace()
   }
 
   initUserId(){
@@ -69,6 +73,27 @@ export class FileManagerComponent implements OnInit {
 
   }
 
+  public updateFreespace() {
+
+    if (this.authService.user.connectedToDropbox) {
+      this.space_info["dropbox"] = this.freespace("dropbox")
+    }
+    if (this.authService.user.connectedToDropbox) {
+      this.space_info["googledrive"] = this.freespace("googledrive")
+    }
+    if (this.authService.user.connectedToDropbox) {
+      this.space_info["onedrive"] = this.freespace("onedrive")
+    }
+  }
+
+  private freespace(drive: string) {
+
+    this.request.freespace(this.userID, drive).subscribe(
+      data => {
+        this.space_info[drive] = data
+      });
+  }
+
   /*
     onSelect(f :FileDroovy){
 
@@ -101,4 +126,10 @@ class PreviousInfo {
               public getDropbox: number) {
   }
 
+}
+
+class SpaceInfo {
+  quota: string;
+  used: string;
+  freeSpace: string
 }

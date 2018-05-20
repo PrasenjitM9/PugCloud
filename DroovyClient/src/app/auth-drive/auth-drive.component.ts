@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {UtilitaireService} from "../utilitaire.service";
+import {AuthService} from "../auth.service";
 
 @Component({
   selector: 'app-auth-drive',
@@ -10,7 +11,7 @@ export class AuthDriveComponent implements OnInit {
 
   private userID : string;
 
-  constructor(private utilitaire: UtilitaireService) {
+  constructor(private utilitaire: UtilitaireService, private auth: AuthService) {
   }
 
   ngOnInit() {
