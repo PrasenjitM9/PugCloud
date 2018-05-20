@@ -92,7 +92,8 @@ const appRoutes: Routes = [
   ],
   entryComponents: [
     UploadDialog,
-    LoadingComponentComponent
+    LoadingComponentComponent,
+    ErrorDialogComponent
   ],
     providers: [AuthService, RequestService, HttpClient, AuthGuard, UtilitaireService],
   bootstrap: [AppComponent]
