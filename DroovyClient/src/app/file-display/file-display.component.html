@@ -2,19 +2,29 @@
 
   <mat-card class="example-card">
     <mat-card-header>
-      <img mat-card-avatar src="./../../assets/images/folder.svg" alt="" >
-      <mat-card-title>{{ fileDroovy.name}}</mat-card-title>
-      <mat-card-subtitle>{{fileDroovy.taille | fileSize}}</mat-card-subtitle>
+      <table style="width: max-content">
+        <td width="80 px">
+          <img mat-card-avatar src="./../../assets/images/folder.svg" alt="" >
+        </td>
+        <td width="500 px">
+          <mat-card-title>{{ fileDroovy.name}}</mat-card-title>
+          <mat-card-subtitle>{{fileDroovy.taille | fileSize}}</mat-card-subtitle>
+        </td>
+        <mat-card-content>
+          <td>
+            <img mat-card-avatar src="./../../assets/images/googledrive.png" *ngIf='fileDroovy.sourceProperties["GoogleDrive"]' alt=""
+                 (click)="propertiesGoogledrive()">
+            <img mat-card-avatar src="./../../assets/images/onedrive.png" *ngIf='fileDroovy.sourceProperties["OneDrive"]'
+                 alt=""
+                 (click)="propertiesOnedrive()">
+            <img mat-card-avatar src="./../../assets/images/dropbox.png" *ngIf='fileDroovy.sourceProperties["Dropbox"]' alt=""
+                 (click)="propertiesDropbox()">
+          </td>
+        </mat-card-content>
+
+      </table>
+
     </mat-card-header>
-    <mat-card-content>
-      <img mat-card-avatar src="./../../assets/images/googledrive.png" *ngIf='fileDroovy.sourceProperties["GoogleDrive"]' alt=""
-           (click)="propertiesGoogledrive()">
-      <img mat-card-avatar src="./../../assets/images/onedrive.png" *ngIf='fileDroovy.sourceProperties["OneDrive"]'
-           alt=""
-           (click)="propertiesOnedrive()">
-      <img mat-card-avatar src="./../../assets/images/dropbox.png" *ngIf='fileDroovy.sourceProperties["Dropbox"]' alt=""
-           (click)="propertiesDropbox()">
-    </mat-card-content>
   </mat-card>
 
 </div>
@@ -24,18 +34,27 @@
 
   <mat-card>
     <mat-card-header>
-      <img mat-card-avatar src="./../../assets/images/file.svg" alt="" >
-       <mat-card-title>{{ fileDroovy.name}}</mat-card-title>
-      <mat-card-subtitle>{{fileDroovy.taille | fileSize}}</mat-card-subtitle>
+      <table>
+        <td width="80 px">
+          <img mat-card-avatar src="./../../assets/images/file.svg" alt="" >
+        </td>
+        <td width="500 px">
+          <mat-card-title>{{ fileDroovy.name}}</mat-card-title>
+          <mat-card-subtitle>{{fileDroovy.taille | fileSize}}</mat-card-subtitle>
+        </td>
+        <mat-card-content >
+          <td>
+            <img  mat-card-avatar src="./../../assets/images/googledrive.png" *ngIf='fileDroovy.sourceProperties["GoogleDrive"]' alt=""
+                  (click)="propertiesGoogledrive()">
+            <img mat-card-avatar src="./../../assets/images/onedrive.png" *ngIf='fileDroovy.sourceProperties["Onedrive"]' alt=""
+                 (click)="propertiesOnedrive()">
+            <img mat-card-avatar src="./../../assets/images/dropbox.png" *ngIf='fileDroovy.sourceProperties["Dropbox"]' alt=""
+                 (click)="propertiesDropbox()">
+          </td>
+        </mat-card-content>
+      </table>
     </mat-card-header>
-    <mat-card-content>
-      <img mat-card-avatar src="./../../assets/images/googledrive.png" *ngIf='fileDroovy.sourceProperties["GoogleDrive"]' alt=""
-           (click)="propertiesGoogledrive()">
-      <img mat-card-avatar src="./../../assets/images/onedrive.png" *ngIf='fileDroovy.sourceProperties["Onedrive"]' alt=""
-           (click)="propertiesOnedrive()">
-      <img mat-card-avatar src="./../../assets/images/dropbox.png" *ngIf='fileDroovy.sourceProperties["Dropbox"]' alt=""
-           (click)="propertiesDropbox()">
-    </mat-card-content>
+
   </mat-card>
 
 </ng-template>
