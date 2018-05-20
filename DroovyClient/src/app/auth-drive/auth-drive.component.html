@@ -8,9 +8,9 @@
         <div class="card-content">
           <p> Drive(s) connecté(s) : </p>
           <mat-list>
-            <mat-list-item *ngIf="auth.user.connectedToGoogleDrive">Google Drive</mat-list-item>
-            <mat-list-item *ngIf="auth.user.connectedToOneDrive">OneDrive</mat-list-item>
-            <mat-list-item *ngIf="auth.user.connectedToDropbox">DropBox</mat-list-item>
+            <mat-list-item *ngIf="isConnectedToGoogleDrive()">Google Drive</mat-list-item>
+            <mat-list-item *ngIf="isConnectedToOneDrive()">OneDrive</mat-list-item>
+            <mat-list-item *ngIf="isConnectedToDropBox()">DropBox</mat-list-item>
           </mat-list>
 
         </div>
