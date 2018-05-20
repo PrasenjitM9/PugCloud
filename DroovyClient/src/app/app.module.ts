@@ -23,7 +23,7 @@ import {UtilitaireService} from "./utilitaire.service";
 import {UploadComponent} from './upload/upload.component';
 import {CallbackdriveconnectionComponent} from './callbackdriveconnection/callbackdriveconnection.component';
 import {FileDisplayComponent} from './file-display/file-display.component';
-import { SearchFolderComponent } from './search-folder/search-folder.component';
+import {SearchFolderComponent} from './search-folder/search-folder.component';
 import {MatListModule} from '@angular/material/list';
 import {MatTabsModule} from '@angular/material/tabs';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -77,7 +77,7 @@ const appRoutes: Routes = [
     MatCardModule,
     MatTabsModule,
     BrowserAnimationsModule,
-    MatToolbarModule,
+    MatToolbarModule
   ],
   providers: [AuthService, RequestService, HttpClient, AuthGuard, UtilitaireService],
   bootstrap: [AppComponent]

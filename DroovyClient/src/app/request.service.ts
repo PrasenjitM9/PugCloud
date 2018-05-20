@@ -41,6 +41,12 @@ export class RequestService {
     return this.http.get(url, {responseType: 'json'});
   }
 
+
+  freespace(idUser: string, drive: string) {
+    var url = this.apiUrl + "freespace?idUser=" + idUser + "&drive=" + drive;
+    return this.http.get(url, {responseType: 'json'});
+  }
+
 }
 
 export interface FileDroovy {

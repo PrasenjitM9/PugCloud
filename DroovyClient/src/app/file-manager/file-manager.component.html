@@ -9,6 +9,22 @@
   <mat-toolbar-row>
     <button mat-button (click)="navigatePrevious()"><i
       class="material-icons">arrow_back</i></button>
+
+    <a>{{tab_previous_folder[tab_previous_folder.length-1].path}}</a>
+
+    <mat-chip-list>
+      <mat-chip color="accent" selected="true" *ngIf="space_info['googledrive']">Google Drive
+        {{space_info['googledrive'].used / space_info['googledrive'].quota * 100 | number:'1.0-2'}}%
+      </mat-chip>
+      <mat-chip color="accent" selected="true" *ngIf="space_info['dropbox']">Dropbox {{space_info['dropbox'].used /
+        space_info['dropbox'].quota * 100 | number:'1.0-2'}}%
+      </mat-chip>
+      <mat-chip color="accent" selected="true" *ngIf="space_info['onedrive']">Onedrive {{space_info['onedrive'].used /
+        space_info['onedrive'].quota * 100 | number:'1.0-2'}}%
+      </mat-chip>
+    </mat-chip-list>
+
+
   </mat-toolbar-row>
 </mat-toolbar>
 
@@ -17,7 +33,7 @@
 <mat-tab-group color="primary">
   <mat-tab label="Fichiers">
     <app-file-display *ngFor="let file of fileList" [fileDroovy]="file" (action)="initRoot($event)" [file_manager]="this"></app-file-display>
-      <mat-divider></mat-divider>
+    <mat-divider></mat-divider>
   </mat-tab>
   <mat-tab label="Ajouter un drive"><app-auth-drive></app-auth-drive></mat-tab>
 </mat-tab-group>
