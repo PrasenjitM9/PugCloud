@@ -49,4 +49,15 @@ export class AuthDriveComponent implements OnInit {
     window.location.href = "https://www.dropbox.com/oauth2/authorize?response_type=code&client_id=i90y72ofs47u9b8&redirect_uri=http://localhost:8080/droovy/dropboxauth/callback&state="+this.userID;
   }
 
+  isConnectedToGoogleDrive(){
+    return(this.auth.user.connectedToGoogleDrive);
+  }
+
+  isConnectedToDropBox(){
+    return(this.auth.user.connectedToDropbox);
+  }
+
+  isConnectedToOneDrive(){
+    return(this.auth.user.connectedToOneDrive);
+  }
 }
