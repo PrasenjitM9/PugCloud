@@ -101,26 +101,36 @@ export class FileDisplayComponent implements OnInit {
   }
 
   openFolder() {
+
     var path: string;
+    var length_path = this.file_manager.tab_previous_folder.length;
+
+    if (length_path > 1) {
+      path = this.file_manager.tab_previous_folder[length_path - 1].path + this.fileDroovy.name + "/";
+    }
+    else {
+      path = "/" + this.fileDroovy.name + "/"
+    }
+
+    var idFolder = "";
 
     var getGoogleDrive = 0;
     var getOneDrive = 0;
     var getDropbox = 0;
 
     if (this.fileDroovy.sourceProperties["Dropbox"]) {
-      path = this.fileDroovy.sourceProperties["Dropbox"].path;
       getDropbox = 1
     }
     if (this.fileDroovy.sourceProperties["Onecloud"]) {
-      path = this.fileDroovy.sourceProperties["Onecloud"].path;
       getOneDrive = 1
     }
 
     if (this.fileDroovy.sourceProperties["GoogleDrive"]) {
+      idFolder = this.fileDroovy.sourceProperties["GoogleDrive"].id;
       getGoogleDrive = 1
     }
 
-    this.file_manager.navigate(path, this.fileDroovy.sourceProperties["GoogleDrive"].id, getGoogleDrive, getOneDrive, getDropbox)
+    this.file_manager.navigate(path, idFolder, getGoogleDrive, getOneDrive, getDropbox)
   }
 }
 

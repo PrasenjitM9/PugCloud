@@ -15,23 +15,17 @@ export class FileManagerComponent implements OnInit {
 
   protected fileList : FileDroovy[];
   private userID : string;
-  private currentPath : string;
-  private currentFolderId : string;
 
   tab_previous_folder: PreviousInfo[] = [];
-  private previousPath = "root";
-  private previousFolderId = "root";
+
 
   ngOnInit() {
     this.initUserId();
 
     //A MODIFIER
     //TO DO
-    this.updateFileList("root", "root", this.authService.user.connectedToGoogleDrive ? 1 : 0,
+    this.navigate("root", "root", this.authService.user.connectedToGoogleDrive ? 1 : 0,
       this.authService.user.connectedToOneDrive ? 1 : 0, this.authService.user.connectedToDropbox ? 1 : 0);
-
-    this.tab_previous_folder.push(new PreviousInfo("root", "root", this.authService.user.connectedToGoogleDrive ? 1 : 0,
-      this.authService.user.connectedToOneDrive ? 1 : 0, this.authService.user.connectedToDropbox ? 1 : 0))
   }
 
   initUserId(){
@@ -65,18 +59,12 @@ export class FileManagerComponent implements OnInit {
       this.tab_previous_folder[lastindex].getDropbox)
   }
 
+
   private updateFileList(path: string, idFolder: string, getGoogleDrive: number, getOneDrive: number, getDropbox: number) {
 
     this.request.getFiles(path, idFolder, this.userID, getGoogleDrive, getOneDrive, getDropbox,false).subscribe(
       data => {
-
         this.fileList = data;
-
-        this.previousPath = this.currentPath;
-        this.previousFolderId = this.currentFolderId;
-        this.currentFolderId = idFolder;
-        this.currentPath = path;
-
       });
 
   }
