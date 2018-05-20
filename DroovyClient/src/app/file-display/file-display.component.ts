@@ -21,6 +21,7 @@ export class FileDisplayComponent implements OnInit {
   creation_date: string;
   last_update_date: string;
 
+
   new_name: string;
   properties: PropertiesFileDroovy;
 
@@ -35,43 +36,57 @@ export class FileDisplayComponent implements OnInit {
 
 
   propertiesOnedrive() {
-    this.properties = this.fileDroovy.sourceProperties["OneDrive"];
-    this.name_drive = "Onedrive";
-    this.url_download = this.properties.url;
-    this.creation_date = this.properties.creationDate;
-    this.last_update_date = this.properties.lastUpdateDate;
+    if (this.display_properties === false) {
+      this.properties = this.fileDroovy.sourceProperties["OneDrive"];
+      this.name_drive = "Onedrive";
+      this.url_download = this.properties.url;
+      this.creation_date = this.properties.creationDate;
+      this.last_update_date = this.properties.lastUpdateDate;
 
-    this.display_properties = true;
-    this.choosenDrive = "onedrive";
+      this.display_properties = true;
+      this.choosenDrive = "onedrive";
+
+    } else {
+      this.display_properties = false;
+    }
 
   }
 
   propertiesGoogledrive() {
-    this.properties = this.fileDroovy.sourceProperties["GoogleDrive"];
-    this.name_drive = "Google Drive";
-    this.url_download = this.properties.url;
-    this.creation_date = this.properties.creationDate;
-    this.last_update_date = this.properties.lastUpdateDate;
+    if (this.display_properties === false) {
+      this.properties = this.fileDroovy.sourceProperties["GoogleDrive"];
+      this.name_drive = "Google Drive";
+      this.url_download = this.properties.url;
+      this.creation_date = this.properties.creationDate;
+      this.last_update_date = this.properties.lastUpdateDate;
 
-    this.display_properties = true;
-    this.choosenDrive = "googledrive";
+      this.display_properties = true;
+      this.choosenDrive = "googledrive";
 
+    } else {
+      this.display_properties = false;
+    }
   }
 
   propertiesDropbox() {
-    this.properties = this.fileDroovy.sourceProperties["Dropbox"];
-    this.name_drive = "Dropbox";
-    this.url_download = this.properties.url;
-    this.creation_date = this.properties.creationDate;
-    this.last_update_date = this.properties.lastUpdateDate;
+    if (this.display_properties === false) {
+      this.properties = this.fileDroovy.sourceProperties["Dropbox"];
+      this.name_drive = "Dropbox";
+      this.url_download = this.properties.url;
+      this.creation_date = this.properties.creationDate;
+      this.last_update_date = this.properties.lastUpdateDate;
 
-    this.display_properties = true;
-    this.choosenDrive = "dropbox";
+      this.display_properties = true;
+      this.choosenDrive = "dropbox";
+
+    } else {
+      this.display_properties = false;
+    }
   }
 
   move(choice : any ) {
 
-      this.request.move(this.auth.user.id,choice.pathParent+"/"+this.fileDroovy.name,this.properties.id,this.choosenDrive,choice.idParent,"/"+this.fileDroovy.name,this.fileDroovy.name).subscribe(
+    this.request.move(this.auth.user.id,choice.pathParent+"/"+this.fileDroovy.name,this.properties.id,this.choosenDrive,choice.idParent,"/"+this.fileDroovy.name,this.fileDroovy.name).subscribe(
       data => {
         console.log(data);
       });
