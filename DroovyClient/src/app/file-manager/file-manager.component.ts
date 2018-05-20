@@ -55,7 +55,17 @@ export class FileManagerComponent implements OnInit {
     }
   }
 
-  public updateFileList(path: string, idFolder: string, getGoogleDrive: number, getOneDrive: number, getDropbox: number) {
+
+  public refreshList() {
+
+    var lastindex = this.tab_previous_folder.length - 1;
+
+    this.updateFileList(this.tab_previous_folder[lastindex].path, this.tab_previous_folder[lastindex].folder_id,
+      this.tab_previous_folder[lastindex].getGoogledrive, this.tab_previous_folder[lastindex].getOnedrive,
+      this.tab_previous_folder[lastindex].getDropbox)
+  }
+
+  private updateFileList(path: string, idFolder: string, getGoogleDrive: number, getOneDrive: number, getDropbox: number) {
 
     this.request.getFiles(path, idFolder, this.userID, getGoogleDrive, getOneDrive, getDropbox,false).subscribe(
       data => {

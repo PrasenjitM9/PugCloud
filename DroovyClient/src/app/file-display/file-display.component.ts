@@ -1,8 +1,6 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {RequestService} from "../request.service";
+import {Component, Input, OnInit} from '@angular/core';
+import {FileDroovy, PropertiesFileDroovy, RequestService} from "../request.service";
 import {AuthService} from "../auth.service";
-import {destinationMove} from "../search-folder/search-folder.component";
-import {FileDroovy, PropertiesFileDroovy} from "../request.service";
 import {FileManagerComponent} from "../file-manager/file-manager.component";
 
 @Component({
@@ -14,7 +12,6 @@ export class FileDisplayComponent implements OnInit {
 
   @Input() fileDroovy: FileDroovy;
   @Input() file_manager: FileManagerComponent;
-  @Output() action = new EventEmitter<string>();
 
   display_properties = false;
   choosenDrive : string;
@@ -77,24 +74,22 @@ export class FileDisplayComponent implements OnInit {
       this.request.move(this.auth.user.id,choice.pathParent+"/"+this.fileDroovy.name,this.properties.id,this.choosenDrive,choice.idParent,"/"+this.fileDroovy.name,this.fileDroovy.name).subscribe(
       data => {
         console.log(data);
-        this.refreshList();
-
       });
+    this.refreshList();
   }
   delete() {
     this.request.delete(this.auth.user.id,"/"+this.fileDroovy.name,this.properties.id,this.choosenDrive).subscribe(
       data => {
         console.log(data);
-        this.refreshList();
-
       });
+    this.refreshList();
   }
   rename() {
     this.request.rename(this.auth.user.id,"/"+this.fileDroovy.name,this.properties.id,this.choosenDrive,this.new_name).subscribe(
       data => {
         console.log(data);
-        this.refreshList();
       });
+    this.refreshList();
   }
 
   download(){
@@ -102,8 +97,9 @@ export class FileDisplayComponent implements OnInit {
   }
 
   refreshList(){
-    this.action.next("");
+    this.file_manager.refreshList()
   }
+
   openFolder() {
     var path: string;
 
