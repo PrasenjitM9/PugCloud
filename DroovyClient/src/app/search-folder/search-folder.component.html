@@ -1,9 +1,20 @@
-<div>
 
-  <ul class="collection">
-    <li  class="collection-item" *ngFor="let folder of listFolder" (click)="goInFolder(folder)">{{folder.name}}</li>
-  </ul>
+<mat-accordion>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Déplacer le fichier
+      </mat-panel-title>
+      <mat-panel-description>
+        Choisir un dossier de destination
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <mat-list role="list">
+      <mat-list-item *ngFor="let folder of listFolder" (click)="goInFolder(folder)">{{folder.name}}</mat-list-item>
+    </mat-list>
 
-  <a class="waves-effect waves-light btn" (click)="back()">Précédent </a>
-  <a class="waves-effect waves-light btn" (click)="chooseFolder()">Déplacer </a>
-</div>
+    <button mat-button  (click)="back()" >Précédent</button>
+    <button mat-button (click)="chooseFolder()" >Déplacer</button>
+
+  </mat-expansion-panel>
+</mat-accordion>

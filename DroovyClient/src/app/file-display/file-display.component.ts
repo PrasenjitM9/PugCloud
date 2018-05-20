@@ -1,7 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {RequestService} from "../request.service";
 import {AuthService} from "../auth.service";
-import {destinationMove} from "../search-folder/search-folder.component";
 import {FileDroovy, PropertiesFileDroovy} from "../request.service";
 import {FileManagerComponent} from "../file-manager/file-manager.component";
 

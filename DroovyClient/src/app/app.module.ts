@@ -24,6 +24,15 @@ import {UploadComponent} from './upload/upload.component';
 import {CallbackdriveconnectionComponent} from './callbackdriveconnection/callbackdriveconnection.component';
 import {FileDisplayComponent} from './file-display/file-display.component';
 import { SearchFolderComponent } from './search-folder/search-folder.component';
+import {MatListModule} from '@angular/material/list';
+import {MatTabsModule} from '@angular/material/tabs';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import {MatInputModule} from '@angular/material/input';
+import {MatExpansionModule} from '@angular/material/expansion';
+import {MatChipsModule} from '@angular/material/chips';
 
 const appRoutes: Routes = [
   { path: 'manager', canActivate:[AuthGuard], component: FileManagerComponent },
@@ -59,7 +68,16 @@ const appRoutes: Routes = [
     BrowserModule,
     MaterializeModule,
     FormsModule,
-    AppRoutingModule
+    AppRoutingModule,
+    MatButtonModule,
+    MatExpansionModule,
+    MatListModule,
+    MatChipsModule,
+    MatInputModule,
+    MatCardModule,
+    MatTabsModule,
+    BrowserAnimationsModule,
+    MatToolbarModule,
   ],
   providers: [AuthService, RequestService, HttpClient, AuthGuard, UtilitaireService],
   bootstrap: [AppComponent]

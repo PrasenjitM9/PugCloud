@@ -1,43 +1,23 @@
-<nav class="nav-extended navbar-fixed" >
-  <div class="nav-wrapper">
-    <a href="#" class="brand-logo">Droovy</a>
-    <ul id="nav-mobile" class="right hide-on-med-and-down">
-      <li> <form>
-        <div class="input-field">
-          <input id="search" type="search" required>
-          <label class="label-icon" for="search"><i class="material-icons">search</i></label>
-          <i class="material-icons">close</i>
-        </div>
-      </form></li>
-      <li><a href="" (click)="onSignOut()">Déconnexion</a></li>
-    </ul>
-
-  </div>
-
-  <div class="row">
-    <div class="col s2">
-      <a class="btn-floating btn-large waves-effect waves-light blue-grey" (click)="navigatePrevious()"><i
-        class="large material-icons">arrow_back</i></a>
-    </div>
-    <div class=" col s10 nav-content">
-      <ul class="tabs tabs-transparent">
-        <li class="tab"><a class="active" href="#page1">Fichiers</a></li>
-        <li class="tab"><a href="#page2">Ajouter un drive</a></li>
-      </ul>
-    </div>
-  </div>
-
-</nav>
 
 
-<div  id="page1" class="col s12">
+<mat-toolbar color="primary">
+  <mat-toolbar-row >
+    <span>Droovy
+      <button mat-button (click)="onSignOut()">Déconnexion</button>
+    </span>
+  </mat-toolbar-row>
+  <mat-toolbar-row>
+    <button mat-button (click)="navigatePrevious()"><i
+      class="material-icons">arrow_back</i></button>
+  </mat-toolbar-row>
+</mat-toolbar>
 
 
-  <li *ngFor="let file of fileList">
-    <app-file-display [fileDroovy]="file" (action)="initRoot($event)" [file_manager]="this"></app-file-display>
-  </li>
 
-
-</div>
-
-<div id="page2" class="col s12"><app-auth-drive></app-auth-drive></div>
+<mat-tab-group color="primary">
+  <mat-tab label="Fichiers">
+    <app-file-display *ngFor="let file of fileList" [fileDroovy]="file" (action)="initRoot($event)" [file_manager]="this"></app-file-display>
+      <mat-divider></mat-divider>
+  </mat-tab>
+  <mat-tab label="Ajouter un drive"><app-auth-drive></app-auth-drive></mat-tab>
+</mat-tab-group>
