@@ -405,4 +405,42 @@ public class UserRequestGoogleDrive implements UserRequest{
 		
 	}
 
+
+
+	@Override
+	public File createFolder(String idUser, String folderName, String path, String idParent) {
+		String url = "https://www.googleapis.com/drive/v3/files/";
+
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		jerseyClient.register(MultiPartFeature.class);
+		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+
+		String json = "{\n" + 
+				"    \"name\": \""+folderName+"\",\n" + 
+				"    \"mimeType\": \"application/vnd.google-apps.folder\",\n" + 
+				"    \"parents\": [\""+idParent+"\"]\n" + 
+				"}";
+
+		DatabaseOp db = new DatabaseOp();
+
+		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserGoogleDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).post(Entity.json(json));
+
+		if (response.getStatus() != 200) {//204 == success rename
+
+			if(response.getStatus()==401 || response.getStatus() == 400) {
+				throw new UserApplicationError("Set/Update your google drive token,or your token is invalid",401);
+			}
+			else {
+				throw new InternalServerError();
+			}
+		}	
+		try {
+			return new JSONParserGoogledrive().parserFileSearch(new ObjectMapper().readTree(response.readEntity(String.class)));
+		} catch (Exception e) {
+			throw new InternalServerError();
+		}
+
+
+	}
+
 }

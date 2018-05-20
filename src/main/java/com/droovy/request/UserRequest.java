@@ -25,4 +25,6 @@ public interface UserRequest {
 	public List<File> searchFile(String idUser,String query);
 	
 	public java.io.File downloadFile(String idUser,String idFile);
+	
+	public File createFolder(String idUser,String folderName,String path, String idParent);
 }

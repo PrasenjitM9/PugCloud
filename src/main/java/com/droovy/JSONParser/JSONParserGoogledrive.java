@@ -21,7 +21,6 @@ public class JSONParserGoogledrive implements JSONParser {
 
 	@Override
 	public List<File> parserFiles(String result) throws JsonProcessingException, IOException {
-		System.out.println(result);
 
 		ObjectMapper mapper = new ObjectMapper();
 		List<File> listFile = new ArrayList<File>();
@@ -76,7 +75,7 @@ public class JSONParserGoogledrive implements JSONParser {
 		return listFile;
 	}
 
-	private File parserFileSearch(JsonNode file) {
+	public File parserFileSearch(JsonNode file) {
 
 		String name = file.path("name").asText();
 			
