@@ -341,9 +341,9 @@ public class UserApiRequest {
 			fileToSend = request_googledrive.downloadFile(idUser, idFile);
 		}
 		else {
-			throw new UserApplicationError("Tell in which drive upload, example : drive=dropbox", 400);
+			throw new UserApplicationError("Tell in which drive, example : drive=dropbox", 400);
 		}
-		
+
 		 StreamingOutput fileStream =  new StreamingOutput()
 	        {
 	            @Override

@@ -122,12 +122,12 @@ public class UserRequestDropbox implements UserRequest{
 
 		System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
 
-		Response response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Dropbox-API-Arg", dropboxargs).header("Content-Type","application/octet-stream").header("Authorization", "Bearer "+db.getUserDropBoxToken("2"))
+		Response response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Dropbox-API-Arg", dropboxargs).header("Content-Type","application/octet-stream").header("Authorization", "Bearer "+db.getUserDropBoxToken(userId))
 				.post(Entity.entity(null,MediaType.APPLICATION_OCTET_STREAM));
 
 
 		if (response.getStatus() != 200) {
-
+			System.out.println(response.readEntity(String.class));
 			if(response.getStatus()==401 || response.getStatus() == 400) {
 				throw new UserApplicationError("Set/Update your dropbox token,or your token is invalid",401);
 			}
@@ -229,7 +229,7 @@ public class UserRequestDropbox implements UserRequest{
 				"}";
 		jerseyTarget = jerseyClient.target("https://content.dropboxapi.com/2/files/upload_session/finish");
 
-		response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Dropbox-API-Arg", dropboxargs).header("Content-Type", "application/octet-stream").header("Authorization", "Bearer "+db.getUserDropBoxToken("2"))
+		response = jerseyTarget.request(MediaType.APPLICATION_JSON_TYPE).header("Dropbox-API-Arg", dropboxargs).header("Content-Type", "application/octet-stream").header("Authorization", "Bearer "+db.getUserDropBoxToken(userId))
 				.post(Entity.entity(null,MediaType.APPLICATION_OCTET_STREAM));
 
 		if (response.getStatus() != 200) {
