@@ -5,6 +5,7 @@ import {UtilitaireService} from "../utilitaire.service";
 import {UploadDialog} from "../upload/upload.component";
 import {MatDialog} from "@angular/material";
 import {LoadingComponentComponent} from "../loading-component/loading-component.component";
+import {ErrorDialogComponent} from "../error-dialog/error-dialog.component";
 
 @Component({
   selector: 'app-file-manager',
@@ -80,11 +81,20 @@ export class FileManagerComponent implements OnInit {
       data => {
         this.fileList = data;
         dialogRef.close();
-
-      });
+      }
+      , (error: any) => {
+          this.handleError(error);
+        });
 
   }
-
+  handleError(error : any){
+    console.log("Erreur : "+error);
+    let dialogRef = this.dialog.open(ErrorDialogComponent, {
+      data: {
+        msg :  "Oups, ....\nUne erreur est survenue, l'action a échoué"
+      }
+    });
+  }
   public updateFreespace() {
 
     if (this.authService.user.connectedToDropbox) {
@@ -103,6 +113,9 @@ export class FileManagerComponent implements OnInit {
     this.request.freespace(this.userID, drive).subscribe(
       data => {
         this.space_info[drive] = data
+      }
+      , (error: any) => {
+        this.handleError(error);
       });
   }
 

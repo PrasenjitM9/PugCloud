@@ -2,6 +2,9 @@ import {Component, Input, OnInit} from '@angular/core';
 import {FileDroovy, PropertiesFileDroovy, RequestService} from "../request.service";
 import {AuthService} from "../auth.service";
 import {FileManagerComponent} from "../file-manager/file-manager.component";
+import {LoadingComponentComponent} from "../loading-component/loading-component.component";
+import {MatDialog} from "@angular/material";
+import {ErrorDialogComponent} from "../error-dialog/error-dialog.component";
 
 @Component({
   selector: 'app-file-display',
@@ -25,7 +28,7 @@ export class FileDisplayComponent implements OnInit {
   new_name: string;
   properties: PropertiesFileDroovy;
 
-  constructor(private request : RequestService,private auth : AuthService) {
+  constructor(public dialog: MatDialog,private request : RequestService,private auth : AuthService) {
 
   }
 
@@ -89,6 +92,9 @@ export class FileDisplayComponent implements OnInit {
     this.request.move(this.auth.user.id,choice.pathParent+"/"+this.fileDroovy.name,this.properties.id,this.choosenDrive,choice.idParent,"/"+this.fileDroovy.name,this.fileDroovy.name).subscribe(
       data => {
         console.log(data);
+        }
+      , (error: any) => {
+        this.handleError(error);
       });
     this.refreshList();
   }
@@ -96,7 +102,11 @@ export class FileDisplayComponent implements OnInit {
     this.request.delete(this.auth.user.id,"/"+this.fileDroovy.name,this.properties.id,this.choosenDrive).subscribe(
       data => {
         console.log(data);
+      }
+      , (error: any) => {
+          this.handleError(error);
       });
+
     this.refreshList();
     this.file_manager.updateFreespace()
   }
@@ -104,6 +114,9 @@ export class FileDisplayComponent implements OnInit {
     this.request.rename(this.auth.user.id,"/"+this.fileDroovy.name,this.properties.id,this.choosenDrive,this.new_name).subscribe(
       data => {
         console.log(data);
+      }
+      , (error: any) => {
+        this.handleError(error);
       });
     this.refreshList();
   }
@@ -114,6 +127,15 @@ export class FileDisplayComponent implements OnInit {
 
   refreshList(){
     this.file_manager.refreshList()
+  }
+
+  handleError(error : any){
+    console.log(error);
+    let dialogRef = this.dialog.open(ErrorDialogComponent, {
+      data: {
+        msg :  "Oups, ....\nUne erreur est survenue, l'action a échoué"
+      }
+    });
   }
 
   openFolder() {

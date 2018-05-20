@@ -91,8 +91,7 @@ export class UploadDialog {
     this.request.upload(formData).subscribe(
       data => {
         console.log(data);
-        this.dialogRef.close('Uploaded');
-
+        this.dialogRef.close("");
       });
   }
 }
