@@ -35,6 +35,9 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import {MatChipsModule} from '@angular/material/chips';
 import { MatDialogModule } from '@angular/material';
 import {MatSelectModule} from '@angular/material/select';
+import { ErrorDialogComponent } from './error-dialog/error-dialog.component';
+import { LoadingComponentComponent } from './loading-component/loading-component.component';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 const appRoutes: Routes = [
   { path: 'manager', canActivate:[AuthGuard], component: FileManagerComponent },
@@ -61,7 +64,9 @@ const appRoutes: Routes = [
     UploadComponent,
     CallbackdriveconnectionComponent,
     SearchFolderComponent,
-    UploadDialog
+    UploadDialog,
+    ErrorDialogComponent,
+    LoadingComponentComponent
   ],
   imports: [
     RouterModule.forRoot(
@@ -71,6 +76,7 @@ const appRoutes: Routes = [
     BrowserModule,
     MaterializeModule,
     FormsModule,
+    MatProgressSpinnerModule,
     AppRoutingModule,
     MatButtonModule,
     MatExpansionModule,
@@ -85,7 +91,8 @@ const appRoutes: Routes = [
     MatToolbarModule
   ],
   entryComponents: [
-    UploadDialog
+    UploadDialog,
+    LoadingComponentComponent
   ],
     providers: [AuthService, RequestService, HttpClient, AuthGuard, UtilitaireService],
   bootstrap: [AppComponent]

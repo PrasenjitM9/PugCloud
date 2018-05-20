@@ -2,6 +2,9 @@ import {Component, OnInit} from '@angular/core';
 import {FileDroovy, RequestService} from "../request.service";
 import {AuthService} from '../auth.service';
 import {UtilitaireService} from "../utilitaire.service";
+import {UploadDialog} from "../upload/upload.component";
+import {MatDialog} from "@angular/material";
+import {LoadingComponentComponent} from "../loading-component/loading-component.component";
 
 @Component({
   selector: 'app-file-manager',
@@ -10,7 +13,7 @@ import {UtilitaireService} from "../utilitaire.service";
 })
 export class FileManagerComponent implements OnInit {
 
-  constructor(private request: RequestService, private authService: AuthService, private utilitaire: UtilitaireService) {
+  constructor(public dialog: MatDialog,private request: RequestService, private authService: AuthService, private utilitaire: UtilitaireService) {
   }
 
   protected fileList : FileDroovy[];
@@ -66,9 +69,18 @@ export class FileManagerComponent implements OnInit {
 
   private updateFileList(path: string, idFolder: string, getGoogleDrive: number, getOneDrive: number, getDropbox: number) {
 
+
+    let dialogRef = this.dialog.open(LoadingComponentComponent, {
+      data: {
+        msg :  "Chargement ..."
+      }
+    });
+
     this.request.getFiles(path, idFolder, this.userID, getGoogleDrive, getOneDrive, getDropbox,false).subscribe(
       data => {
         this.fileList = data;
+        dialogRef.close();
+
       });
 
   }
