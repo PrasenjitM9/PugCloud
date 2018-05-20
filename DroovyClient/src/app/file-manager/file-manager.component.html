@@ -16,7 +16,8 @@
 
 <mat-tab-group color="primary">
   <mat-tab label="Fichiers">
-    <app-file-display *ngFor="let file of fileList" [fileDroovy]="file" (action)="initRoot($event)" [file_manager]="this"></app-file-display>
+    <app-upload [file_manager]="this"></app-upload>
+    <app-file-display *ngFor="let file of fileList" [fileDroovy]="file"  [file_manager]="this"></app-file-display>
       <mat-divider></mat-divider>
   </mat-tab>
   <mat-tab label="Ajouter un drive"><app-auth-drive></app-auth-drive></mat-tab>

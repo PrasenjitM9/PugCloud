@@ -20,7 +20,7 @@ import {RequestService} from './request.service';
 import {FileSizePipe} from './file-size.pipe';
 import {AuthGuard} from './auth-guard.service';
 import {UtilitaireService} from "./utilitaire.service";
-import {UploadComponent} from './upload/upload.component';
+import {UploadComponent, UploadDialog} from './upload/upload.component';
 import {CallbackdriveconnectionComponent} from './callbackdriveconnection/callbackdriveconnection.component';
 import {FileDisplayComponent} from './file-display/file-display.component';
 import { SearchFolderComponent } from './search-folder/search-folder.component';
@@ -33,6 +33,8 @@ import {MatCardModule} from '@angular/material/card';
 import {MatInputModule} from '@angular/material/input';
 import {MatExpansionModule} from '@angular/material/expansion';
 import {MatChipsModule} from '@angular/material/chips';
+import { MatDialogModule } from '@angular/material';
+import {MatSelectModule} from '@angular/material/select';
 
 const appRoutes: Routes = [
   { path: 'manager', canActivate:[AuthGuard], component: FileManagerComponent },
@@ -59,6 +61,7 @@ const appRoutes: Routes = [
     UploadComponent,
     CallbackdriveconnectionComponent,
     SearchFolderComponent,
+    UploadDialog
   ],
   imports: [
     RouterModule.forRoot(
@@ -72,6 +75,8 @@ const appRoutes: Routes = [
     MatButtonModule,
     MatExpansionModule,
     MatListModule,
+    MatSelectModule,
+    MatDialogModule,
     MatChipsModule,
     MatInputModule,
     MatCardModule,
@@ -79,7 +84,10 @@ const appRoutes: Routes = [
     BrowserAnimationsModule,
     MatToolbarModule,
   ],
-  providers: [AuthService, RequestService, HttpClient, AuthGuard, UtilitaireService],
+  entryComponents: [
+    UploadDialog
+  ],
+    providers: [AuthService, RequestService, HttpClient, AuthGuard, UtilitaireService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

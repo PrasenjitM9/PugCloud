@@ -19,6 +19,8 @@ export class RequestService {
   download(fileName : string, fileId : string, userId : string, drive : string){
     var url = this.apiUrl + "download?idUser=" + userId +  "&idFile=" + fileId + "&drive=" + drive + "&fileName=" + fileName;
     window.location.href = url;
+
+
   }
 
   /*
@@ -40,6 +42,12 @@ export class RequestService {
     var url = this.apiUrl + "move?idUser=" + idUser + "&path=" + path + "&idFile=" + idFile + "&drive="+drive+"&idParent="+idParent+"&pathParent="+pathParent+"&name="+name;
     return this.http.get(url, {responseType: 'json'});
   }
+
+  upload(formData : FormData){
+    var url = this.apiUrl+"upload";
+    return this.http.post(url,formData);
+  }
+
 
 }
 
