@@ -1,0 +1,33 @@
+<br>
+<mat-accordion>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Partager
+      </mat-panel-title>
+      <mat-panel-description>
+        Ajouter un collaborateur
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <input [(ngModel)]="mail" placeholder="Adresse mail">
+    <input [(ngModel)]="message" placeholder="Message">
+
+    <mat-form-field>
+      <mat-select name="selectDrive" [(ngModel)]="selectedDrive" required placeholder="Choisir un drive">
+        <mat-option *ngIf='this.file.sourceProperties["Dropbox"]!=undefined' value="dropbox">Dropbox</mat-option>
+        <mat-option *ngIf='this.file.sourceProperties["OneDrive"]!=undefined' value="onedrive">OneDrive</mat-option>
+        <mat-option *ngIf='this.file.sourceProperties["GoogleDrive"]!=undefined' value="googledrive">GoogleDrive</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-select name="right" [(ngModel)]="selectedRight" required placeholder="Droit">
+        <mat-option value="READ">Lecture</mat-option>
+        <mat-option value="WRITE">Ecriture</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-button color="primary" (click)="send()" >Envoyer</button>
+
+  </mat-expansion-panel>
+</mat-accordion>

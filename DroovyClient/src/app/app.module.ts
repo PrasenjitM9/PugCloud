@@ -45,6 +45,7 @@ import {CreateFolderComponent} from './create-folder/create-folder.component';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {FlexLayoutModule} from "@angular/flex-layout";
 import { SearchFilterPipe } from './search-filter.pipe';
+import { SharingComponent } from './sharing/sharing.component';
 import {ShortTextPipe} from './pipes/short-text.pipe';
 
 const appRoutes: Routes = [
@@ -80,6 +81,7 @@ const appRoutes: Routes = [
     CreateFolderComponent,
     SearchFilterPipe,
     ShortTextPipe,
+    SharingComponent,
   ],
   imports: [
     RouterModule.forRoot(

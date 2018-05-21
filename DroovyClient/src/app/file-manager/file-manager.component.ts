@@ -229,7 +229,7 @@ export class FileManagerComponent implements OnInit {
   }
 }
 
-class PreviousInfo {
+export class PreviousInfo {
 
   constructor(public path: string, public folder_id: string, public getGoogledrive: number, public getOnedrive: number,
               public getDropbox: number) {
