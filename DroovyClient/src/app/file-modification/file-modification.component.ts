@@ -17,11 +17,11 @@ export class FileModificationComponent implements OnInit {
 
   onRename(){
     this.data.fileDisplay.rename();
-    this.router.navigate(['/manager']);
+   // this.router.navigate(['/manager']);
     }
   onDelete(){
     this.data.fileDisplay.delete();
-    this.router.navigate(['/manager']);
+    //this.router.navigate(['/manager']);
   }
   onDownload(){
     this.data.fileDisplay.downloas();
