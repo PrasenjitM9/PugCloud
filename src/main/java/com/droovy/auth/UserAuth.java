@@ -30,6 +30,12 @@ public class UserAuth {
 
 		DatabaseOp db = new DatabaseOp();
 
+		if(password.length()<3 || name.length()<3){
+			return "{\"reason\" : \"too short\","
+					+ "\"success\" : \"false\"}";
+		}
+		
+		
 		if(db.checkIfUserExist(name)) {
 			return "{\"reason\" : \"alreadyExist\","
 					+ "\"success\" : \"false\"}";

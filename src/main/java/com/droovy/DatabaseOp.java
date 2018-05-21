@@ -17,6 +17,7 @@ import com.droovy.auth.OneDriveAuth;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import errors.InternalServerError;
+import errors.UserApplicationError;
 
 public class DatabaseOp {
 
@@ -97,6 +98,8 @@ public class DatabaseOp {
 	}
 
 	public boolean checkIfUserExist(String name) {
+		
+		
 		String sql_get_user = "SELECT id FROM users WHERE name == ?";
 
 		try {
@@ -122,6 +125,8 @@ public class DatabaseOp {
 
 
 	public int authUser(String name, String password){
+		
+		
 
 		String sql_get_user = "SELECT id FROM users WHERE name == ? and password == ?";
 
@@ -148,8 +153,37 @@ public class DatabaseOp {
 
 
 	}
+	
+	public boolean checkIfExist(String id) {
+		
+		
+		String sql_get_user = "SELECT name FROM users WHERE id == ?";
+
+		try {
+			
+			PreparedStatement st = connectDb().prepareStatement(sql_get_user);
+			st.setString(1, id);
+			st.execute();
+
+
+			ResultSet rs = st.getResultSet();
+
+			while (rs.next()) {
+				return true;
+			}
+			return false;
+
+		} catch (Exception e) {
+			throw new InternalServerError();
+		}
+	}
 
 	public boolean updateUserOneDriveToken(String token,String refreshToken,String id){
+		
+		if(!checkIfExist(id)) {
+			throw new UserApplicationError(442);
+		}
+		
 		String sql_update_user = "UPDATE users SET onedrivetoken = ?, onedrivetokencreation = datetime('now','localtime'), onedrivetokenrefresh = ? WHERE id == ?;";
 
 
@@ -171,6 +205,11 @@ public class DatabaseOp {
 	}
 
 	public boolean updateUserDropBoxToken(String token,String id){
+		
+		if(!checkIfExist(id)) {
+			throw new UserApplicationError(442);
+		}
+		
 		String sql_update_user = "UPDATE users SET dropboxtoken = ? WHERE id == ?;";
 
 
@@ -189,6 +228,11 @@ public class DatabaseOp {
 	}
 
 	public boolean updateUserGoogleDriveToken(String token,String refreshToken, String id){
+		
+		if(!checkIfExist(id)) {
+			throw new UserApplicationError(442);
+		}
+		
 		String sql_update_user = "UPDATE users SET googledrivetoken = ?, googledrivetokencreation = datetime('now','localtime') ,googledrivetokenrefresh = ? WHERE id == ?;";
 
 		try {
@@ -211,6 +255,11 @@ public class DatabaseOp {
 
 
 	public String getUserOneDriveToken(String id) {
+		
+		if(!checkIfExist(id)) {
+			throw new UserApplicationError(442);
+		}
+		
 		String sql_create_user = "SELECT onedrivetoken,onedrivetokencreation,onedrivetokenrefresh FROM users WHERE id == ?;";
 
 
@@ -259,6 +308,11 @@ public class DatabaseOp {
 	}
 
 	public String getUserDropBoxToken(String id){
+		
+		if(!checkIfExist(id)) {
+			throw new UserApplicationError(442);
+		}
+		
 		String sql_create_user = "SELECT dropboxtoken FROM users WHERE id == ?;";
 
 
@@ -283,6 +337,11 @@ public class DatabaseOp {
 	}
 
 	public String getUserGoogleDriveToken(String id) {
+		
+		if(!checkIfExist(id)) {
+			throw new UserApplicationError(442);
+		}
+		
 		String sql_create_user = "SELECT googledrivetoken,googledrivetokencreation,googledrivetokenrefresh FROM users WHERE id == ?;";
 
 		try {
