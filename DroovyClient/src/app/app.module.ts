@@ -47,7 +47,6 @@ import {FlexLayoutModule} from "@angular/flex-layout";
 import { SearchFilterPipe } from './search-filter.pipe';
 import { SharingComponent } from './sharing/sharing.component';
 import {ShortTextPipe} from './pipes/short-text.pipe';
-import { ErrorHandlerCustom } from './error/ErrorHandlerCustom';
 
 const appRoutes: Routes = [
   { path: 'manager', canActivate:[AuthGuard], component: FileManagerComponent },
@@ -117,7 +116,7 @@ const appRoutes: Routes = [
     FileModificationComponent,
     CreateFolderComponent
   ],
-  providers: [{provide: ErrorHandler, useClass: ErrorHandlerCustom},AuthService, RequestService, HttpClient, AuthGuard, UtilitaireService, ShortTextPipe],
+  providers: [AuthService, RequestService, HttpClient, AuthGuard, UtilitaireService, ShortTextPipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
