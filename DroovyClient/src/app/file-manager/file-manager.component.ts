@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FileDroovy, RequestService, token} from "../request.service";
 import {AuthService} from '../auth.service';
 import {UtilitaireService} from "../utilitaire.service";
@@ -17,6 +17,7 @@ export class FileManagerComponent implements OnInit {
 
   constructor(public dialog: MatDialog,private request: RequestService, private authService: AuthService, private utilitaire: UtilitaireService, private router : Router) {
   }
+  @Input() searchQuery: string;
 
   public fileList: FileDroovy[] = [];
   public tab_fileList: Array<FileDroovy>[] = [];
@@ -64,6 +65,10 @@ export class FileManagerComponent implements OnInit {
     }
   }
 
+
+  public internSearch(){
+
+  }
 
   public refreshList() {
 

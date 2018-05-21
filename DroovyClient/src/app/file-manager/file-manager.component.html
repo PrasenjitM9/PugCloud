@@ -40,10 +40,11 @@
     <app-upload [file_manager]="this"></app-upload><button mat-button color="primary" (click)="createFolder()">Créer un dossier</button>
     <!--<app-search-bar [file_manager]="this"></app-search-bar>-->
     <button mat-button color="primary" (click)="nextPage()">Afficher plus</button>
+    <input [(ngModel)]="searchQuery" placeholder="Filtrer">
 
-    <ng-container *ngFor="let tab_fileDroovy of tab_fileList">
+    <ng-container *ngFor="let tab_fileDroovy of tab_fileList ">
       <div style="margin: 5px;" fxLayout="row" fxLayout.xs="column" fxLayoutGap="5px">
-        <app-file-display [fileDroovy]="file" [file_manager]="this" *ngFor="let file of tab_fileDroovy"
+        <app-file-display [fileDroovy]="file" [file_manager]="this" *ngFor="let file of tab_fileDroovy | searchFilter : searchQuery"
                           fxFlex="20%"></app-file-display>
       </div>
     </ng-container>

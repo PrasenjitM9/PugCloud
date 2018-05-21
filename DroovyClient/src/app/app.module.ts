@@ -44,6 +44,7 @@ import {SearchBarComponent} from './search-bar/search-bar.component';
 import {CreateFolderComponent} from './create-folder/create-folder.component';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {FlexLayoutModule} from "@angular/flex-layout";
+import { SearchFilterPipe } from './search-filter.pipe';
 
 const appRoutes: Routes = [
   { path: 'manager', canActivate:[AuthGuard], component: FileManagerComponent },
@@ -76,6 +77,7 @@ const appRoutes: Routes = [
     FileModificationComponent,
     SearchBarComponent,
     CreateFolderComponent,
+    SearchFilterPipe,
   ],
   imports: [
     RouterModule.forRoot(
