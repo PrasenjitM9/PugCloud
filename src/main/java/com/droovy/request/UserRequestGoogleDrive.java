@@ -514,7 +514,7 @@ public class UserRequestGoogleDrive implements UserRequest{
 		if (response.getStatus() != 200) {
 			System.out.println(response.readEntity(String.class));
 			if(response.getStatus()==401 || response.getStatus() == 400) {
-				throw new UserApplicationError("Set/Update your google drive token,or your token is invalid",401);
+				throw new UserApplicationError("Set/Update your dropbox token,or your token is invalid or you don't have the rights to do this",401);
 			}
 			else {
 				throw new InternalServerError();

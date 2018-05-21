@@ -25,38 +25,30 @@ public class UserAuth {
 	@Produces("text/plain")
 	@Path("/create")
 	public String userCreate(@Context UriInfo uriInfo,@QueryParam("password") String password,@QueryParam("name") String name) {
-		
-		 boolean creationSuccess = true;
-		
-		 DatabaseOp db = new DatabaseOp();
-		 
-		 if(db.checkIfUserExist(name)) {
-			 return "{\"reason\" : \"alreadyExist\","
-						+ "\"success\" : \"false\"}";
-		 }
-		 
-		 int idClient = db.createUser(name, password);
-		
-		 
-		 try {
-				db.close();
-			} catch (SQLException e) {
-				 return "{\"id\" : \"-1\","
-							+ "\"success\" : \"false\"}";
-			}
-			 
-		 if(idClient == -1) {
-			 creationSuccess = false;
-		 }
-		 
-		 if(creationSuccess) {
-				return "{\"id\" : \""+idClient+"\","
-						+ "\"success\" : \"true\"}";
-		 }
-		 else {
-			 return "{\"id\" : \"-1\","
-						+ "\"success\" : \"false\"}";
-		 }
+
+		boolean creationSuccess = true;
+
+		DatabaseOp db = new DatabaseOp();
+
+		if(db.checkIfUserExist(name)) {
+			return "{\"reason\" : \"alreadyExist\","
+					+ "\"success\" : \"false\"}";
+		}
+
+		int idClient = db.createUser(name, password);
+
+		if(idClient == -1) {
+			creationSuccess = false;
+		}
+
+		if(creationSuccess) {
+			return "{\"id\" : \""+idClient+"\","
+					+ "\"success\" : \"true\"}";
+		}
+		else {
+			return "{\"id\" : \"-1\","
+					+ "\"success\" : \"false\"}";
+		}
 	}
 
 
@@ -66,32 +58,25 @@ public class UserAuth {
 	@Path("/auth")
 	public String userAuth(@Context UriInfo uriInfo,@QueryParam("password") String password,@QueryParam("name") String name) {
 
-		
-		 boolean connexionSuccess = true;
-		 
-		 DatabaseOp db = new DatabaseOp();
-		 
-		 int idClient = db.authUser(name, password);
-		
-		 try {
-			db.close();
-		} catch (SQLException e) {
-			 return "{\"id\" : \"-1\","
-						+ "\"success\" : \"false\"}";
+
+		boolean connexionSuccess = true;
+
+		DatabaseOp db = new DatabaseOp();
+
+		int idClient = db.authUser(name, password);
+
+		if(idClient == -1) {
+			connexionSuccess = false;
 		}
-		 
-		 if(idClient == -1) {
-			 connexionSuccess = false;
-		 }
-		 
-		 if(connexionSuccess) {
-				return "{\"id\" : \""+idClient+"\","
-						+ "\"success\" : \"true\"}";
-		 }
-		 else {
-			 return "{\"id\" : \"-1\","
-						+ "\"success\" : \"false\"}";
-		 }
+
+		if(connexionSuccess) {
+			return "{\"id\" : \""+idClient+"\","
+					+ "\"success\" : \"true\"}";
+		}
+		else {
+			return "{\"id\" : \"-1\","
+					+ "\"success\" : \"false\"}";
+		}
 	}
 
 

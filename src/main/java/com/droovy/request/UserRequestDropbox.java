@@ -395,7 +395,6 @@ public class UserRequestDropbox implements UserRequest{
 			}
 
 			String jsonData = "";
-System.out.println(folder);
 			if(folder) {
 				url = "https://api.dropboxapi.com/2/sharing/add_folder_member";
 				jsonData = "{" + 
@@ -429,9 +428,6 @@ System.out.println(folder);
 						"}";
 
 			}
-			System.out.println(url);
-
-			
 			
 			JerseyClient jerseyClient = JerseyClientBuilder.createClient();
 			jerseyClient.register(MultiPartFeature.class);
@@ -444,8 +440,12 @@ System.out.println(folder);
 			Response response = jerseyTarget.request().header("Content-Type", "application/json").header("Authorization", "Bearer "+db.getUserDropBoxToken(idUser)).accept(MediaType.APPLICATION_JSON).post(Entity.json(jsonData));
 
 			if (response.getStatus() != 200) {
-				throw new RuntimeException("Failed : HTTP error code : "
-						+ response.getStatus()+ " "+ response.toString()+ response.readEntity(String.class));
+				if(response.getStatus()==401 || response.getStatus() == 400) {
+					throw new UserApplicationError("Set/Update your dropbox token,or your token is invalid or you don't have the rights to do this",401);
+				}
+				else {
+					throw new InternalServerError();
+				}
 			}		
 			return true;		
 

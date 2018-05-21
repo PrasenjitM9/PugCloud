@@ -16,9 +16,11 @@ import com.droovy.auth.GoogledriveAuth;
 import com.droovy.auth.OneDriveAuth;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import errors.InternalServerError;
+
 public class DatabaseOp {
 
-	private Connection conn;
+	//private Connection conn;
 
 	private static String url = "./" + "users.db";
 
@@ -42,13 +44,26 @@ public class DatabaseOp {
 	private static Connection c = null;
 
 
-	private static Connection connectDb() throws SQLException, ClassNotFoundException{
+	private static Connection connectDb() {
 		
 		if(c == null){
-			Class.forName("org.sqlite.JDBC");
+			
+			try {
+				Class.forName("org.sqlite.JDBC");
+				c = DriverManager.getConnection("jdbc:sqlite:"+url);
+				c.createStatement().executeUpdate(sql_create_table);
+				Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+					@Override
+					public void run() {
+						close();
+					}
+				}));
 
-			c = DriverManager.getConnection("jdbc:sqlite:"+url);
-			c.createStatement().executeUpdate(sql_create_table);
+			}
+			catch(Exception e) {
+				throw new InternalServerError();
+			}
+			
 		}
 		return c;
 	}
@@ -61,29 +76,22 @@ public class DatabaseOp {
 		String sql_get_user_id = "SELECT MAX(id) as id FROM users";
 
 		try {
-			try {
-				conn = connectDb();
-			} catch (ClassNotFoundException e) {
-				return -1;
-			}
-			PreparedStatement st = conn.prepareStatement(sql_create_user);
+			
+			PreparedStatement st = connectDb().prepareStatement(sql_create_user);
 			st.setString(1, name);
 			st.setString(2, password);
 			st.executeUpdate();
 
 
-			ResultSet rs = conn.createStatement().executeQuery(sql_get_user_id);
+			ResultSet rs = connectDb().createStatement().executeQuery(sql_get_user_id);
 
 			while (rs.next()) {
 				return rs.getInt("id");
 			}
-
-
 			return -1;
 
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return -1;
+		} catch (Exception e) {
+			throw new InternalServerError();
 		}
 
 	}
@@ -92,12 +100,8 @@ public class DatabaseOp {
 		String sql_get_user = "SELECT id FROM users WHERE name == ?";
 
 		try {
-			try {
-				conn = connectDb();
-			} catch (ClassNotFoundException e) {
-				return false;
-			}
-			PreparedStatement st = conn.prepareStatement(sql_get_user);
+			
+			PreparedStatement st = connectDb().prepareStatement(sql_get_user);
 			st.setString(1, name);
 			st.execute();
 
@@ -110,9 +114,8 @@ public class DatabaseOp {
 			}
 			return false;
 
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return false;
+		} catch (Exception e) {
+			throw new InternalServerError();
 		}
 
 	}
@@ -123,12 +126,8 @@ public class DatabaseOp {
 		String sql_get_user = "SELECT id FROM users WHERE name == ? and password == ?";
 
 		try {
-			try {
-				conn = connectDb();
-			} catch (ClassNotFoundException e) {
-				return -1;
-			}
-			PreparedStatement st = conn.prepareStatement(sql_get_user);
+			
+			PreparedStatement st = connectDb().prepareStatement(sql_get_user);
 			st.setString(1, name);
 			st.setString(2, password);
 			st.execute();
@@ -143,26 +142,20 @@ public class DatabaseOp {
 			}
 			return -1;
 
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return -1;
+		} catch (Exception e) {
+			throw new InternalServerError();
 		}
 
 
 	}
-
 
 	public boolean updateUserOneDriveToken(String token,String refreshToken,String id){
 		String sql_update_user = "UPDATE users SET onedrivetoken = ?, onedrivetokencreation = datetime('now','localtime'), onedrivetokenrefresh = ? WHERE id == ?;";
 
 
 		try {
-			try {
-				conn = connectDb();
-			} catch (ClassNotFoundException e) {
-				return false;
-			}
-			PreparedStatement st = conn.prepareStatement(sql_update_user);
+			
+			PreparedStatement st = connectDb().prepareStatement(sql_update_user);
 			st.setString(1, token);
 			st.setString(2, refreshToken);
 			st.setString(3, id);
@@ -172,9 +165,8 @@ public class DatabaseOp {
 
 			return true;
 
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return false;
+		} catch (Exception e) {
+			throw new InternalServerError();
 		}
 	}
 
@@ -183,49 +175,34 @@ public class DatabaseOp {
 
 
 		try {
-			try {
-				conn = connectDb();
-			} catch (ClassNotFoundException e) {
-				return false;
-			}
-			PreparedStatement st = conn.prepareStatement(sql_update_user);
+			
+			PreparedStatement st = connectDb().prepareStatement(sql_update_user);
 			st.setString(1, token);
 			st.setString(2, id);
 			st.executeUpdate();
 
-
-
 			return true;
 
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return false;
+		} catch (Exception e) {
+			throw new InternalServerError();
 		}	
 	}
 
 	public boolean updateUserGoogleDriveToken(String token,String refreshToken, String id){
 		String sql_update_user = "UPDATE users SET googledrivetoken = ?, googledrivetokencreation = datetime('now','localtime') ,googledrivetokenrefresh = ? WHERE id == ?;";
 
-
 		try {
-			try {
-				conn = connectDb();
-			} catch (ClassNotFoundException e) {
-				return false;
-			}
-			PreparedStatement st = conn.prepareStatement(sql_update_user);
+			
+			PreparedStatement st = connectDb().prepareStatement(sql_update_user);
 			st.setString(1, token);
 			st.setString(2, refreshToken);
 			st.setString(3, id);
 			st.executeUpdate();
 
-
-
 			return true;
 
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return false;
+		} catch (Exception e) {
+			throw new InternalServerError();
 		}
 	}
 
@@ -238,12 +215,8 @@ public class DatabaseOp {
 
 
 		try {
-			try {
-				conn = connectDb();
-			} catch (ClassNotFoundException e) {
-				return "";
-			}
-			PreparedStatement st = conn.prepareStatement(sql_create_user);
+			
+			PreparedStatement st = connectDb().prepareStatement(sql_create_user);
 			st.setString(1, id);
 			ResultSet rs = st.executeQuery();
 
@@ -259,7 +232,7 @@ public class DatabaseOp {
 					Date dateCreation;
 					try {
 						dateCreation = format.parse(date);
-					} catch (ParseException e) {
+					} catch (Exception e) {
 						return "";
 					}
 
@@ -269,12 +242,8 @@ public class DatabaseOp {
 
 						try {
 							return new OneDriveAuth().refreshToken(rs.getString("onedrivetokenrefresh"),id);
-						} catch (JsonProcessingException e) {
-							return "";
-
-						} catch (IOException e) {
-							return "";
-
+						} catch (Exception e) {
+							throw new InternalServerError();
 						}
 
 					}
@@ -283,9 +252,8 @@ public class DatabaseOp {
 				return token;
 			}
 
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return "";
+		} catch (Exception e) {
+			throw new InternalServerError();
 		}
 		return "";
 	}
@@ -295,12 +263,8 @@ public class DatabaseOp {
 
 
 		try {
-			try {
-				conn = connectDb();
-			} catch (ClassNotFoundException e) {
-				return "";
-			}
-			PreparedStatement st = conn.prepareStatement(sql_create_user);
+			
+			PreparedStatement st = connectDb().prepareStatement(sql_create_user);
 			st.setString(1, id);
 			ResultSet rs = st.executeQuery();
 
@@ -312,9 +276,8 @@ public class DatabaseOp {
 				return token;
 			}
 
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return "";
+		} catch (Exception e) {
+			throw new InternalServerError();
 		}
 		return "";
 	}
@@ -323,12 +286,8 @@ public class DatabaseOp {
 		String sql_create_user = "SELECT googledrivetoken,googledrivetokencreation,googledrivetokenrefresh FROM users WHERE id == ?;";
 
 		try {
-			try {
-				conn = connectDb();
-			} catch (ClassNotFoundException e) {
-				return "";
-			}
-			PreparedStatement st = conn.prepareStatement(sql_create_user);
+			
+			PreparedStatement st = connectDb().prepareStatement(sql_create_user);
 			st.setString(1, id);
 			ResultSet rs = st.executeQuery();
 
@@ -345,7 +304,7 @@ public class DatabaseOp {
 					try {
 						dateCreation = format.parse(date);
 					} catch (ParseException e1) {
-						return "";
+						throw new InternalServerError();
 					}
 
 					Date dateExpiration = new Date(dateCreation.getTime() + 1 * HOUR);
@@ -354,29 +313,28 @@ public class DatabaseOp {
 						System.out.println("refresh");
 						try {
 							return new GoogledriveAuth().refreshToken(rs.getString("googledrivetokenrefresh"),id);
-						} catch (JsonProcessingException e) {
-							return "";
-						} catch (IOException e) {
-							return "";
+						} catch (Exception e) {
+							throw new InternalServerError();
 						}					
 					}
 
 				}
-
-
 				return token;
 			}
 
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return "";
+		} catch (Exception e) {
+			throw new InternalServerError();
 		}
 		return "";
 	}
 
 
-	public void close() throws SQLException {
-
+	public static void close() {
+		try {
+			c.close();
+		} catch (SQLException e) {
+			throw new InternalServerError();
+		}
 	}
 
 

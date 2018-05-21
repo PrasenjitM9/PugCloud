@@ -515,11 +515,11 @@ public class UserRequestOneDrive implements UserRequest {
 
 		if (response.getStatus() != 200 && response.getStatus() != 201) {
 			if(response.getStatus()==401 || response.getStatus() == 400) {
-				throw new UserApplicationError("Set/Update your onedrive token,or your token is invalid",401);
+				throw new UserApplicationError("Set/Update your dropbox token,or your token is invalid or you don't have the rights to do this",401);
 			}
 			else {
 				throw new InternalServerError();
-			}	
+			}
 		}		
 		return true;
 	}
