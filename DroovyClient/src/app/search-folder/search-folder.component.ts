@@ -42,7 +42,7 @@ export class SearchFolderComponent implements OnInit {
 
       this.request.getFiles("root","root", this.auth.user.id,this.google,this.one,this.dropbox,true).subscribe(
       data => {
-        this.listFolder = data;
+        this.listFolder = data.files;
         console.log(data);
 
       });
@@ -74,7 +74,7 @@ export class SearchFolderComponent implements OnInit {
 
     this.request.getFiles(this.currentPath,this.currentId, this.auth.user.id,this.google,this.one,this.dropbox,true).subscribe(
       data => {
-        this.listFolder = data;
+        this.listFolder = data.files;
 
         console.log(data);
 
@@ -104,7 +104,7 @@ export class SearchFolderComponent implements OnInit {
 
     this.request.getFiles(this.currentPath,this.currentId, this.auth.user.id,this.google,this.one,this.dropbox,true).subscribe(
       data => {
-        this.listFolder = data;
+        this.listFolder = data.files;
 
         console.log(data);
 
