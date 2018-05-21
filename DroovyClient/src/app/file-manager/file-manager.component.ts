@@ -114,10 +114,10 @@ export class FileManagerComponent implements OnInit {
     if (this.authService.user.connectedToDropbox) {
       this.space_info["dropbox"] = this.freespace("dropbox")
     }
-    if (this.authService.user.connectedToDropbox) {
+    if (this.authService.user.connectedToGoogleDrive) {
       this.space_info["googledrive"] = this.freespace("googledrive")
     }
-    if (this.authService.user.connectedToDropbox) {
+    if (this.authService.user.connectedToOneDrive) {
       this.space_info["onedrive"] = this.freespace("onedrive")
     }
   }

@@ -15,7 +15,7 @@ export class FileSizePipe implements PipeTransform {
       uniteId ++;
     }
 
-    return size.toPrecision(2)+" "+unite[uniteId];
+    return size.toFixed(2)+" "+unite[uniteId];
   }
 
 }
