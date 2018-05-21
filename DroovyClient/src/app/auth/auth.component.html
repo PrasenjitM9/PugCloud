@@ -5,33 +5,31 @@
   </mat-toolbar-row>
 </mat-toolbar>
 
-<div class="row " >
-  <div class="col s6 m4 ">
-    <mat-tab-group color="primary">
-      <mat-tab label="Connexion">
+<mat-card style="width: 50%;margin: auto;margin-top: 5%">
+    <mat-tab-group color="primary" style="margin: 1%">
+      <mat-tab label="Connexion" >
 
-        <form (ngSubmit)="connect()">
+        <form (ngSubmit)="connect()"  style="margin: 5%">
           Nom :
           <input [(ngModel)]="name" type="text" name="username" required="required"><br>
           Mot de passe :
           <input [(ngModel)]="password" type="password" name="password" required="required"><br>
 
-          <input class="btn waves-effect waves-light" type="submit" value="Connexion">
+          <button mat-button color="primary" type="submit" value="Connexion">Connexion</button>
 
         </form>
 
 
       </mat-tab>
-      <mat-tab label="Créer un compte">
-        <form (ngSubmit)="createAccount()">
+      <mat-tab label="Créer un compte" >
+        <form (ngSubmit)="createAccount()"  style="margin: 5%">
           Nom :
           <input [(ngModel)]="name" type="text" name="username" required="required"><br>
           Mot de passe :
           <input [(ngModel)]="password" type="password" name="password" required="required"><br>
-          <input class="btn waves-effect waves-light" type="submit" value="Créer">
+          <button mat-button color="primary" type="submit" value="Créer">Créer</button>
         </form>
 
       </mat-tab>
     </mat-tab-group>
-  </div>
-</div>
+</mat-card>

@@ -1,5 +1,6 @@
-<mat-card>
-  <mat-card-header>
+
+<div style="height: 400px;">
+<mat-card-header>
     <h4>{{this.data.fileDisplay.name_drive}}</h4>
   </mat-card-header>
   <mat-card-content>
@@ -8,6 +9,8 @@
     <mat-chip-list>
       <mat-chip>Dernière modification : {{this.data.fileDisplay.last_update_date | date:'dd-MM-yyyy HH:mm:ss ' }}</mat-chip>
       <mat-chip>Création : {{this.data.fileDisplay.creation_date | date:'dd-MM-yyyy HH:mm:ss ' }}</mat-chip>
+      <button mat-button *ngIf="this.data.fileDisplay.choosenDrive!='dropbox'"><a onclick="window.open(this.href); return false;" [href]="this.data.fileDisplay.properties.url">Lien</a></button>
+
     </mat-chip-list>
     <mat-form-field>
       <input matInput [(ngModel)]="this.data.fileDisplay.new_name">
@@ -23,4 +26,4 @@
     <br>
 
   </mat-card-content>
-</mat-card>
+</div>

@@ -63,14 +63,13 @@ export class SearchFolderComponent implements OnInit {
       this.currentId = folder.sourceProperties["GoogleDrive"].id;
     }
     else if(this.one){
-      this.currentId = folder.sourceProperties["Onedrive"].id;
+      this.currentId = folder.sourceProperties["OneDrive"].id;
     }
     else if(this.dropbox){
       this.currentId = folder.sourceProperties["Dropbox"].id;
     }
 
-    console.log(this.currentId);
-    console.log(this.currentPath);
+    console.log(this.auth);
 
     this.request.getFiles(this.currentPath,this.currentId, this.auth.user.id,this.google,this.one,this.dropbox,true).subscribe(
       data => {

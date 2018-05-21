@@ -3,19 +3,16 @@
   <mat-expansion-panel>
     <mat-expansion-panel-header>
       <mat-panel-title>
-        Déplacer le fichier
+        Déplacer
       </mat-panel-title>
       <mat-panel-description>
         Choisir un dossier de destination
       </mat-panel-description>
     </mat-expansion-panel-header>
 
-    Choix : {{this.currentFolderName}}
-    <mat-nav-list role="list">
-      <p class="itemList" *ngFor="let folder of listFolder" (dblclick)="goInFolder(folder)">{{folder.name}}
-      </p>
-
-
+    <b>Choix : {{this.currentFolderName}}</b>
+    <mat-nav-list role="list" style="margin-left: 5%;">
+      <p  *ngFor="let folder of listFolder" (dblclick)="goInFolder(folder)"> {{folder.name}}     </p>
     </mat-nav-list>
 
     <button mat-button color="primary" (click)="back()" >Précédent</button>

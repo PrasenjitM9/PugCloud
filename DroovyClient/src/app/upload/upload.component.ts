@@ -87,9 +87,6 @@ export class UploadDialog {
 
   public submit(file) {
 
-
-    console.log(file.size);
-
     if(this.selectedDrive ==undefined || this.selectedDrive == ""){
       this.snackBar.open('Choisissez un drive', 'Ok', {
         duration: 3000
