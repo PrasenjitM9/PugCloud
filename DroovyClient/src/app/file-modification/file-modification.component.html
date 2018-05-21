@@ -13,9 +13,9 @@
       <input matInput [(ngModel)]="this.data.fileDisplay.new_name">
     </mat-form-field>
     <br>
-    <button  color="primary"  mat-button (click)="this.data.fileDisplay.rename()" >Renommer</button>
-    <button color="primary"  mat-button (click)="this.data.fileDisplay.delete()">Supprimer</button>
-    <button  color="primary" mat-button (click)="this.data.fileDisplay.download()">Télécharger</button>
+    <button  color="primary"  mat-button (click)="onRename()" >Renommer</button>
+    <button color="primary"  mat-button (click)="onDelete()">Supprimer</button>
+    <button  color="primary" mat-button (click)="onDownload()">Télécharger</button>
     <br>
     <app-sharing [file]="this.data.fileDisplay.fileDroovy" [properties]="this.data.fileDisplay.properties"></app-sharing>
     <br>
