@@ -33,16 +33,17 @@ import {MatCardModule} from '@angular/material/card';
 import {MatInputModule} from '@angular/material/input';
 import {MatExpansionModule} from '@angular/material/expansion';
 import {MatChipsModule} from '@angular/material/chips';
-import { MatDialogModule } from '@angular/material';
+import {MatDialogModule, MatFormFieldModule} from '@angular/material';
 import {MatSelectModule} from '@angular/material/select';
-import { ErrorDialogComponent } from './error-dialog/error-dialog.component';
-import { LoadingComponentComponent } from './loading-component/loading-component.component';
+import {ErrorDialogComponent} from './error-dialog/error-dialog.component';
+import {LoadingComponentComponent} from './loading-component/loading-component.component';
 import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {MatGridListModule} from '@angular/material/grid-list';
-import { FileModificationComponent } from './file-modification/file-modification.component';
-import { SearchBarComponent } from './search-bar/search-bar.component';
-import { CreateFolderComponent } from './create-folder/create-folder.component';
+import {FileModificationComponent} from './file-modification/file-modification.component';
+import {SearchBarComponent} from './search-bar/search-bar.component';
+import {CreateFolderComponent} from './create-folder/create-folder.component';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {FlexLayoutModule} from "@angular/flex-layout";
 
 const appRoutes: Routes = [
   { path: 'manager', canActivate:[AuthGuard], component: FileManagerComponent },
@@ -93,12 +94,14 @@ const appRoutes: Routes = [
     MatSelectModule,
     MatDialogModule,
     MatChipsModule,
+    MatFormFieldModule,
     MatSnackBarModule,
     MatInputModule,
     MatCardModule,
     MatTabsModule,
     BrowserAnimationsModule,
-    MatToolbarModule
+    MatToolbarModule,
+    FlexLayoutModule
   ],
   entryComponents: [
     UploadDialog,

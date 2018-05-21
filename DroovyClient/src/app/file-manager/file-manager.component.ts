@@ -2,7 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {FileDroovy, RequestService} from "../request.service";
 import {AuthService} from '../auth.service';
 import {UtilitaireService} from "../utilitaire.service";
-import {UploadDialog} from "../upload/upload.component";
 import {MatDialog} from "@angular/material";
 import {LoadingComponentComponent} from "../loading-component/loading-component.component";
 import {ErrorDialogComponent} from "../error-dialog/error-dialog.component";
@@ -19,12 +18,13 @@ export class FileManagerComponent implements OnInit {
   constructor(public dialog: MatDialog,private request: RequestService, private authService: AuthService, private utilitaire: UtilitaireService, private router : Router) {
   }
 
-  public fileList : FileDroovy[];
+  public fileList: FileDroovy[] = [];
+  public tab_fileList: Array<FileDroovy>[] = [];
   private userID : string;
 
   public space_info: SpaceInfo[] = [];
 
-  tab_previous_folder: PreviousInfo[] = [];
+  public tab_previous_folder: PreviousInfo[] = [];
 
 
   ngOnInit() {
@@ -69,25 +69,15 @@ export class FileManagerComponent implements OnInit {
       this.tab_previous_folder[lastindex].getDropbox)
   }
 
+  divide_file_list(fileList: FileDroovy[]): Array<FileDroovy[]> {
 
-  private updateFileList(path: string, idFolder: string, getGoogleDrive: number, getOneDrive: number, getDropbox: number) {
+    var tab_fileList = [];
 
-
-    let dialogRef = this.dialog.open(LoadingComponentComponent, {
-      data: {
-        msg :  "Chargement ..."
-      }
-    });
-
-    this.request.getFiles(path, idFolder, this.userID, getGoogleDrive, getOneDrive, getDropbox,false).subscribe(
-      data => {
-        this.fileList = data;
-        dialogRef.close();
-      }
-      , (error: any) => {
-          this.handleError(error);
-        });
-
+    while (fileList.length != 0) {
+      tab_fileList.push(fileList.slice(0, 5));
+      fileList = fileList.slice(5)
+    }
+    return tab_fileList
   }
 
   public createFolder(){
@@ -158,6 +148,26 @@ export class FileManagerComponent implements OnInit {
     this.router.navigate(['/auth']);
   }
 
+  private updateFileList(path: string, idFolder: string, getGoogleDrive: number, getOneDrive: number, getDropbox: number) {
+
+
+    let dialogRef = this.dialog.open(LoadingComponentComponent, {
+      data: {
+        msg: "Chargement ..."
+      }
+    });
+
+    this.request.getFiles(path, idFolder, this.userID, getGoogleDrive, getOneDrive, getDropbox, false).subscribe(
+      data => {
+        this.fileList = data;
+        this.tab_fileList = this.divide_file_list(data);
+        dialogRef.close();
+      }
+      , (error: any) => {
+        this.handleError(error);
+      });
+
+  }
 }
 
 class PreviousInfo {
