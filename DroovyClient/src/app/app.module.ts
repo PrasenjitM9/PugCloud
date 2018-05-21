@@ -46,6 +46,7 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {FlexLayoutModule} from "@angular/flex-layout";
 import { SearchFilterPipe } from './search-filter.pipe';
 import { SharingComponent } from './sharing/sharing.component';
+import {ShortTextPipe} from './pipes/short-text.pipe';
 
 const appRoutes: Routes = [
   { path: 'manager', canActivate:[AuthGuard], component: FileManagerComponent },
@@ -79,6 +80,7 @@ const appRoutes: Routes = [
     SearchBarComponent,
     CreateFolderComponent,
     SearchFilterPipe,
+    ShortTextPipe,
     SharingComponent,
   ],
   imports: [
@@ -114,7 +116,7 @@ const appRoutes: Routes = [
     FileModificationComponent,
     CreateFolderComponent
   ],
-  providers: [AuthService, RequestService, HttpClient, AuthGuard, UtilitaireService],
+  providers: [AuthService, RequestService, HttpClient, AuthGuard, UtilitaireService, ShortTextPipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
