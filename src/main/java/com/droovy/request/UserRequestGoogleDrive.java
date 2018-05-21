@@ -3,6 +3,7 @@ package com.droovy.request;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URLConnection;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.ws.rs.client.Entity;
@@ -29,7 +30,7 @@ public class UserRequestGoogleDrive implements UserRequest{
 	JSONParser parser = new JSONParserGoogledrive();
 
 	@Override
-	public List<File> getFilesList(String path,String id,boolean folderOnly) {
+	public Page getFilesList(String path,String id,boolean folderOnly) {
 
 		path = "q=%27"+path+"%27%20in%20parents";
 
@@ -56,11 +57,21 @@ public class UserRequestGoogleDrive implements UserRequest{
 		}		
 		String output =  response.readEntity(String.class);
 
+		List<File> list = new LinkedList<>();
 		try {
-			return parser.parserFiles((output));
+			list = parser.parserFiles((output));
 		} catch (Exception e) {
 			throw new InternalServerError();
 		}
+		
+
+		try {
+			return new Page(list,new ObjectMapper().readTree(output).has("nextPageToken") ? "true" : "false",new ObjectMapper().readTree(output).path("nextPageToken").asText());
+		} catch (Exception e) {
+			throw new InternalServerError();
+		}	
+
+		
 	}
 
 
@@ -440,6 +451,50 @@ public class UserRequestGoogleDrive implements UserRequest{
 			throw new InternalServerError();
 		}
 
+
+	}
+
+
+
+	@Override
+	public Page nextPage(String idUser, String tokenNextPage,String folderId) {
+
+		String url = "https://www.googleapis.com/drive/v2/files?pageToken="+tokenNextPage;
+
+		System.out.println(url);
+		url+="&q=%27"+folderId+"%27%20in%20parents";
+
+		
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+
+		DatabaseOp db = new DatabaseOp();
+		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserGoogleDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).get();
+
+		if (response.getStatus() != 200) {
+			System.out.println(response.readEntity(String.class)+ " "+tokenNextPage);
+			if(response.getStatus()==401 ) {
+				throw new UserApplicationError("Set/Update your googledrive token", 401);
+			}
+			else {
+				throw new InternalServerError("Check your file ID");
+			}
+		}		
+		String output =  response.readEntity(String.class);
+
+		List<File> list = new LinkedList<>();
+		try {
+			list = parser.parserFiles((output));
+		} catch (Exception e) {
+			throw new InternalServerError();
+		}
+		
+
+		try {
+			return new Page(list,new ObjectMapper().readTree(output).has("nextPageToken") ? "true" : "false",new ObjectMapper().readTree(output).path("nextPageToken").asText());
+		} catch (Exception e) {
+			throw new InternalServerError();
+		}	
 
 	}
 

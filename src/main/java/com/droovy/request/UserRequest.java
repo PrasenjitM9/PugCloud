@@ -8,7 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 public interface UserRequest {
 	
 	
-	public List<File> getFilesList(String path,String id,boolean folderOnly);
+	public Page getFilesList(String path,String id,boolean folderOnly);
 		
 	public boolean removeFile(String idFile,String path,String idUser);
 	
@@ -27,4 +27,7 @@ public interface UserRequest {
 	public java.io.File downloadFile(String idUser,String idFile);
 	
 	public File createFolder(String idUser,String folderName,String path, String idParent);
+	
+	public Page nextPage(String idUser,String tokenNextPage,String folderId);
+	
 }

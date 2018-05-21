@@ -3,6 +3,7 @@ package com.droovy.request;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.ws.rs.client.Entity;
@@ -30,7 +31,7 @@ import errors.UserApplicationError;
 public class UserRequestOneDrive implements UserRequest {
 
 	@Override
-	public List<File> getFilesList(String path,String id,boolean folderOnly) {
+	public Page getFilesList(String path,String id,boolean folderOnly) {
 		
 		if(!path.equals("root")) {
 			path=":"+path+":";
@@ -62,12 +63,20 @@ public class UserRequestOneDrive implements UserRequest {
 		}		
 		String output =  response.readEntity(String.class);
 
+		List<File> list = new LinkedList<>();
+
 		try {
-			return parser.parserFiles((output));
+			list = parser.parserFiles((output));
 		} catch (Exception e) {
 			throw new InternalServerError();
 		}
 
+
+		try {
+			return new Page(list,new ObjectMapper().readTree(output).has("@odata.nextLink") ? "true" : "false",new ObjectMapper().readTree(output).path("@odata.nextLink").asText());
+		} catch (Exception e) {
+			throw new InternalServerError();
+		}	
 	}
 
 	@Override
@@ -433,6 +442,49 @@ public class UserRequestOneDrive implements UserRequest {
 			throw new InternalServerError();
 		}
 
+	}
+
+	@Override
+	public Page nextPage(String idUser, String tokenNextPage,String folderId) {
+		
+		
+		String url = tokenNextPage;
+
+		
+		JSONParser parser = new JSONParserOneDrive();
+
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+
+		DatabaseOp db = new DatabaseOp();
+		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserOneDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).get();
+
+		if (response.getStatus() != 200) {
+			if(response.getStatus()==401 || response.getStatus() == 400) {
+				System.out.println(response.readEntity(String.class));
+				throw new UserApplicationError("Set/Update your onedrive token,or your token is invalid",401);
+			}
+			else {
+				throw new InternalServerError();
+			}
+		}		
+		String output =  response.readEntity(String.class);
+
+		List<File> list = new LinkedList<>();
+
+		try {
+			list = parser.parserFiles((output));
+		} catch (Exception e) {
+			throw new InternalServerError();
+		}
+
+
+		try {
+			return new Page(list,new ObjectMapper().readTree(output).has("@odata.nextLink") ? "true" : "false",new ObjectMapper().readTree(output).path("@odata.nextLink").asText());
+		} catch (Exception e) {
+			throw new InternalServerError();
+		}	
+		
 	}
 
 

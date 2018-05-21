@@ -20,6 +20,7 @@ public class JSONParserDropbox implements JSONParser {
 	
 	@Override
 	public List<File> parserFiles(String result) throws JsonProcessingException, IOException, ParseException {
+		System.out.println(result);
 		ObjectMapper mapper = new ObjectMapper();
 		List<File> listFile = new ArrayList<File>();
 
