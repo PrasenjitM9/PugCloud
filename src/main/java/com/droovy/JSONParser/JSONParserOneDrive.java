@@ -20,6 +20,7 @@ public class JSONParserOneDrive implements JSONParser {
 	
 	@Override
 	public List<File> parserFiles(String result) throws JsonProcessingException, IOException, ParseException {
+
 		ObjectMapper mapper = new ObjectMapper();
 		List<File> listFile = new ArrayList<File>();
 

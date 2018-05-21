@@ -3,6 +3,7 @@ package com.droovy.request;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URLConnection;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.ws.rs.client.Entity;
@@ -29,7 +30,7 @@ public class UserRequestGoogleDrive implements UserRequest{
 	JSONParser parser = new JSONParserGoogledrive();
 
 	@Override
-	public List<File> getFilesList(String path,String id,boolean folderOnly) {
+	public Page getFilesList(String path,String id,boolean folderOnly) {
 
 		path = "q=%27"+path+"%27%20in%20parents";
 
@@ -38,7 +39,7 @@ public class UserRequestGoogleDrive implements UserRequest{
 		if(folderOnly) {
 			url+="%20and+%20mimeType+%20+%3d+%20%27application%2Fvnd.google-apps.folder%27";
 		}
-		
+
 		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
 		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
 
@@ -55,12 +56,23 @@ public class UserRequestGoogleDrive implements UserRequest{
 			}
 		}		
 		String output =  response.readEntity(String.class);
-		
+
+		List<File> list = new LinkedList<>();
+
 		try {
-			return parser.parserFiles((output));
+			list = parser.parserFiles((output));
 		} catch (Exception e) {
 			throw new InternalServerError();
 		}
+
+
+		try {
+			return new Page(list,new ObjectMapper().readTree(output).has("nextPageToken") ? "true" : "false",new ObjectMapper().readTree(output).path("nextPageToken").asText());
+		} catch (Exception e) {
+			throw new InternalServerError();
+		}	
+
+
 	}
 
 
@@ -242,9 +254,9 @@ public class UserRequestGoogleDrive implements UserRequest{
 		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserGoogleDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).put(Entity.json(json));
 
 		if (response.getStatus() != 200) {
-			
+
 			System.out.println(response.readEntity(String.class));
-			
+
 			if(response.getStatus()==401 || response.getStatus() == 400) {
 				throw new UserApplicationError("Set/Update your google drive token,or your token is invalid",401);
 			}
@@ -333,14 +345,6 @@ public class UserRequestGoogleDrive implements UserRequest{
 	}
 
 
-	/*
-	@Override
-	public boolean shareFile(String idUser, String message, String idFile, String mail, FilePermission permission,boolean folder) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	 */
 
 	@Override
 	public List<File> searchFile(String idUser, String query) {
@@ -376,7 +380,7 @@ public class UserRequestGoogleDrive implements UserRequest{
 
 	@Override
 	public java.io.File downloadFile(String idUser, String idFile) {
-		
+
 		System.out.println("d");
 
 		String url = "https://www.googleapis.com/drive/v3/files/"+idFile+"?alt=media";
@@ -399,8 +403,8 @@ public class UserRequestGoogleDrive implements UserRequest{
 		java.io.File output =  response.readEntity(java.io.File.class);
 		return output;
 
-		
-		
+
+
 	}
 
 
@@ -439,6 +443,85 @@ public class UserRequestGoogleDrive implements UserRequest{
 		}
 
 
+	}
+
+
+
+	@Override
+	public Page nextPage(String idUser, String tokenNextPage,String folderId) {
+
+		String url = "https://www.googleapis.com/drive/v2/files?pageToken="+tokenNextPage;
+
+		System.out.println(url);
+		url+="&q=%27"+folderId+"%27%20in%20parents";
+
+
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+
+		DatabaseOp db = new DatabaseOp();
+		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserGoogleDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).get();
+
+		if (response.getStatus() != 200) {
+			System.out.println(response.readEntity(String.class)+ " "+tokenNextPage);
+			if(response.getStatus()==401 ) {
+				throw new UserApplicationError("Set/Update your googledrive token", 401);
+			}
+			else {
+				throw new InternalServerError("Check your file ID");
+			}
+		}		
+		String output =  response.readEntity(String.class);
+
+		List<File> list = new LinkedList<>();
+		try {
+			list = parser.parserFiles((output));
+		} catch (Exception e) {
+			throw new InternalServerError();
+		}
+
+
+		try {
+			return new Page(list,new ObjectMapper().readTree(output).has("nextPageToken") ? "true" : "false",new ObjectMapper().readTree(output).path("nextPageToken").asText());
+		} catch (Exception e) {
+			throw new InternalServerError();
+		}	
+
+	}
+
+
+
+	@Override
+	public boolean shareFile(String idUser, String message, String idFile, String mail, FilePermission permission,boolean folder) {
+
+		String url = "https://www.googleapis.com/drive/v3/files/"+idFile+"/permissions?sendNotificationEmails=true&emailMessage="+message;
+
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		jerseyClient.register(MultiPartFeature.class);
+		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+
+		String json = "{" + 
+				"  \"role\": \""+(permission==FilePermission.READ ? "reader" : "writer")+"\"," + 
+				"  \"type\": \"user\"," + 
+				"  \"emailAddress\" : \""+mail+"\""+
+				"}";
+
+		DatabaseOp db = new DatabaseOp();
+
+		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserGoogleDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).post(Entity.json(json));
+
+		if (response.getStatus() != 200) {
+			System.out.println(response.readEntity(String.class));
+			if(response.getStatus()==401 || response.getStatus() == 400) {
+				throw new UserApplicationError("Set/Update your dropbox token,or your token is invalid or you don't have the rights to do this",401);
+			}
+			else {
+				throw new InternalServerError();
+			}
+		}	
+	
+
+		return true;
 	}
 
 }

@@ -3,6 +3,7 @@ package com.droovy.request;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.ws.rs.client.Entity;
@@ -30,7 +31,7 @@ import errors.UserApplicationError;
 public class UserRequestOneDrive implements UserRequest {
 
 	@Override
-	public List<File> getFilesList(String path,String id,boolean folderOnly) {
+	public Page getFilesList(String path,String id,boolean folderOnly) {
 		
 		if(!path.equals("root")) {
 			path=":"+path+":";
@@ -62,12 +63,20 @@ public class UserRequestOneDrive implements UserRequest {
 		}		
 		String output =  response.readEntity(String.class);
 
+		List<File> list = new LinkedList<>();
+
 		try {
-			return parser.parserFiles((output));
+			list = parser.parserFiles((output));
 		} catch (Exception e) {
 			throw new InternalServerError();
 		}
 
+
+		try {
+			return new Page(list,new ObjectMapper().readTree(output).has("@odata.nextLink") ? "true" : "false",new ObjectMapper().readTree(output).path("@odata.nextLink").asText());
+		} catch (Exception e) {
+			throw new InternalServerError();
+		}	
 	}
 
 	@Override
@@ -435,6 +444,84 @@ public class UserRequestOneDrive implements UserRequest {
 
 	}
 
+	@Override
+	public Page nextPage(String idUser, String tokenNextPage,String folderId) {
+		
+		
+		String url = tokenNextPage;
 
+		
+		JSONParser parser = new JSONParserOneDrive();
+
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+
+		DatabaseOp db = new DatabaseOp();
+		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserOneDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).get();
+
+		if (response.getStatus() != 200) {
+			if(response.getStatus()==401 || response.getStatus() == 400) {
+				System.out.println(response.readEntity(String.class));
+				throw new UserApplicationError("Set/Update your onedrive token,or your token is invalid",401);
+			}
+			else {
+				throw new InternalServerError();
+			}
+		}		
+		String output =  response.readEntity(String.class);
+
+		List<File> list = new LinkedList<>();
+
+		try {
+			list = parser.parserFiles((output));
+		} catch (Exception e) {
+			throw new InternalServerError();
+		}
+
+
+		try {
+			return new Page(list,new ObjectMapper().readTree(output).has("@odata.nextLink") ? "true" : "false",new ObjectMapper().readTree(output).path("@odata.nextLink").asText());
+		} catch (Exception e) {
+			throw new InternalServerError();
+		}	
+		
+	}
+
+	@Override
+	public boolean shareFile(String idUser, String message, String idFile, String mail, FilePermission permission,
+			boolean folder) {
+		
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		jerseyClient.property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true);
+
+		String url = "https://graph.microsoft.com/v1.0/me/drive/items/"+idFile+"/invite";
+
+		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+		DatabaseOp db = new DatabaseOp();
+
+		String jsonData = "{" + 
+				"  \"recipients\": [" + 
+				"    {" + 
+				"      \"email\": \""+mail+"\"" + 
+				"    }" + 
+				"  ]," + 
+				"  \"message\": \""+message+"\"," + 
+				"  \"requireSignIn\": true," + 
+				"  \"sendInvitation\": true," + 
+				"  \"roles\": [ \""+permission+"\" ]" + 
+				"}";
+
+		Response response = jerseyTarget.request().header("Content-type","application/json").header("Authorization", "Bearer "+db.getUserOneDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).post(Entity.json(jsonData));;
+
+		if (response.getStatus() != 200 && response.getStatus() != 201) {
+			if(response.getStatus()==401 || response.getStatus() == 400) {
+				throw new UserApplicationError("Set/Update your dropbox token,or your token is invalid or you don't have the rights to do this",401);
+			}
+			else {
+				throw new InternalServerError();
+			}
+		}		
+		return true;
+	}
 
 }

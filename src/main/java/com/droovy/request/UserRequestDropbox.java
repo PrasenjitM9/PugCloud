@@ -27,7 +27,7 @@ import errors.UserApplicationError;
 
 public class UserRequestDropbox implements UserRequest{
 	@Override
-	public List<File> getFilesList(String path,String id,boolean folderOnly)  {
+	public Page getFilesList(String path,String id,boolean folderOnly)  {
 
 		String url = "https://api.dropboxapi.com/2/files/list_folder";
 		JSONParser parser = new JSONParserDropbox();
@@ -61,8 +61,13 @@ public class UserRequestDropbox implements UserRequest{
 		} catch (Exception e) {
 			throw new InternalServerError();
 		}
-		
-		return list;	
+
+
+		try {
+			return new Page(list,new ObjectMapper().readTree(output).path("has_more").asText(),new ObjectMapper().readTree(output).path("cursor").asText());
+		} catch (Exception e) {
+			throw new InternalServerError();
+		}	
 
 	}
 
@@ -376,12 +381,11 @@ public class UserRequestDropbox implements UserRequest{
 
 	}
 
-	/*
+	
 	@Override
 	public boolean shareFile(String idUser, String message, String idFile, String mail,FilePermission permission,boolean folder) {
 		String url = "https://api.dropboxapi.com/2/sharing/add_file_member";
-
-
+		
 		try{
 
 			String filePermission = "editor";
@@ -390,7 +394,6 @@ public class UserRequestDropbox implements UserRequest{
 			}
 
 			String jsonData = "";
-
 			if(folder) {
 				url = "https://api.dropboxapi.com/2/sharing/add_folder_member";
 				jsonData = "{" + 
@@ -424,7 +427,7 @@ public class UserRequestDropbox implements UserRequest{
 						"}";
 
 			}
-
+			
 			JerseyClient jerseyClient = JerseyClientBuilder.createClient();
 			jerseyClient.register(MultiPartFeature.class);
 			JerseyWebTarget jerseyTarget = jerseyClient.target(url);
@@ -436,8 +439,12 @@ public class UserRequestDropbox implements UserRequest{
 			Response response = jerseyTarget.request().header("Content-Type", "application/json").header("Authorization", "Bearer "+db.getUserDropBoxToken(idUser)).accept(MediaType.APPLICATION_JSON).post(Entity.json(jsonData));
 
 			if (response.getStatus() != 200) {
-				throw new RuntimeException("Failed : HTTP error code : "
-						+ response.getStatus()+ " "+ response.toString()+ response.readEntity(String.class));
+				if(response.getStatus()==401 || response.getStatus() == 400) {
+					throw new UserApplicationError("Set/Update your dropbox token,or your token is invalid or you don't have the rights to do this",401);
+				}
+				else {
+					throw new InternalServerError();
+				}
 			}		
 			return true;		
 
@@ -447,8 +454,6 @@ public class UserRequestDropbox implements UserRequest{
 
 		return false;
 	}
-
-	 */
 
 	@Override
 	public List<File> searchFile(String idUser, String query) {
@@ -538,7 +543,7 @@ public class UserRequestDropbox implements UserRequest{
 		if(path.equals("root")) {
 			path="";
 		}
-		
+
 		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
 		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
 
@@ -546,7 +551,7 @@ public class UserRequestDropbox implements UserRequest{
 				"    \"path\": \""+path+"/"+folderName+"\",\n" + 
 				"    \"autorename\": true\n" + 
 				"}";
-		
+
 		DatabaseOp db = new DatabaseOp();
 
 		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserDropBoxToken(idUser)).header("Content-Type", "application/json").accept(MediaType.APPLICATION_JSON).post(Entity.json(jsonData));
@@ -568,6 +573,52 @@ public class UserRequestDropbox implements UserRequest{
 		} catch (Exception e) {
 			throw new InternalServerError();
 		}
+	}
+
+
+
+	@Override
+	public Page nextPage(String idUser, String tokenNextPage,String folderId) {
+
+		String url = "https://api.dropboxapi.com/2/files/list_folder/continue";
+		JSONParser parser = new JSONParserDropbox();
+
+
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+
+		String jsonData = "{" + 
+				"    \"cursor\": \""+tokenNextPage+"\"" + 
+				"}";
+		DatabaseOp db = new DatabaseOp();
+
+		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserDropBoxToken(idUser)).header("Content-Type", "application/json").accept(MediaType.APPLICATION_JSON).post(Entity.json(jsonData));
+
+		if (response.getStatus() != 200) {
+			if(response.getStatus()==401 || response.getStatus() == 400) {
+				throw new UserApplicationError("Set/Update your dropbox token", 401);
+			}
+			else {
+				throw new InternalServerError("Check your file ID");
+			}
+		}		
+
+		String output =  response.readEntity(String.class);
+		List<File> list = new LinkedList<>();
+		try {
+			list = parser.parserFiles(output);
+		} catch (Exception e) {
+			throw new InternalServerError();
+		}
+
+
+
+		try {
+			return new Page(list,new ObjectMapper().readTree(output).path("has_more").asText(),new ObjectMapper().readTree(output).path("cursor").asText());
+		} catch (Exception e) {
+			throw new InternalServerError();
+		}	
+
 	}
 
 

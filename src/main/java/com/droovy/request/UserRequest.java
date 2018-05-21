@@ -8,7 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 public interface UserRequest {
 	
 	
-	public List<File> getFilesList(String path,String id,boolean folderOnly);
+	public Page getFilesList(String path,String id,boolean folderOnly);
 		
 	public boolean removeFile(String idFile,String path,String idUser);
 	
@@ -20,11 +20,14 @@ public interface UserRequest {
 	
 	public String freeSpaceRemaining(String idUser) throws JsonProcessingException, IOException;
 
-	//public boolean shareFile(String idUser, String message, String idFile, String mail,FilePermission permission,boolean folder);
+	public boolean shareFile(String idUser, String message, String idFile, String mail,FilePermission permission,boolean folder);
 	
 	public List<File> searchFile(String idUser,String query);
 	
 	public java.io.File downloadFile(String idUser,String idFile);
 	
 	public File createFolder(String idUser,String folderName,String path, String idParent);
+	
+	public Page nextPage(String idUser,String tokenNextPage,String folderId);
+	
 }
