@@ -74,9 +74,14 @@ export class FileManagerComponent implements OnInit {
 
     var lastindex = this.tab_previous_folder.length - 1;
 
-    this.updateFileList(this.tab_previous_folder[lastindex].path, this.tab_previous_folder[lastindex].folder_id,
+    setTimeout(() => {
+      this.updateFileList(this.tab_previous_folder[lastindex].path, this.tab_previous_folder[lastindex].folder_id,
       this.tab_previous_folder[lastindex].getGoogledrive, this.tab_previous_folder[lastindex].getOnedrive,
-      this.tab_previous_folder[lastindex].getDropbox)
+        this.tab_previous_folder[lastindex].getDropbox)
+    }, 1000);
+
+
+
   }
 
   divide_file_list(fileList: FileDroovy[]): Array<FileDroovy[]> {
