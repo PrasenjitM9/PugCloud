@@ -17,7 +17,10 @@
     <button color="primary"  mat-button (click)="this.data.fileDisplay.delete()">Supprimer</button>
     <button  color="primary" mat-button (click)="this.data.fileDisplay.download()">Télécharger</button>
     <br>
+    <app-sharing [file]="this.data.fileDisplay.fileDroovy" [properties]="this.data.fileDisplay.properties"></app-sharing>
+    <br>
     <app-search-folder [drive]="this.data.fileDisplay.choosenDrive" (choice)="this.data.fileDisplay.move($event)"></app-search-folder>
     <br>
+
   </mat-card-content>
 </mat-card>

@@ -69,6 +69,10 @@ export class RequestService {
     return this.http.get<Page>(url, {responseType: 'json'})
   }
 
+  share(drive : string, folder : boolean, permission : string, fileId : string, message : string, idUser : string, mail : string){
+    var url = this.apiUrl + "share?idUser=" + idUser + "&drive=" + drive+"&folder="+folder+"&permission="+permission+"&message="+message+"&idUser="+idUser+"&mail="+mail+"&idFile="+fileId;
+    return this.http.get(url, {responseType: 'json'});
+  }
 
 }
 
