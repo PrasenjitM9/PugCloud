@@ -3,6 +3,7 @@ package com.droovy.request;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URLConnection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -523,5 +524,43 @@ public class UserRequestGoogleDrive implements UserRequest{
 
 		return true;
 	}
+	
+	@Override
+	public HashMap<String, String> getFilePermission(String idFile, String idUser) {
+		
+		
+		String url = "https://www.googleapis.com/drive/v2/files/"+idFile+"/permissions";
+		
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+
+		DatabaseOp db = new DatabaseOp();
+		
+		System.out.println(db.getUserGoogleDriveToken(idUser));
+		
+		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserGoogleDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).get();
+
+		if (response.getStatus() != 200) {
+			System.out.println(response.readEntity(String.class)+ " ");
+			if(response.getStatus()==401 ) {
+				throw new UserApplicationError("Set/Update your googledrive token", 401);
+			}
+			else {
+				throw new InternalServerError("Check your file ID");
+			}
+		}		
+		String output =  response.readEntity(String.class);
+
+		HashMap<String, String> listPermission = new HashMap();
+
+		try {
+			listPermission = parser.parserPermission(output);
+		} catch (Exception e) {
+			throw new InternalServerError();
+		}
+		
+		return listPermission;
+	}
+
 
 }

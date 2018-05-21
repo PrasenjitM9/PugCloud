@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import com.droovy.request.File;
@@ -88,6 +89,22 @@ public class JSONParserGoogledrive implements JSONParser {
 			return new File(name, FileType.FOLDER, id, "",source, null,null, 0, null);
 		}
 		return new File(name, FileType.FILE, id, "",source,null,null,0,"TO DO");
+	}
+
+	@Override
+	public HashMap<String, String> parserPermission(String output)
+			throws JsonProcessingException, IOException, ParseException {
+		
+		ObjectMapper mapper = new ObjectMapper();
+		HashMap<String,String> listPermission = new HashMap<>();
+
+		JsonNode rootNode = mapper.readTree(output);
+		JsonNode items = (ArrayNode) rootNode.path("items");
+
+		for (final JsonNode permission : items) {
+			(listPermission).put(permission.path("emailAddress").asText(), permission.path("role").asText());
+		}
+		return listPermission;
 	}
 	
 }

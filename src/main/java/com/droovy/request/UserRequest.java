@@ -1,6 +1,7 @@
 package com.droovy.request;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -29,5 +30,7 @@ public interface UserRequest {
 	public File createFolder(String idUser,String folderName,String path, String idParent);
 	
 	public Page nextPage(String idUser,String tokenNextPage,String folderId);
+	
+	public HashMap<String, String> getFilePermission(String idFile, String idUser);
 	
 }

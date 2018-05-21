@@ -3,6 +3,7 @@ package com.droovy.request;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -619,6 +620,49 @@ public class UserRequestDropbox implements UserRequest{
 			throw new InternalServerError();
 		}	
 
+	}
+
+
+
+	@Override
+	public HashMap<String, String> getFilePermission(String idFile, String idUser) {
+		
+		String url = "https://api.dropboxapi.com/2/sharing/list_file_members";
+		JSONParser parser = new JSONParserDropbox();
+		
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+
+		DatabaseOp db = new DatabaseOp();
+		
+		String jsonData = "{ "
+				+ "\"file\": \""+idFile+"\","
+				+ "\"include_inherited\": true,"
+				+ "\"limit\": 100"
+				+ "}";
+						
+		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserDropBoxToken(idUser)).header("Content-Type", "application/json").accept(MediaType.APPLICATION_JSON).post(Entity.json(jsonData));
+		
+		if (response.getStatus() != 200) {
+			if(response.getStatus()==401 || response.getStatus() == 400) {
+				throw new UserApplicationError("Set/Update your dropbox token", 401);
+			}
+			else {
+				throw new InternalServerError("Check your file ID");
+			}
+		}
+		
+		String output =  response.readEntity(String.class);
+		
+		HashMap<String, String> listPermission = new HashMap();
+
+		try {
+			listPermission = parser.parserPermission(output);
+		} catch (Exception e) {
+			throw new InternalServerError();
+		}
+		
+		return listPermission;
 	}
 
 

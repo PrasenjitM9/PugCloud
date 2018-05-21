@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -108,6 +109,9 @@ public class UserApiRequest {
 		
 		output += ","+dropboxToken+","+onedriveToken+","+googledriveToken+"}"; 
 	
+		System.out.println("file");
+		System.out.println(output);
+		
 		return Response.status(Status.OK).entity(output).build();
 	}
 
@@ -484,6 +488,38 @@ public class UserApiRequest {
 		output += ","+dropboxToken+","+onedriveToken+","+googledriveToken+"}"; 
 		return Response.status(Status.OK).entity(output).build();
 
+	}
+	
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/permission")
+	public Response getPermission(@QueryParam("idUser") String idUser, @QueryParam("idFile") String idFile,@QueryParam("drive") String drive) {
+		
+		final HashMap<String, String> permission;
+
+		if(drive.equals("dropbox")) {
+			permission = request_dropbox.getFilePermission(idFile, idUser);
+		}
+		else if(drive.equals("onedrive")) {
+			permission = request_onedrive.getFilePermission(idFile, idUser);
+		}
+		else if(drive.equals("googledrive")) {
+			permission = request_googledrive.getFilePermission(idFile, idUser);
+		}
+		else {
+			throw new UserApplicationError("Tell in which drive, example : drive=dropbox", 400);
+		}
+
+		ObjectMapper mapper = new ObjectMapper();
+		String output;
+		try {
+			output = mapper.writeValueAsString(permission);
+		} catch (JsonProcessingException e) {
+			throw new InternalServerError();
+		}
+
+		return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity(output).build();
 	}
 
 

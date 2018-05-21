@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import com.droovy.request.File;
@@ -81,6 +82,36 @@ public class JSONParserDropbox implements JSONParser {
 		String source = "Dropbox";
 
 		return new File(name, FileType.FOLDER, id, "",source,null,null,0,"TO DO");
+	}
+
+	@Override
+	public HashMap<String, String> parserPermission(String output)
+			throws JsonProcessingException, IOException, ParseException {
+		
+		ObjectMapper mapper = new ObjectMapper();
+		HashMap<String,String> listPermission = new HashMap<>();
+
+		JsonNode rootNode = mapper.readTree(output);
+		JsonNode users = (ArrayNode) rootNode.path("users");
+		JsonNode groups = (ArrayNode) rootNode.path("groups");
+		JsonNode invitees = (ArrayNode) rootNode.path("invitees");
+
+		for (final JsonNode permission : users) {
+			(listPermission).put(permission.path("user").path("display_name").asText(),
+					permission.path("access_type").path(".tag").asText());
+		}
+		
+		for (final JsonNode permission : groups) {
+			(listPermission).put(permission.path("group").path("group_name").asText(),
+					permission.path("access_type").path(".tag").asText());
+		}
+
+		for (final JsonNode permission : invitees) {
+			(listPermission).put(permission.path("invitee").path("email").asText(),
+					permission.path("access_type").path(".tag").asText());
+		}
+		
+		return listPermission;
 	}
 
 

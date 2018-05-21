@@ -3,6 +3,7 @@ package com.droovy.request;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class UserRequestOneDrive implements UserRequest {
 
 	@Override
 	public Page getFilesList(String path,String id,boolean folderOnly) {
-		
+
 		if(!path.equals("root")) {
 			path=":"+path+":";
 		}
@@ -171,7 +172,7 @@ public class UserRequestOneDrive implements UserRequest {
 		boolean done = false;
 
 		String output ="";
-		
+
 		while(!done) {
 			byte[] buffer = new byte[(int) chunkSize];
 
@@ -285,7 +286,7 @@ public class UserRequestOneDrive implements UserRequest {
 				throw new InternalServerError();
 			}
 		}		
-		
+
 		String output = response.readEntity(String.class);
 		try {
 			return new JSONParserOneDrive().parserFile(new ObjectMapper().readTree(output));
@@ -406,14 +407,14 @@ public class UserRequestOneDrive implements UserRequest {
 		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
 		jerseyClient.property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true);
 
-		
+
 		if(path.equals("root")) {
 			path = "";
 		}
 		else {
 			path=":"+path+":";
 		}
-		
+
 		String url = "https://graph.microsoft.com/v1.0/me/drive/items/root"+path+"/children";
 
 		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
@@ -446,11 +447,11 @@ public class UserRequestOneDrive implements UserRequest {
 
 	@Override
 	public Page nextPage(String idUser, String tokenNextPage,String folderId) {
-		
-		
+
+
 		String url = tokenNextPage;
 
-		
+
 		JSONParser parser = new JSONParserOneDrive();
 
 		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
@@ -484,13 +485,13 @@ public class UserRequestOneDrive implements UserRequest {
 		} catch (Exception e) {
 			throw new InternalServerError();
 		}	
-		
+
 	}
 
 	@Override
 	public boolean shareFile(String idUser, String message, String idFile, String mail, FilePermission permission,
 			boolean folder) {
-		
+
 		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
 		jerseyClient.property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true);
 
@@ -523,5 +524,41 @@ public class UserRequestOneDrive implements UserRequest {
 		}		
 		return true;
 	}
+
+	@Override
+	public HashMap<String, String> getFilePermission(String idFile, String idUser) {
+		String url = "https://graph.microsoft.com/v1.0/me/drive/items/"+idFile+"/permissions";
+				
+		JSONParser parser = new JSONParserOneDrive();
+
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+
+		DatabaseOp db = new DatabaseOp();
+
+		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserOneDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).get();
+
+		if (response.getStatus() != 200) {
+			if(response.getStatus()==401 || response.getStatus() == 400) {
+				System.out.println(response.readEntity(String.class));
+				throw new UserApplicationError("Set/Update your onedrive token,or your token is invalid",401);
+			}
+			else {
+				throw new InternalServerError();
+			}
+		}		
+		String output =  response.readEntity(String.class);
+		
+		HashMap<String, String> listPermission = new HashMap();
+
+		try {
+			listPermission = parser.parserPermission(output);
+		} catch (Exception e) {
+			throw new InternalServerError();
+		}
+
+		return listPermission;
+	}
+
 
 }
