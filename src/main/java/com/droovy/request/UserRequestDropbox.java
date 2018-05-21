@@ -382,12 +382,11 @@ public class UserRequestDropbox implements UserRequest{
 
 	}
 
-	/*
+	
 	@Override
 	public boolean shareFile(String idUser, String message, String idFile, String mail,FilePermission permission,boolean folder) {
 		String url = "https://api.dropboxapi.com/2/sharing/add_file_member";
-
-
+		
 		try{
 
 			String filePermission = "editor";
@@ -396,7 +395,7 @@ public class UserRequestDropbox implements UserRequest{
 			}
 
 			String jsonData = "";
-
+System.out.println(folder);
 			if(folder) {
 				url = "https://api.dropboxapi.com/2/sharing/add_folder_member";
 				jsonData = "{" + 
@@ -430,7 +429,10 @@ public class UserRequestDropbox implements UserRequest{
 						"}";
 
 			}
+			System.out.println(url);
 
+			
+			
 			JerseyClient jerseyClient = JerseyClientBuilder.createClient();
 			jerseyClient.register(MultiPartFeature.class);
 			JerseyWebTarget jerseyTarget = jerseyClient.target(url);
@@ -453,8 +455,6 @@ public class UserRequestDropbox implements UserRequest{
 
 		return false;
 	}
-
-	 */
 
 	@Override
 	public List<File> searchFile(String idUser, String query) {

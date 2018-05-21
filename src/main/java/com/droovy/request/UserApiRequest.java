@@ -271,22 +271,35 @@ public class UserApiRequest {
 
 	}
 
-	/*@GET
+	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/share")
-	public Response shareFile(@QueryParam("folder") String folder,@QueryParam("permission") String permission, @QueryParam("message") String message,@QueryParam("idUser") String idUser,@QueryParam("idFile") String idFile,@QueryParam("mail") String mail){
+	public Response shareFile(@QueryParam("drive") String drive,@QueryParam("folder") String folder,@QueryParam("permission") String permission, @QueryParam("message") String message,@QueryParam("idUser") String idUser,@QueryParam("idFile") String idFile,@QueryParam("mail") String mail){
 
 		FilePermission permissionFile = FilePermission.READ;
-		if(permission.equals("read")) {
+		if(!permission.equals("read")) {
 			permissionFile = FilePermission.WRITE;
+		}
+		
+		boolean folderOnly = folder.trim().equals("true");
+				
+		if(drive.equals("dropbox")) {
+			request_dropbox.shareFile(idUser, message, idFile, mail,permissionFile,folderOnly);
+		}
+		else if(drive.equals("onedrive")) {
+			request_onedrive.shareFile(idUser, message, idFile, mail,permissionFile,folderOnly);
+		}
+		else if(drive.equals("googledrive")) {
+			request_googledrive.shareFile(idUser, message, idFile, mail,permissionFile,folderOnly);
+		}
+		else {
+			throw new UserApplicationError("Tell in which drive share, example : drive=dropbox", 400);
 		}
 
 
-		request_dropbox.shareFile(idUser, message, idFile, mail,permissionFile,(folder.equals("1")) ? true : false);
+		return Response.status(Status.OK).entity("{\"success\":\"ok\"}").build();
 
-		return Response.status(Status.OK).entity("").build();
-
-	}*/
+	}
 
 
 	@GET

@@ -20,7 +20,7 @@ public interface UserRequest {
 	
 	public String freeSpaceRemaining(String idUser) throws JsonProcessingException, IOException;
 
-	//public boolean shareFile(String idUser, String message, String idFile, String mail,FilePermission permission,boolean folder);
+	public boolean shareFile(String idUser, String message, String idFile, String mail,FilePermission permission,boolean folder);
 	
 	public List<File> searchFile(String idUser,String query);
 	

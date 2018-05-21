@@ -487,6 +487,41 @@ public class UserRequestOneDrive implements UserRequest {
 		
 	}
 
+	@Override
+	public boolean shareFile(String idUser, String message, String idFile, String mail, FilePermission permission,
+			boolean folder) {
+		
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		jerseyClient.property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true);
 
+		String url = "https://graph.microsoft.com/v1.0/me/drive/items/"+idFile+"/invite";
+
+		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+		DatabaseOp db = new DatabaseOp();
+
+		String jsonData = "{" + 
+				"  \"recipients\": [" + 
+				"    {" + 
+				"      \"email\": \""+mail+"\"" + 
+				"    }" + 
+				"  ]," + 
+				"  \"message\": \""+message+"\"," + 
+				"  \"requireSignIn\": true," + 
+				"  \"sendInvitation\": true," + 
+				"  \"roles\": [ \""+permission+"\" ]" + 
+				"}";
+
+		Response response = jerseyTarget.request().header("Content-type","application/json").header("Authorization", "Bearer "+db.getUserOneDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).post(Entity.json(jsonData));;
+
+		if (response.getStatus() != 200 && response.getStatus() != 201) {
+			if(response.getStatus()==401 || response.getStatus() == 400) {
+				throw new UserApplicationError("Set/Update your onedrive token,or your token is invalid",401);
+			}
+			else {
+				throw new InternalServerError();
+			}	
+		}		
+		return true;
+	}
 
 }
