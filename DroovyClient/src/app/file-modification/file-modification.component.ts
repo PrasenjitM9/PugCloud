@@ -10,18 +10,16 @@ import {Router} from '@angular/router';
 })
 export class FileModificationComponent implements OnInit {
 
-  constructor(private dialogRef: MatDialogRef<UploadDialog>,@Inject(MAT_DIALOG_DATA) public data: any, private router :Router) { }
+  constructor(private dialogRef: MatDialogRef<UploadDialog>,@Inject(MAT_DIALOG_DATA) public data: any) { }
 
   ngOnInit() {
   }
 
   onRename(){
     this.data.fileDisplay.rename();
-   // this.router.navigate(['/manager']);
     }
   onDelete(){
     this.data.fileDisplay.delete();
-    //this.router.navigate(['/manager']);
   }
   onDownload(){
     this.data.fileDisplay.download();

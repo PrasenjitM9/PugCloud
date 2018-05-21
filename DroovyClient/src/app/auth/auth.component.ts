@@ -2,6 +2,8 @@ import {Component, Input, OnInit} from '@angular/core';
 import {AuthService} from '../auth.service';
 import {Router} from "@angular/router";
 import {UtilitaireService} from "../utilitaire.service";
+import {MatDialog, MatSnackBar} from "@angular/material";
+import {ErrorDialogComponent} from "../error-dialog/error-dialog.component";
 
 @Component({
   selector: 'app-auth',
@@ -11,7 +13,7 @@ import {UtilitaireService} from "../utilitaire.service";
 export class AuthComponent implements OnInit {
 
 
-  constructor(private auth: AuthService, private router: Router, private utilitaire: UtilitaireService) {
+  constructor(private snackBar: MatSnackBar,private auth: AuthService, private router: Router, private utilitaire: UtilitaireService) {
 
   }
 
@@ -33,6 +35,9 @@ export class AuthComponent implements OnInit {
         }
         else{
           this.auth.user.isAuth = false;
+          this.snackBar.open('Mauvais identifiant ou mot de passe', 'Ok', {
+            duration: 3000
+          });
         }
       }
     );
@@ -53,6 +58,26 @@ export class AuthComponent implements OnInit {
         }
         else{
           this.auth.user.isAuth = false;
+
+          if(data.reason!=undefined){
+            if(data.reason=="too short"){
+              this.snackBar.open('Trop court, 3 caractères minimum', 'Ok', {
+                duration: 3000
+              });
+            }
+            else if(data.reason=="alreadyExist"){
+              this.snackBar.open('Nom déjà utilisé', 'Ok', {
+                duration: 3000
+              });
+            }
+
+          }
+          else{
+            this.snackBar.open('Impossible de créer le compte', 'Ok', {
+              duration: 3000
+            });
+          }
+
         }
       }
     );
