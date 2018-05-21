@@ -24,7 +24,7 @@ export class FileModificationComponent implements OnInit {
     //this.router.navigate(['/manager']);
   }
   onDownload(){
-    this.data.fileDisplay.downloas();
+    this.data.fileDisplay.download();
   }
 }
 

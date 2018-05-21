@@ -31,7 +31,8 @@ export class UploadComponent implements OnInit {
     let dialogRef = this.dialog.open(UploadDialog, {
       data: {
         folder: this.getCurrentFolder(),
-        idUser : this.auth.user.id
+        idUser : this.auth.user.id,
+        fileManager : this.file_manager
       }
     });
     dialogRef.afterClosed().subscribe(result => {
@@ -86,8 +87,17 @@ export class UploadDialog {
 
   public submit(file) {
 
+
+    console.log(file.size);
+
     if(this.selectedDrive ==undefined || this.selectedDrive == ""){
       this.snackBar.open('Choisissez un drive', 'Ok', {
+        duration: 3000
+      });
+    }
+    else if(this.data.fileManager.space_info[this.selectedDrive].freeSpace < file.size){
+
+      this.snackBar.open('Espace insuffisant !', 'Ok', {
         duration: 3000
       });
     }
