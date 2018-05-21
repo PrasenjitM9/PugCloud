@@ -1,38 +1,37 @@
+<mat-toolbar color="primary">
+  <mat-toolbar-row>
+    <span>Droovy
+    </span>
+  </mat-toolbar-row>
+</mat-toolbar>
 
 <div class="row " >
   <div class="col s6 m4 ">
-  <div class="card ">
-    <div class="card-content valign center " >
-    <h4>Droovy</h4>
-  </div>
-  <div class="card-tabs">
-    <ul class="tabs tabs-fixed-width">
-      <li class="tab"><a class="active" href="#connexion">Connexion</a></li>
-      <li class="tab"><a href="#create">Créer un compte</a></li>
-    </ul>
-  </div>
-  <div class="card-content grey lighten-4">
-    <div id="connexion">
-      <form (ngSubmit)="connect()">
-      Nom :
-        <input [(ngModel)]="name" type="text" name="username" required="required"><br>
-      Mot de passe :
-        <input [(ngModel)]="password" type="password" name="password" required="required"><br>
+    <mat-tab-group color="primary">
+      <mat-tab label="Connexion">
 
-        <input  class="btn waves-effect waves-light" type="submit" value="Connexion">
+        <form (ngSubmit)="connect()">
+          Nom :
+          <input [(ngModel)]="name" type="text" name="username" required="required"><br>
+          Mot de passe :
+          <input [(ngModel)]="password" type="password" name="password" required="required"><br>
 
-      </form>
-    </div>
-    <div id="create">
-      <form (ngSubmit)="createAccount()">
-        Nom :
-        <input [(ngModel)]="name" type="text" name="username" required="required"><br>
-        Mot de passe :
-        <input [(ngModel)]="password" type="password" name="password" required="required"><br>
-        <input  class="btn waves-effect waves-light" type="submit" value="Créer">
-      </form>
-    </div>
+          <input class="btn waves-effect waves-light" type="submit" value="Connexion">
+
+        </form>
+
+
+      </mat-tab>
+      <mat-tab label="Créer un compte">
+        <form (ngSubmit)="createAccount()">
+          Nom :
+          <input [(ngModel)]="name" type="text" name="username" required="required"><br>
+          Mot de passe :
+          <input [(ngModel)]="password" type="password" name="password" required="required"><br>
+          <input class="btn waves-effect waves-light" type="submit" value="Créer">
+        </form>
+
+      </mat-tab>
+    </mat-tab-group>
   </div>
-  </div>
-</div>
 </div>
