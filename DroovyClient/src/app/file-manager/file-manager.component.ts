@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FileDroovy, RequestService} from "../request.service";
+import {FileDroovy, RequestService, token} from "../request.service";
 import {AuthService} from '../auth.service';
 import {UtilitaireService} from "../utilitaire.service";
 import {MatDialog} from "@angular/material";
@@ -25,6 +25,11 @@ export class FileManagerComponent implements OnInit {
   public space_info: SpaceInfo[] = [];
 
   public tab_previous_folder: PreviousInfo[] = [];
+
+
+  private pageTokenDropbox : token;
+  private pageTokenOneDrive : token;
+  private pageTokenGoogleDrive : token;
 
 
   ngOnInit() {
@@ -123,6 +128,49 @@ export class FileManagerComponent implements OnInit {
       });
   }
 
+  public nextPage(){
+
+    let tokenOne = "",tokenDropbox = "",tokenGoogle="";
+
+    if(this.pageTokenDropbox.hasMore=="true"){
+      tokenDropbox=this.pageTokenDropbox.token;
+    }
+    if(this.pageTokenOneDrive.hasMore=="true"){
+      tokenOne=this.pageTokenOneDrive.token;
+    }
+    if(this.pageTokenGoogleDrive.hasMore=="true"){
+      tokenGoogle=this.pageTokenGoogleDrive.token;
+    }
+
+    if(tokenOne!="" || tokenGoogle!="" || tokenDropbox!=""){
+      let dialogRef = this.dialog.open(LoadingComponentComponent, {
+        data: {
+          msg: "Récupération des fichiers ..."
+        }
+      });
+
+      this.request.nextPage(this.authService.user.id,this.tab_previous_folder[this.tab_previous_folder.length-1].folder_id, tokenDropbox, tokenOne, tokenGoogle,false).subscribe(
+        data => {
+          for (let item of data.files) {
+            this.fileList.push(item);
+          }
+          this.tab_fileList = this.divide_file_list(this.fileList);
+
+          this.pageTokenDropbox=data.dropboxToken;
+          this.pageTokenOneDrive=data.onedriveToken;
+          this.pageTokenGoogleDrive=data.googledriveToken;
+          dialogRef.close();
+        }
+        , (error: any) => {
+          this.handleError(error);
+        });
+    }
+
+
+
+  }
+
+
   /*
     onSelect(f :FileDroovy){
 
@@ -159,8 +207,14 @@ export class FileManagerComponent implements OnInit {
 
     this.request.getFiles(path, idFolder, this.userID, getGoogleDrive, getOneDrive, getDropbox, false).subscribe(
       data => {
-        this.fileList = data;
-        this.tab_fileList = this.divide_file_list(data);
+        this.fileList = data.files;
+        this.tab_fileList = this.divide_file_list(data.files);
+
+        this.pageTokenDropbox=data.dropboxToken;
+        this.pageTokenOneDrive=data.onedriveToken;
+        this.pageTokenGoogleDrive=data.googledriveToken;
+        console.log(data);
+
         dialogRef.close();
       }
       , (error: any) => {

@@ -10,10 +10,10 @@ export class RequestService {
 
   constructor(private http: HttpClient) { }
 
-  getFiles(path: string, fileId: string, userId: string, getGoogleDrive: number, getOneDrive: number, getDropbox: number, folderOnly : boolean): Observable<FileDroovy[]> {
+  getFiles(path: string, fileId: string, userId: string, getGoogleDrive: number, getOneDrive: number, getDropbox: number, folderOnly : boolean): Observable<Page> {
     var url = this.apiUrl + "list?idUser=" + userId + "&path=" + path + "&idFolder=" + fileId + "&getGoogleDrive=" + getGoogleDrive + "&getOnedrive=" + getOneDrive + "&getDropbox=" + getDropbox + "&folderOnly="+folderOnly;
 
-    return this.http.get<FileDroovy[]>(url, {responseType: 'json'})
+    return this.http.get<Page>(url, {responseType: 'json'});
   }
 
   download(fileName : string, fileId : string, userId : string, drive : string){
@@ -63,7 +63,24 @@ export class RequestService {
     var url = this.apiUrl + "createFolder?idUser=" + idUser + "&drive=" + drive+"&folderName="+folderName+"&path="+path+"&idParent="+idParent;
     return this.http.get(url, {responseType: 'json'});
   }
+  nextPage(idUser : string,folderId : string,nextPageTokenDropbox : string ,nextPageTokenOnedrive : string, nextPageTokenGoogleDrive : string,folderOnly : boolean){
+    var url = this.apiUrl + "nextPage?idUser=" + idUser + "&folderId=" + folderId + "&nextPageTokenOnedrive=" + nextPageTokenOnedrive + "&nextPageTokenDropbox=" + nextPageTokenDropbox + "&nextPageTokenGoogleDrive=" + nextPageTokenGoogleDrive + "&folderOnly="+folderOnly;
 
+    return this.http.get<Page>(url, {responseType: 'json'})
+  }
+
+
+}
+
+export interface Page{
+  files : FileDroovy[],
+  dropboxToken : token,
+  onedriveToken : token,
+  googledriveToken : token
+}
+export interface token{
+  hasMore :string,
+  token : string
 }
 
 export interface FileDroovy {

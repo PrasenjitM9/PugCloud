@@ -39,6 +39,7 @@
 
     <app-upload [file_manager]="this"></app-upload><button mat-button color="primary" (click)="createFolder()">Créer un dossier</button>
     <!--<app-search-bar [file_manager]="this"></app-search-bar>-->
+    <button mat-button color="primary" (click)="nextPage()">Afficher plus</button>
 
     <ng-container *ngFor="let tab_fileDroovy of tab_fileList">
       <div style="margin: 5px;" fxLayout="row" fxLayout.xs="column" fxLayoutGap="5px">
