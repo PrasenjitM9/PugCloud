@@ -29,6 +29,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.ClientResponse.Status;
 
+import errors.InternalServerError;
 import errors.UserApplicationError;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
@@ -48,7 +49,7 @@ public class UserApiRequest {
 		
 		boolean folderOnly = onlyFolders.equals("true");
 		
-		if(idUser == null || path==null || idFolder == null) {
+		if(idUser == null || path==null || idFolder == null || onlyFolders == null ) {
 			throw new UserApplicationError("At least one argument is missing", 400);
 		}
 		
@@ -370,4 +371,36 @@ public class UserApiRequest {
 	                .build();
 
 	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/createFolder")
+	public Response createFolder(@QueryParam("folderName") String folderName,@QueryParam("idUser") String idUser,@QueryParam("idParent") String idParent, @QueryParam("path") String path,@QueryParam("drive") String drive) {
+		
+		final File folder;
+
+		if(drive.equals("dropbox")) {
+			folder = request_dropbox.createFolder(idUser, folderName, path, idParent);
+		}
+		else if(drive.equals("onedrive")) {
+			folder = request_onedrive.createFolder(idUser, folderName, path, idParent);
+		}
+		else if(drive.equals("googledrive")) {
+			folder = request_googledrive.createFolder(idUser, folderName, path, idParent);
+		}
+		else {
+			throw new UserApplicationError("Tell in which drive, example : drive=dropbox", 400);
+		}
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String output;
+		try {
+			output = mapper.writeValueAsString(folder);
+		} catch (JsonProcessingException e) {
+			throw new InternalServerError();
+		}
+			
+		return Response.status(Status.OK).type(MediaType.APPLICATION_JSON).entity(output).build();
+	}
+	
 }

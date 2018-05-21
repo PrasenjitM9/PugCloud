@@ -75,7 +75,7 @@ public class JSONParserGoogledrive implements JSONParser {
 		return listFile;
 	}
 
-	private File parserFileSearch(JsonNode file) {
+	public File parserFileSearch(JsonNode file) {
 
 		String name = file.path("name").asText();
 			

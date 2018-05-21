@@ -72,6 +72,16 @@ public class JSONParserDropbox implements JSONParser {
 		return listFile;
 	}
 
+	public File parseFolderCreation(JsonNode file) {
+
+		String name = file.path("name").asText();
+			
+		
+		String id = file.path("id").asText();
+		String source = "Dropbox";
+
+		return new File(name, FileType.FOLDER, id, "",source,null,null,0,"TO DO");
+	}
 
 
 }

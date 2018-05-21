@@ -231,8 +231,12 @@ public class UserRequestOneDrive implements UserRequest {
 		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserOneDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).method("PATCH", Entity.json(jsonData));;
 
 		if (response.getStatus() != 200) {
-			throw new RuntimeException("Failed : HTTP error code : "
-					+ response.getStatus()+ " "+ response.toString() + response.readEntity(String.class));
+			if(response.getStatus()==401 || response.getStatus() == 400) {
+				throw new UserApplicationError("Set/Update your onedrive token,or your token is invalid",401);
+			}
+			else {
+				throw new InternalServerError();
+			}
 		}		
 		String output = response.readEntity(String.class);
 		try {
@@ -385,6 +389,49 @@ public class UserRequestOneDrive implements UserRequest {
 
 		java.io.File output =  response.readEntity(java.io.File.class);
 		return output;
+
+	}
+
+	@Override
+	public File createFolder(String idUser, String folderName, String path, String idParent) {
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		jerseyClient.property(HttpUrlConnectorProvider.SET_METHOD_WORKAROUND, true);
+
+		
+		if(path.equals("root")) {
+			path = "";
+		}
+		else {
+			path=":"+path+":";
+		}
+		
+		String url = "https://graph.microsoft.com/v1.0/me/drive/items/root"+path+"/children";
+
+		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+		DatabaseOp db = new DatabaseOp();
+
+		String jsonData = "{" + 
+				"  \"name\": \""+folderName+"\"," + 
+				"  \"folder\": { }," + 
+				"  \"@microsoft.graph.conflictBehavior\": \"rename\"" + 
+				"}";
+
+		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserOneDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).post(Entity.json(jsonData));;
+
+		if (response.getStatus() != 200 && response.getStatus() != 201) {
+			if(response.getStatus()==401 || response.getStatus() == 400) {
+				throw new UserApplicationError("Set/Update your onedrive token,or your token is invalid",401);
+			}
+			else {
+				throw new InternalServerError();
+			}	
+		}		
+		String output = response.readEntity(String.class);
+		try {
+			return new JSONParserOneDrive().parserFile(new ObjectMapper().readTree(output));
+		} catch (Exception e) {
+			throw new InternalServerError();
+		}
 
 	}
 

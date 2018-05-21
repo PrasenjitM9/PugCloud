@@ -315,9 +315,9 @@ public class UserRequestDropbox implements UserRequest{
 		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserDropBoxToken(idUser)).header("Content-Type", "application/json").accept(MediaType.APPLICATION_JSON).post(Entity.json(jsonData));
 
 		if (response.getStatus() != 200) {
-			
+
 			System.out.println(response.readEntity(String.class));
-			
+
 			if(response.getStatus()==401 || response.getStatus() == 400) {
 				throw new UserApplicationError("Set/Update your dropbox token,or your token is invalid",401);
 			}
@@ -493,7 +493,7 @@ public class UserRequestDropbox implements UserRequest{
 	}
 
 
-	
+
 	@Override
 	public java.io.File downloadFile(String idUser, String idFile) {
 
@@ -524,6 +524,50 @@ public class UserRequestDropbox implements UserRequest{
 
 		java.io.File output =  response.readEntity(java.io.File.class);
 		return output;
+	}
+
+
+
+	@Override
+	public File createFolder(String idUser, String folderName, String path, String idParent) {
+
+		String url = "https://api.dropboxapi.com/2/files/create_folder_v2";
+		JSONParser parser = new JSONParserDropbox();
+
+
+		if(path.equals("root")) {
+			path="";
+		}
+		
+		JerseyClient jerseyClient = JerseyClientBuilder.createClient();
+		JerseyWebTarget jerseyTarget = jerseyClient.target(url);
+
+		String jsonData = "{\n" + 
+				"    \"path\": \""+path+"/"+folderName+"\",\n" + 
+				"    \"autorename\": true\n" + 
+				"}";
+		
+		DatabaseOp db = new DatabaseOp();
+
+		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserDropBoxToken(idUser)).header("Content-Type", "application/json").accept(MediaType.APPLICATION_JSON).post(Entity.json(jsonData));
+
+		if (response.getStatus() != 200) {
+
+			if(response.getStatus()==401 || response.getStatus() == 400) {
+				throw new UserApplicationError("Set/Update your dropbox token,or your token is invalid",401);
+			}
+			else {
+				throw new InternalServerError();
+			}
+		}		
+
+		String output = response.readEntity(String.class);
+
+		try {
+			return new JSONParserDropbox().parseFolderCreation(new ObjectMapper().readTree(output).path("metadata"));
+		} catch (Exception e) {
+			throw new InternalServerError();
+		}
 	}
 
 
