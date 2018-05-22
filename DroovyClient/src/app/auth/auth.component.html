@@ -1,0 +1,35 @@
+<mat-toolbar color="primary">
+  <mat-toolbar-row>
+    <span>Pug Cloud
+    </span>
+  </mat-toolbar-row>
+</mat-toolbar>
+
+<mat-card style="width: 50%;margin: auto;margin-top: 5%">
+    <mat-tab-group color="primary" style="margin: 1%">
+      <mat-tab label="Connexion" >
+
+        <form (ngSubmit)="connect()"  style="margin: 5%">
+          Nom :
+          <input [(ngModel)]="name" type="text" name="username" required="required"><br>
+          Mot de passe :
+          <input [(ngModel)]="password" type="password" name="password" required="required"><br>
+
+          <button mat-button color="primary" type="submit" value="Connexion">Connexion</button>
+
+        </form>
+
+
+      </mat-tab>
+      <mat-tab label="Créer un compte" >
+        <form (ngSubmit)="createAccount()"  style="margin: 5%">
+          Nom :
+          <input [(ngModel)]="name" type="text" name="username" required="required"><br>
+          Mot de passe :
+          <input [(ngModel)]="password" type="password" name="password" required="required"><br>
+          <button mat-button color="primary" type="submit" value="Créer">Créer</button>
+        </form>
+
+      </mat-tab>
+    </mat-tab-group>
+</mat-card>

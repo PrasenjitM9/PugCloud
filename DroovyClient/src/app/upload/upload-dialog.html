@@ -1,0 +1,14 @@
+<div>
+<form action="http://localhost:8080/droovy/request/upload/" method="post" enctype="multipart/form-data"  id="uploadForm">
+  <label for="file">Sélectionnez un fichier :</label>
+  <input (change)="fileChange($event)" type="file" name="file" id="file" />
+  <mat-form-field>
+    <mat-select name="selectDrive" [(ngModel)]="selectedDrive" required placeholder="Choisir un drive">
+      <mat-option *ngIf='this.data.folder.getDropbox==1' value="dropbox">Dropbox</mat-option>
+      <mat-option *ngIf='this.data.folder.getOnedrive==1' value="onedrive">OneDrive</mat-option>
+      <mat-option *ngIf='this.data.folder.getGoogledrive==1' value="googledrive">GoogleDrive</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <button (click)="submit(this.file)">Importer</button>
+</form>
+</div>

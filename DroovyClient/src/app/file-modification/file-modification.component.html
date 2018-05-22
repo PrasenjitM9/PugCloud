@@ -1,0 +1,31 @@
+
+<div style="height: 400px;">
+<mat-card-header>
+    <h4>{{this.data.fileDisplay.name_drive}}</h4>
+  </mat-card-header>
+  <mat-card-content>
+    <br>
+
+    <mat-chip-list>
+      <mat-chip>Dernière modification : {{this.data.fileDisplay.last_update_date | date:'dd-MM-yyyy HH:mm:ss ' }}</mat-chip>
+      <mat-chip>Création : {{this.data.fileDisplay.creation_date | date:'dd-MM-yyyy HH:mm:ss ' }}</mat-chip>
+      &nbsp;<a *ngIf="this.data.fileDisplay.choosenDrive!='dropbox'" onclick="window.open(this.href); return false;"
+               [href]="this.data.fileDisplay.properties.url">Lien</a>
+
+    </mat-chip-list>
+    <input [(ngModel)]="this.data.fileDisplay.new_name">
+    <br>
+    <button  color="primary"  mat-button (click)="onRename()" >Renommer</button>
+    <button color="primary"  mat-button (click)="onDelete()">Supprimer</button>
+    <button *ngIf="this.data.fileDisplay.fileDroovy.type=='FILE'" color="primary" mat-button (click)="onDownload()">Télécharger</button>
+
+    <br>
+    <app-info-sharing [listPermission]="this.data.fileDisplay.listPermission"></app-info-sharing>
+    <br>
+    <app-sharing [file]="this.data.fileDisplay.fileDroovy" [properties]="this.data.fileDisplay.properties"></app-sharing>
+    <br>
+    <app-search-folder [drive]="this.data.fileDisplay.choosenDrive" (choice)="this.data.fileDisplay.move($event)"></app-search-folder>
+    <br>
+
+  </mat-card-content>
+</div>
