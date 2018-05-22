@@ -82,20 +82,16 @@ public class JSONParserOneDrive implements JSONParser {
 		JsonNode items = (ArrayNode) rootNode.path("value");
 
 		for (final JsonNode permission : items) {
-			
-			if(items.path("id").asInt() == 1){
-				(listPermission).put("me", permission.path("roles").asText());
+						
+			if(!permission.path("grantedTo").isNull()) {//Partage
+				(listPermission).put(
+						permission.path("grantedTo").path("user").path("displayName").asText()
+						,(((ArrayNode) permission.path("roles")).get(0).asText() ));
 			}
-			else{
-				if(!permission.path("grantedTo").isNull()){
-					(listPermission).put(
-							permission.path("grantedTo").path("user").path("displayName").asText()
-							, permission.path("roles").asText());
-				}else if(!permission.path("link").isNull()){
-					(listPermission).put(
-							permission.path("link").path("application").path("displayName").asText()
-							, permission.path("roles").asText());
-				}
+			else {//Lien
+				(listPermission).put(
+						permission.path("link").path("webUrl").asText()
+						,(((ArrayNode) permission.path("roles")).get(0).asText() ));
 			}
 			
 		}

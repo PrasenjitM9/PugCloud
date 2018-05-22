@@ -539,8 +539,9 @@ public class UserRequestOneDrive implements UserRequest {
 		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserOneDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).get();
 
 		if (response.getStatus() != 200) {
+			System.out.println("d ! "+response.readEntity(String.class));
+
 			if(response.getStatus()==401 || response.getStatus() == 400) {
-				System.out.println(response.readEntity(String.class));
 				throw new UserApplicationError("Set/Update your onedrive token,or your token is invalid",401);
 			}
 			else {
@@ -548,7 +549,7 @@ public class UserRequestOneDrive implements UserRequest {
 			}
 		}		
 		String output =  response.readEntity(String.class);
-		
+		System.out.println(output);
 		HashMap<String, String> listPermission = new HashMap();
 
 		try {
