@@ -1,0 +1,22 @@
+.img-icon{
+
+  height: 3em;
+  width: 3em;
+
+}
+.sub-content{
+
+}
+
+
+.img-icon-drive{
+  height: 2em;
+  width: 2em;
+  -webkit-box-shadow: 9px 10px 185px -4px rgba(232,220,232,1);
+  -moz-box-shadow: 9px 10px 185px -4px rgba(232,220,232,1);
+  box-shadow: 9px 10px 185px -4px rgba(232,220,232,1);
+}
+
+.file{
+  word-wrap: break-word;
+}

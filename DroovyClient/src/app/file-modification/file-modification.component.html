@@ -12,9 +12,7 @@
       <button mat-button *ngIf="this.data.fileDisplay.choosenDrive!='dropbox'"><a onclick="window.open(this.href); return false;" [href]="this.data.fileDisplay.properties.url">Lien</a></button>
 
     </mat-chip-list>
-    <mat-form-field>
-      <input matInput [(ngModel)]="this.data.fileDisplay.new_name">
-    </mat-form-field>
+      <input [(ngModel)]="this.data.fileDisplay.new_name">
     <br>
     <button  color="primary"  mat-button (click)="onRename()" >Renommer</button>
     <button color="primary"  mat-button (click)="onDelete()">Supprimer</button>
