@@ -17,7 +17,7 @@ import 'rxjs/Rx';
 import {RouterModule, Routes} from '@angular/router';
 import {PageNotFoundComponent} from './page-not-found/page-not-found.component';
 import {RequestService} from './request.service';
-import {FileSizePipe} from './file-size.pipe';
+import {FileSizePipe} from './pipes/file-size.pipe';
 import {AuthGuard} from './auth-guard.service';
 import {UtilitaireService} from "./utilitaire.service";
 import {UploadComponent, UploadDialog} from './upload/upload.component';
@@ -44,8 +44,8 @@ import {SearchBarComponent} from './search-bar/search-bar.component';
 import {CreateFolderComponent} from './create-folder/create-folder.component';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {FlexLayoutModule} from "@angular/flex-layout";
-import { SearchFilterPipe } from './search-filter.pipe';
-import { SharingComponent } from './sharing/sharing.component';
+import {SearchFilterPipe} from './pipes/search-filter.pipe';
+import {SharingComponent} from './sharing/sharing.component';
 import {ShortTextPipe} from './pipes/short-text.pipe';
 
 const appRoutes: Routes = [

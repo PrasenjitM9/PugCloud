@@ -1,5 +1,5 @@
-import { Pipe, PipeTransform } from '@angular/core';
-import {FileDroovy} from "./request.service";
+import {Pipe, PipeTransform} from '@angular/core';
+import {FileDroovy} from "../request.service";
 
 @Pipe({
   name: 'searchFilter'
