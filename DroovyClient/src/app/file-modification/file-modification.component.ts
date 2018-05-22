@@ -1,7 +1,6 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
 import {UploadDialog} from "../upload/upload.component";
-import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-file-modification',
@@ -23,9 +22,6 @@ export class FileModificationComponent implements OnInit {
   }
   onDownload(){
     this.data.fileDisplay.download();
-  }
-  onPermission(){
-    this.data.fileDisplay.getPermission();
   }
 }
 

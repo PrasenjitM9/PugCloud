@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FileDroovy, PropertiesFileDroovy, RequestService} from '../request.service';
+import {FileDroovy, Permission, PropertiesFileDroovy, RequestService} from '../request.service';
 import {AuthService} from "../auth.service";
 import {FileManagerComponent} from "../file-manager/file-manager.component";
 import {MatDialog, MatDialogRef} from "@angular/material";
@@ -24,7 +24,7 @@ export class FileDisplayComponent implements OnInit {
   creation_date: string;
   last_update_date: string;
 
-  public listPermission = new Map<string, string>();
+  public listPermission: Permission[];
 
   private dialogRef: MatDialogRef<FileModificationComponent>;
 
@@ -51,6 +51,7 @@ export class FileDisplayComponent implements OnInit {
 
       this.display_properties = true;
       this.choosenDrive = "onedrive";
+      this.getPermission();
       this.loadDialog();
 
     } else {
@@ -69,6 +70,7 @@ export class FileDisplayComponent implements OnInit {
 
       this.display_properties = true;
       this.choosenDrive = "googledrive";
+      this.getPermission();
       this.loadDialog();
 
     } else {
@@ -86,6 +88,7 @@ export class FileDisplayComponent implements OnInit {
 
       this.display_properties = true;
       this.choosenDrive = "dropbox";
+      this.getPermission();
       this.loadDialog();
 
     } else {
@@ -190,14 +193,11 @@ export class FileDisplayComponent implements OnInit {
     this.request.getPermission(this.auth.user.id, this.properties.id, this.choosenDrive).subscribe(
       data => {
         this.listPermission = data;
-        this.listPermission.forEach((value: string, key: string) => {
-          console.log(key, value);
-        })
+        console.log(this.listPermission);
       }
       , (error: any) => {
         this.handleError(error);
       });
-    this.refreshList();
   }
 }
 

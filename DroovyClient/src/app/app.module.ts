@@ -1,5 +1,5 @@
 import {BrowserModule} from '@angular/platform-browser';
-import {ErrorHandler, NgModule} from '@angular/core';
+import {NgModule} from '@angular/core';
 
 
 import {AppComponent} from './app.component';
@@ -47,6 +47,7 @@ import {FlexLayoutModule} from "@angular/flex-layout";
 import {SearchFilterPipe} from './pipes/search-filter.pipe';
 import {SharingComponent} from './sharing/sharing.component';
 import {ShortTextPipe} from './pipes/short-text.pipe';
+import {InfoSharingComponent} from './info-sharing/info-sharing.component';
 
 const appRoutes: Routes = [
   { path: 'manager', canActivate:[AuthGuard], component: FileManagerComponent },
@@ -82,6 +83,7 @@ const appRoutes: Routes = [
     SearchFilterPipe,
     ShortTextPipe,
     SharingComponent,
+    InfoSharingComponent,
   ],
   imports: [
     RouterModule.forRoot(

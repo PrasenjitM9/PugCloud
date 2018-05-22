@@ -241,6 +241,7 @@ export interface PropertiesFileDroovy {
   role: string,
 }*/
 
-export interface PermissionList {
-  permissions: { [name: string]: string };
+export interface Permission {
+  name: string
+  right: string
 }

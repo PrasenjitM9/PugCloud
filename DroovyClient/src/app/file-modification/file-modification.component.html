@@ -18,8 +18,10 @@
     <br>
     <button  color="primary"  mat-button (click)="onRename()" >Renommer</button>
     <button color="primary"  mat-button (click)="onDelete()">Supprimer</button>
-    <button color="primary"  mat-button (click)="onPermission()">Permission</button>
     <button *ngIf="this.data.fileDisplay.fileDroovy.type=='FILE'" color="primary" mat-button (click)="onDownload()">Télécharger</button>
+
+    <br>
+    <app-info-sharing [listPermission]="this.data.fileDisplay.listPermission"></app-info-sharing>
     <br>
     <app-sharing [file]="this.data.fileDisplay.fileDroovy" [properties]="this.data.fileDisplay.properties"></app-sharing>
     <br>
