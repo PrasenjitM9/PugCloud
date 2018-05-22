@@ -1,22 +1,22 @@
-.img-icon{
+.img-icon {
 
   height: 3em;
   width: 3em;
 
 }
-.sub-content{
+
+.sub-content {
 
 }
 
-
-.img-icon-drive{
+.img-icon-drive {
   height: 2em;
   width: 2em;
-  -webkit-box-shadow: 9px 10px 185px -4px rgba(232,220,232,1);
-  -moz-box-shadow: 9px 10px 185px -4px rgba(232,220,232,1);
-  box-shadow: 9px 10px 185px -4px rgba(232,220,232,1);
+  -webkit-box-shadow: 9px 10px 185px -4px rgba(232, 220, 232, 1);
+  -moz-box-shadow: 9px 10px 185px -4px rgba(232, 220, 232, 1);
+  box-shadow: 9px 10px 185px -4px rgba(232, 220, 232, 1);
 }
 
-.file{
+.file {
   word-wrap: break-word;
 }

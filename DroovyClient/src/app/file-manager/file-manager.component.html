@@ -1,15 +1,15 @@
+<div class="page">
 
-
-<mat-toolbar color="primary">
-  <mat-toolbar-row >
-    <span >Pug Cloud > {{this.authService.user.name}}
+  <mat-toolbar color="primary">
+    <mat-toolbar-row>
+    <span>Pug Cloud > {{this.authService.user.name}}
     </span>
-  </mat-toolbar-row>
-  <mat-toolbar-row>
-    <table>
-      <td>
-        <button mat-button (click)="navigatePrevious()"><i
-          class="material-icons">arrow_back</i></button>
+    </mat-toolbar-row>
+    <mat-toolbar-row>
+      <table>
+        <td>
+          <button mat-button (click)="navigatePrevious()"><i
+            class="material-icons">arrow_back</i></button>
 
           <a>{{tab_previous_folder[tab_previous_folder.length-1].path}}</a>
         </td>
@@ -19,15 +19,19 @@
             <mat-chip color="accent" selected="true" *ngIf="space_info['googledrive']">Google Drive
               {{space_info['googledrive'].used / space_info['googledrive'].quota * 100 | number:'1.0-2'}}%
             </mat-chip>
-            <mat-chip color="accent" selected="true" *ngIf="space_info['dropbox']">Dropbox {{space_info['dropbox'].used /
+            <mat-chip color="accent" selected="true" *ngIf="space_info['dropbox']">Dropbox {{space_info['dropbox'].used
+              /
               space_info['dropbox'].quota * 100 | number:'1.0-2'}}%
             </mat-chip>
-            <mat-chip color="accent" selected="true" *ngIf="space_info['onedrive']">Onedrive {{space_info['onedrive'].used /
+            <mat-chip color="accent" selected="true" *ngIf="space_info['onedrive']">Onedrive
+              {{space_info['onedrive'].used /
               space_info['onedrive'].quota * 100 | number:'1.0-2'}}%
             </mat-chip>
           </mat-chip-list>
         </td>
-        <td><button mat-button (click)="onSignOut()">Déconnexion</button></td>
+        <td>
+          <button mat-button (click)="onSignOut()">Déconnexion</button>
+        </td>
       </table>
     </mat-toolbar-row>
   </mat-toolbar>
@@ -36,20 +40,24 @@
   <mat-tab-group color="primary">
     <mat-tab label="Fichiers">
 
-      <app-upload [file_manager]="this"></app-upload><button mat-button color="primary" (click)="createFolder()">Créer un dossier</button>
+      <app-upload [file_manager]="this"></app-upload>
+      <button mat-button color="primary" (click)="createFolder()">Créer un dossier</button>
       <!--<app-search-bar [file_manager]="this"></app-search-bar>-->
       <button mat-button color="primary" (click)="nextPage()">Afficher plus</button>
-      <input style="width: 50%;" [(ngModel)]="searchQuery" placeholder="Filtrer">
+      <input [(ngModel)]="searchQuery" placeholder="Filtrer">
       <div class="scroll">
         <ng-container *ngFor="let tab_fileDroovy of tab_fileList ">
           <div style="margin: 5px;" fxLayout="row" fxLayout.xs="column" fxLayoutGap="5px">
-            <app-file-display [fileDroovy]="file" [file_manager]="this" *ngFor="let file of tab_fileDroovy | searchFilter : searchQuery"
+            <app-file-display [fileDroovy]="file" [file_manager]="this"
+                              *ngFor="let file of tab_fileDroovy | searchFilter : searchQuery"
                               fxFlex="20%"></app-file-display>
           </div>
         </ng-container>
       </div>
 
     </mat-tab>
-    <mat-tab label="Ajouter un drive"><app-auth-drive></app-auth-drive></mat-tab>
+    <mat-tab label="Ajouter un drive">
+      <app-auth-drive></app-auth-drive>
+    </mat-tab>
   </mat-tab-group>
 </div>
