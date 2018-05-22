@@ -7,6 +7,8 @@ import {LoadingComponentComponent} from "../loading-component/loading-component.
 import {ErrorDialogComponent} from "../error-dialog/error-dialog.component";
 import {CreateFolderComponent} from "../create-folder/create-folder.component";
 import {Router} from '@angular/router';
+import {Observable} from "../../../node_modules/rxjs";
+import {HttpErrorResponse} from "@angular/common/http";
 
 @Component({
   selector: 'app-file-manager',
@@ -107,7 +109,7 @@ export class FileManagerComponent implements OnInit {
   }
 
   handleError(error : any){
-    console.log("Erreur : "+error);
+   console.log("Erreur : "+error.httpErrorCode);
     let dialogRef = this.dialog.open(ErrorDialogComponent, {
       data: {
         msg :  "Oups, ....\nUne erreur est survenue, l'action a échoué"

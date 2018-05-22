@@ -5,6 +5,7 @@ export class User {
   connectedToGoogleDrive: boolean;
   connectedToOneDrive: boolean;
   connectedToDropbox: boolean;
+  name : string;
 
   constructor() {
   }
