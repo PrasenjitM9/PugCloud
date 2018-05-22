@@ -175,6 +175,20 @@ export class RequestService {
     });
   }
 
+  getPermission(idUser : string, idFile : string, drive : string ){
+    var url = this.apiUrl + "permission?idUser=" + idUser + "&idFile=" + idFile + "&drive="+drive;
+    return this.http.get(url, {responseType: 'json'}).catch((err: HttpErrorResponse) => {
+      if(err.status == 401){
+        this.resetToken(drive);
+      }
+      else if (err.status == 442){
+        this.auth.eraseUser();
+        this.router.navigate(['/manager']);
+      }
+      return Observable.throw('Error');
+    });
+  }
+
 
   resetToken(drive : string){
       if(drive == "googledrive"){
@@ -220,4 +234,13 @@ export interface PropertiesFileDroovy {
   creationDate: string,
   lastUpdateDate: string,
   contentHash: string
+}
+
+/*export interface PermissionList <user, role> {
+  user: string,
+  role: string,
+}*/
+
+export interface PermissionList {
+  permissions: { [name: string]: string };
 }

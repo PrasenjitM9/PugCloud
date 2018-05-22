@@ -24,5 +24,8 @@ export class FileModificationComponent implements OnInit {
   onDownload(){
     this.data.fileDisplay.download();
   }
+  onPermission(){
+    this.data.fileDisplay.getPermission();
+  }
 }
 

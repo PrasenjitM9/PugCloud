@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FileDroovy, PropertiesFileDroovy, RequestService} from "../request.service";
+import {FileDroovy, PermissionList, PropertiesFileDroovy, RequestService} from '../request.service';
 import {AuthService} from "../auth.service";
 import {FileManagerComponent} from "../file-manager/file-manager.component";
 import {LoadingComponentComponent} from "../loading-component/loading-component.component";
@@ -18,19 +18,21 @@ export class FileDisplayComponent implements OnInit {
   @Input() file_manager: FileManagerComponent;
 
   display_properties = false;
-  choosenDrive : string;
+  choosenDrive: string;
 
   name_drive: string;
   url_download: string;
   creation_date: string;
   last_update_date: string;
 
-  private dialogRef : MatDialogRef<FileModificationComponent>;
+  public listPermission: PermissionList;
+
+  private dialogRef: MatDialogRef<FileModificationComponent>;
 
   new_name: string;
   properties: PropertiesFileDroovy;
 
-  constructor(public dialog: MatDialog,private request : RequestService,private auth : AuthService) {
+  constructor(public dialog: MatDialog, private request: RequestService,private auth : AuthService) {
 
   }
 
@@ -105,7 +107,7 @@ export class FileDisplayComponent implements OnInit {
     this.request.move(this.auth.user.id,choice.pathParent+"/"+this.fileDroovy.name,this.properties.id,this.choosenDrive,choice.idParent,"/"+this.fileDroovy.name,this.fileDroovy.name).subscribe(
       data => {
         console.log(data);
-        }
+      }
       , (error: any) => {
         this.handleError(error);
       });
@@ -117,7 +119,7 @@ export class FileDisplayComponent implements OnInit {
         console.log(data);
       }
       , (error: any) => {
-          this.handleError(error);
+        this.handleError(error);
       });
 
     this.refreshList();
@@ -183,6 +185,20 @@ export class FileDisplayComponent implements OnInit {
     }
 
     this.file_manager.navigate(path, idFolder, getGoogleDrive, getOneDrive, getDropbox)
+  }
+
+  getPermission() {
+    this.request.getPermission(this.auth.user.id, this.properties.id, this.choosenDrive).subscribe(
+      data => {
+        this.listPermission = data;
+        for (let [key, value] of this.listPermission) {
+          console.log(key, value);
+        }
+      }
+      , (error: any) => {
+        this.handleError(error);
+      });
+    this.refreshList();
   }
 }
 
