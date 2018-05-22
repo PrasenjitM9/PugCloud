@@ -1,8 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FileDroovy, PermissionList, PropertiesFileDroovy, RequestService} from '../request.service';
+import {FileDroovy, PropertiesFileDroovy, RequestService} from '../request.service';
 import {AuthService} from "../auth.service";
 import {FileManagerComponent} from "../file-manager/file-manager.component";
-import {LoadingComponentComponent} from "../loading-component/loading-component.component";
 import {MatDialog, MatDialogRef} from "@angular/material";
 import {ErrorDialogComponent} from "../error-dialog/error-dialog.component";
 import {FileModificationComponent} from "../file-modification/file-modification.component";
@@ -25,7 +24,7 @@ export class FileDisplayComponent implements OnInit {
   creation_date: string;
   last_update_date: string;
 
-  public listPermission: PermissionList;
+  public listPermission = new Map<string, string>();
 
   private dialogRef: MatDialogRef<FileModificationComponent>;
 
@@ -191,9 +190,9 @@ export class FileDisplayComponent implements OnInit {
     this.request.getPermission(this.auth.user.id, this.properties.id, this.choosenDrive).subscribe(
       data => {
         this.listPermission = data;
-        for (let [key, value] of this.listPermission) {
+        this.listPermission.forEach((value: string, key: string) => {
           console.log(key, value);
-        }
+        })
       }
       , (error: any) => {
         this.handleError(error);
