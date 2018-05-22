@@ -526,7 +526,7 @@ public class UserRequestOneDrive implements UserRequest {
 	}
 
 	@Override
-	public HashMap<String, String> getFilePermission(String idFile, String idUser) {
+	public List<Permission> getFilePermission(String idFile, String idUser) {
 		String url = "https://graph.microsoft.com/v1.0/me/drive/items/"+idFile+"/permissions";
 				
 		JSONParser parser = new JSONParserOneDrive();
@@ -550,7 +550,7 @@ public class UserRequestOneDrive implements UserRequest {
 		}		
 		String output =  response.readEntity(String.class);
 		System.out.println(output);
-		HashMap<String, String> listPermission = new HashMap();
+		List<Permission> listPermission = new LinkedList<>();
 
 		try {
 			listPermission = parser.parserPermission(output);

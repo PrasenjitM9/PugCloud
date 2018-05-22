@@ -6,10 +6,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.droovy.request.File;
 import com.droovy.request.FileType;
+import com.droovy.request.Permission;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -72,11 +74,11 @@ public class JSONParserOneDrive implements JSONParser {
 	}
 
 	@Override
-	public HashMap<String, String> parserPermission(String output)
+	public List<Permission> parserPermission(String output)
 			throws JsonProcessingException, IOException, ParseException {
 		
 		ObjectMapper mapper = new ObjectMapper();
-		HashMap<String,String> listPermission = new HashMap<>();
+		List<Permission> listPermission = new LinkedList<>();
 
 		JsonNode rootNode = mapper.readTree(output);
 		JsonNode items = (ArrayNode) rootNode.path("value");
@@ -84,14 +86,12 @@ public class JSONParserOneDrive implements JSONParser {
 		for (final JsonNode permission : items) {
 						
 			if(!permission.path("grantedTo").isNull()) {//Partage
-				(listPermission).put(
-						permission.path("grantedTo").path("user").path("displayName").asText()
-						,(((ArrayNode) permission.path("roles")).get(0).asText() ));
+				(listPermission).add(new Permission(permission.path("grantedTo").path("user").path("displayName").asText(), (((ArrayNode) permission.path("roles")).get(0).asText())));
 			}
 			else {//Lien
-				(listPermission).put(
+				(listPermission).add(new Permission(
 						permission.path("link").path("webUrl").asText()
-						,(((ArrayNode) permission.path("roles")).get(0).asText() ));
+						,(((ArrayNode) permission.path("roles")).get(0).asText() )));
 			}
 			
 		}

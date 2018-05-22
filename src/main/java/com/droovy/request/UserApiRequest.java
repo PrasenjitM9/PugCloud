@@ -496,7 +496,7 @@ public class UserApiRequest {
 	@Path("/permission")
 	public Response getPermission(@QueryParam("idUser") String idUser, @QueryParam("idFile") String idFile,@QueryParam("drive") String drive) {
 		
-		final HashMap<String, String> permission;
+		final List<Permission> permission;
 
 		if(drive.equals("dropbox")) {
 			permission = request_dropbox.getFilePermission(idFile, idUser);

@@ -526,7 +526,7 @@ public class UserRequestGoogleDrive implements UserRequest{
 	}
 	
 	@Override
-	public HashMap<String, String> getFilePermission(String idFile, String idUser) {
+	public List<Permission> getFilePermission(String idFile, String idUser) {
 		
 		
 		String url = "https://www.googleapis.com/drive/v2/files/"+idFile+"/permissions";
@@ -551,7 +551,7 @@ public class UserRequestGoogleDrive implements UserRequest{
 		}		
 		String output =  response.readEntity(String.class);
 
-		HashMap<String, String> listPermission = new HashMap();
+		List<Permission> listPermission = new LinkedList<>();
 
 		try {
 			listPermission = parser.parserPermission(output);

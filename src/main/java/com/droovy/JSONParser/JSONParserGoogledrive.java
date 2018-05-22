@@ -7,10 +7,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.droovy.request.File;
 import com.droovy.request.FileType;
+import com.droovy.request.Permission;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -92,17 +94,17 @@ public class JSONParserGoogledrive implements JSONParser {
 	}
 
 	@Override
-	public HashMap<String, String> parserPermission(String output)
+	public List<Permission> parserPermission(String output)
 			throws JsonProcessingException, IOException, ParseException {
 		
 		ObjectMapper mapper = new ObjectMapper();
-		HashMap<String,String> listPermission = new HashMap<>();
+		List<Permission> listPermission = new LinkedList<>();
 
 		JsonNode rootNode = mapper.readTree(output);
 		JsonNode items = (ArrayNode) rootNode.path("items");
 
 		for (final JsonNode permission : items) {
-			(listPermission).put(permission.path("emailAddress").asText(), permission.path("role").asText());
+			(listPermission).add(new Permission(permission.path("emailAddress").asText(), permission.path("role").asText()));
 		}
 		return listPermission;
 	}

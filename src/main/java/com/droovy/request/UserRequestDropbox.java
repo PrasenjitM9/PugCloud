@@ -625,7 +625,7 @@ public class UserRequestDropbox implements UserRequest{
 
 
 	@Override
-	public HashMap<String, String> getFilePermission(String idFile, String idUser) {
+	public List<Permission> getFilePermission(String idFile, String idUser) {
 		
 		String url = "https://api.dropboxapi.com/2/sharing/list_file_members";
 		JSONParser parser = new JSONParserDropbox();
@@ -654,7 +654,7 @@ public class UserRequestDropbox implements UserRequest{
 		
 		String output =  response.readEntity(String.class);
 		
-		HashMap<String, String> listPermission = new HashMap();
+		List<Permission> listPermission = new LinkedList<>();
 
 		try {
 			listPermission = parser.parserPermission(output);

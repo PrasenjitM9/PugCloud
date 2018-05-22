@@ -31,6 +31,6 @@ public interface UserRequest {
 	
 	public Page nextPage(String idUser,String tokenNextPage,String folderId);
 	
-	public HashMap<String, String> getFilePermission(String idFile, String idUser);
+	public List<Permission> getFilePermission(String idFile, String idUser);
 	
 }

@@ -6,10 +6,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.droovy.request.File;
 import com.droovy.request.FileType;
+import com.droovy.request.Permission;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -85,11 +87,11 @@ public class JSONParserDropbox implements JSONParser {
 	}
 
 	@Override
-	public HashMap<String, String> parserPermission(String output)
+	public List<Permission> parserPermission(String output)
 			throws JsonProcessingException, IOException, ParseException {
 		
 		ObjectMapper mapper = new ObjectMapper();
-		HashMap<String,String> listPermission = new HashMap<>();
+		List<Permission> listPermission = new LinkedList<>();
 
 		JsonNode rootNode = mapper.readTree(output);
 		JsonNode users = (ArrayNode) rootNode.path("users");
@@ -97,18 +99,18 @@ public class JSONParserDropbox implements JSONParser {
 		JsonNode invitees = (ArrayNode) rootNode.path("invitees");
 
 		for (final JsonNode permission : users) {
-			(listPermission).put(permission.path("user").path("display_name").asText(),
-					permission.path("access_type").path(".tag").asText());
+			(listPermission).add(new Permission(permission.path("user").path("display_name").asText(),
+					permission.path("access_type").path(".tag").asText()));
 		}
 		
 		for (final JsonNode permission : groups) {
-			(listPermission).put(permission.path("group").path("group_name").asText(),
-					permission.path("access_type").path(".tag").asText());
+			(listPermission).add(new Permission(permission.path("group").path("group_name").asText(),
+					permission.path("access_type").path(".tag").asText()));
 		}
 
 		for (final JsonNode permission : invitees) {
-			(listPermission).put(permission.path("invitee").path("email").asText(),
-					permission.path("access_type").path(".tag").asText());
+			(listPermission).add(new Permission(permission.path("invitee").path("email").asText(),
+					permission.path("access_type").path(".tag").asText()));
 		}
 		
 		return listPermission;
