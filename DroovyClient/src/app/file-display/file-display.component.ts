@@ -24,7 +24,7 @@ export class FileDisplayComponent implements OnInit {
   creation_date: string;
   last_update_date: string;
 
-  public listPermission: Permission[];
+  public listPermission: Permission[] = [];
 
   private dialogRef: MatDialogRef<FileModificationComponent>;
 
@@ -88,7 +88,10 @@ export class FileDisplayComponent implements OnInit {
 
       this.display_properties = true;
       this.choosenDrive = "dropbox";
-      this.getPermission();
+
+      if (this.fileDroovy.type == "FILE") {
+        this.getPermission();
+      }
       this.loadDialog();
 
     } else {
