@@ -3,7 +3,6 @@ package com.droovy.request;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URLConnection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -23,8 +22,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.filter.LoggingFilter;
 
-import errors.InternalServerError;
-import errors.UserApplicationError;
+import com.droovy.errors.InternalServerError;
+import com.droovy.errors.UserApplicationError;
 
 public class UserRequestGoogleDrive implements UserRequest{
 
@@ -48,7 +47,6 @@ public class UserRequestGoogleDrive implements UserRequest{
 		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserGoogleDriveToken(id)).accept(MediaType.APPLICATION_JSON).get();
 
 		if (response.getStatus() != 200) {
-			System.out.println(response.readEntity(String.class)+ " ");
 			if(response.getStatus()==401 ) {
 				throw new UserApplicationError("Set/Update your googledrive token", 401);
 			}
@@ -199,7 +197,6 @@ public class UserRequestGoogleDrive implements UserRequest{
 			if (response.getStatus() == 200) {//Success
 				done=true;
 				String output = response.readEntity(String.class);
-				System.out.println("File : = "+output);
 				ObjectMapper mapper = new ObjectMapper();
 
 				JsonNode rootNode;
@@ -256,7 +253,6 @@ public class UserRequestGoogleDrive implements UserRequest{
 
 		if (response.getStatus() != 200) {
 
-			System.out.println(response.readEntity(String.class));
 
 			if(response.getStatus()==401 || response.getStatus() == 400) {
 				throw new UserApplicationError("Set/Update your google drive token,or your token is invalid",401);
@@ -382,7 +378,6 @@ public class UserRequestGoogleDrive implements UserRequest{
 	@Override
 	public java.io.File downloadFile(String idUser, String idFile) {
 
-		System.out.println("d");
 
 		String url = "https://www.googleapis.com/drive/v3/files/"+idFile+"?alt=media";
 
@@ -393,7 +388,6 @@ public class UserRequestGoogleDrive implements UserRequest{
 		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserGoogleDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).get();
 
 		if (response.getStatus() != 200) {
-			System.out.println(response.readEntity(String.class));
 			if(response.getStatus()==401 || response.getStatus() == 400) {
 				throw new UserApplicationError("Set/Update your google drive token,or your token is invalid",401);
 			}
@@ -453,7 +447,6 @@ public class UserRequestGoogleDrive implements UserRequest{
 
 		String url = "https://www.googleapis.com/drive/v2/files?pageToken="+tokenNextPage;
 
-		System.out.println(url);
 		url+="&q=%27"+folderId+"%27%20in%20parents";
 
 
@@ -464,7 +457,6 @@ public class UserRequestGoogleDrive implements UserRequest{
 		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserGoogleDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).get();
 
 		if (response.getStatus() != 200) {
-			System.out.println(response.readEntity(String.class)+ " "+tokenNextPage);
 			if(response.getStatus()==401 ) {
 				throw new UserApplicationError("Set/Update your googledrive token", 401);
 			}
@@ -512,7 +504,6 @@ public class UserRequestGoogleDrive implements UserRequest{
 		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserGoogleDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).post(Entity.json(json));
 
 		if (response.getStatus() != 200) {
-			System.out.println(response.readEntity(String.class));
 			if(response.getStatus()==401 || response.getStatus() == 400) {
 				throw new UserApplicationError("Set/Update your dropbox token,or your token is invalid or you don't have the rights to do this",401);
 			}
@@ -536,12 +527,10 @@ public class UserRequestGoogleDrive implements UserRequest{
 
 		DatabaseOp db = new DatabaseOp();
 		
-		System.out.println(db.getUserGoogleDriveToken(idUser));
 		
 		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserGoogleDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).get();
 
 		if (response.getStatus() != 200) {
-			System.out.println(response.readEntity(String.class)+ " ");
 			if(response.getStatus()==401 ) {
 				throw new UserApplicationError("Set/Update your googledrive token", 401);
 			}

@@ -23,8 +23,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.filter.LoggingFilter;
 
-import errors.InternalServerError;
-import errors.UserApplicationError;
+import com.droovy.errors.InternalServerError;
+import com.droovy.errors.UserApplicationError;
 
 public class UserRequestDropbox implements UserRequest{
 	@Override
@@ -133,7 +133,6 @@ public class UserRequestDropbox implements UserRequest{
 
 
 		if (response.getStatus() != 200) {
-			System.out.println(response.readEntity(String.class));
 			if(response.getStatus()==401 || response.getStatus() == 400) {
 				throw new UserApplicationError("Set/Update your dropbox token,or your token is invalid",401);
 			}
@@ -322,7 +321,6 @@ public class UserRequestDropbox implements UserRequest{
 
 		if (response.getStatus() != 200) {
 
-			System.out.println(response.readEntity(String.class));
 
 			if(response.getStatus()==401 || response.getStatus() == 400) {
 				throw new UserApplicationError("Set/Update your dropbox token,or your token is invalid",401);
@@ -520,7 +518,6 @@ public class UserRequestDropbox implements UserRequest{
 		if (response.getStatus() != 200) {
 			if(response.getStatus()==401 || response.getStatus() == 400) {
 				String output = response.readEntity(String.class);
-				System.out.println(output);
 				throw new UserApplicationError("Set/Update your dropbox token,or your token is invalid",401);
 			}
 			else {

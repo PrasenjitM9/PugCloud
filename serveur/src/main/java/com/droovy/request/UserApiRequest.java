@@ -30,8 +30,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.ClientResponse.Status;
 
-import errors.InternalServerError;
-import errors.UserApplicationError;
+import com.droovy.errors.InternalServerError;
+import com.droovy.errors.UserApplicationError;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 
@@ -51,7 +51,7 @@ public class UserApiRequest {
 		boolean folderOnly = onlyFolders.equals("true");
 
 		if(idUser == null || path==null || idFolder == null || onlyFolders == null ) {
-			throw new UserApplicationError("At least one argument is missing", 400);
+			throw new com.droovy.errors.UserApplicationError("At least one argument is missing", 400);
 		}
 
 		Page pageDropbox = new Page(), pageGoogleDrive = new Page(), pageOneDrive = new Page();
@@ -108,9 +108,6 @@ public class UserApiRequest {
 		}
 		
 		output += ","+dropboxToken+","+onedriveToken+","+googledriveToken+"}"; 
-	
-		System.out.println("file");
-		System.out.println(output);
 		
 		return Response.status(Status.OK).entity(output).build();
 	}
@@ -124,7 +121,7 @@ public class UserApiRequest {
 	public Response uploadFile(@FormDataParam("file") InputStream uploadInputStream, @FormDataParam("file") FormDataContentDisposition fileDetail, @FormDataParam("idUser") String idUser, @FormDataParam("drive") String drive,@FormDataParam("pathInDrive") String pathInDrive,@FormDataParam("parentId") String parentId) throws IOException {
 
 		if(idUser == null || uploadInputStream==null || fileDetail == null || drive == null || parentId == null || pathInDrive == null ) {
-			throw new UserApplicationError("At least one argument is missing", 400);
+			throw new com.droovy.errors.UserApplicationError("At least one argument is missing", 400);
 		}
 
 		OutputStream outputStream = new FileOutputStream(new java.io.File(fileDetail.getFileName()));

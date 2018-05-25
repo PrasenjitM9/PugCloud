@@ -16,8 +16,8 @@ import com.droovy.auth.GoogledriveAuth;
 import com.droovy.auth.OneDriveAuth;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import errors.InternalServerError;
-import errors.UserApplicationError;
+import com.droovy.errors.InternalServerError;
+import com.droovy.errors.UserApplicationError;
 
 public class DatabaseOp {
 

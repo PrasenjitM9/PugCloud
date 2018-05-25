@@ -1,4 +1,4 @@
-package errors;
+package com.droovy.errors;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;

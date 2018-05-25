@@ -21,13 +21,12 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import com.droovy.DatabaseOp;
 import com.droovy.JSONParser.JSONParser;
 import com.droovy.JSONParser.JSONParserOneDrive;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.filter.LoggingFilter;
 
-import errors.InternalServerError;
-import errors.UserApplicationError;
+import com.droovy.errors.InternalServerError;
+import com.droovy.errors.UserApplicationError;
 
 public class UserRequestOneDrive implements UserRequest {
 
@@ -55,7 +54,6 @@ public class UserRequestOneDrive implements UserRequest {
 
 		if (response.getStatus() != 200) {
 			if(response.getStatus()==401 || response.getStatus() == 400) {
-				System.out.println(response.readEntity(String.class));
 				throw new UserApplicationError("Set/Update your onedrive token,or your token is invalid",401);
 			}
 			else {
@@ -388,7 +386,6 @@ public class UserRequestOneDrive implements UserRequest {
 
 		if (response.getStatus() != 200) {
 			String output =  response.readEntity(String.class);
-			System.out.println(output);
 			if(response.getStatus()==401 || response.getStatus() == 400) {
 				throw new UserApplicationError("Set/Update your onedrive token,or your token is invalid",401);
 			}
@@ -462,7 +459,6 @@ public class UserRequestOneDrive implements UserRequest {
 
 		if (response.getStatus() != 200) {
 			if(response.getStatus()==401 || response.getStatus() == 400) {
-				System.out.println(response.readEntity(String.class));
 				throw new UserApplicationError("Set/Update your onedrive token,or your token is invalid",401);
 			}
 			else {
@@ -539,7 +535,6 @@ public class UserRequestOneDrive implements UserRequest {
 		Response response = jerseyTarget.request().header("Authorization", "Bearer "+db.getUserOneDriveToken(idUser)).accept(MediaType.APPLICATION_JSON).get();
 
 		if (response.getStatus() != 200) {
-			System.out.println("d ! "+response.readEntity(String.class));
 
 			if(response.getStatus()==401 || response.getStatus() == 400) {
 				throw new UserApplicationError("Set/Update your onedrive token,or your token is invalid",401);
@@ -549,7 +544,6 @@ public class UserRequestOneDrive implements UserRequest {
 			}
 		}		
 		String output =  response.readEntity(String.class);
-		System.out.println(output);
 		List<Permission> listPermission = new LinkedList<>();
 
 		try {
